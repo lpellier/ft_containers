@@ -2,7 +2,7 @@ NAME = test
 
 CC = clang++
 
-CFLAGS = -g -Wall -Werror -Wextra -Wno-unused-parameter -std=c++98
+CFLAGS = -g -Wall -Werror -Wextra -std=c++98
 
 SRCS =	./vecTest.cpp \
 		./itTest.cpp \

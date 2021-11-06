@@ -35,13 +35,13 @@ public:
 	typedef typename allocator_type::const_pointer			const_pointer;
 
 	// Iterators point to an element in a vector and point to the next one when incremented
-	typedef random_access_iterator<value_type>			iterator;
+	typedef ft::random_access_iterator<value_type>			iterator;
 	// Reverse iterators point to an element in a vector and point to the previous one when incremented
-	// typedef std::reverse_iterator<iterator>								reverse_iterator;
+	typedef ft::reverse_iterator<iterator>					reverse_iterator;
 	// A const iterator is an iteraror that points to const content
-	typedef random_access_const_iterator<value_type>	const_iterator;
+	typedef ft::random_access_const_iterator<value_type>	const_iterator;
 	// A const reverse iterator is a reverse iterator that points to const content
-	// typedef const reverse_iterator										const_reverse_iterator;
+	typedef ft::reverse_const_iterator<iterator>			const_reverse_iterator;
 
 	// size_type is size of type
 	typedef std::size_t			size_type;
@@ -61,7 +61,7 @@ public:
 
 	// Constructs a vector with n elements
 	// Each element is a copy of val
-	explicit vector (size_type n, const value_type & val) : _size(n), _capacity(n + static_cast<size_type>(CAPACITY_MARGIN)){ // fill
+	explicit vector (size_type n, const value_type & val = value_type()) : _size(n), _capacity(n + static_cast<size_type>(CAPACITY_MARGIN)){ // fill
 		this->_array = this->_alloc.allocate(this->_capacity);
 		for (size_type i = 0; i < this->_size; i++) {
 			this->_alloc.construct(this->_array + i, val);
@@ -75,7 +75,7 @@ public:
 
 	// using enable_if here forbids any integral type to get into this function
 	// so that only iterators may use this function
-	vector (InputIterator first, InputIterator last, typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) { // range
+	vector (InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) { // range
 		this->_size = ft::distance(first, last);
 		this->_capacity = this->_size + CAPACITY_MARGIN;
 		this->_array = this->_alloc.allocate(this->_capacity);
@@ -154,27 +154,27 @@ public:
 	}
 
 	// Returns a reverse iterator pointing to the last element in the vector
-	// reverse_iterator		rbegin () {
-		// reverse_iterator	ret(this->_array + this->_size);
-		// return ret;
-	// }
+	reverse_iterator		rbegin () {
+		reverse_iterator	ret(this->_array + this->_size);
+		return ret;
+	}
 	// If the vector is const qualifed
-	// const_reverse_iterator	rbegin () const {
-		// const_reverse_iterator	ret(this->_array + this->_size);
-		// return ret;
-	// }
+	const_reverse_iterator	rbegin () const {
+		const_reverse_iterator	ret(this->_array + this->_size);
+		return ret;
+	}
 
 	// Returns a reverse iterator pointing to the theroritocal element preceding the 
 	// first element in the vector (which is considered its reverse end)
-	// reverse_iterator		rend () {
-		// reverse_iterator	ret(this->_array);
-		// return ret;
-	// }
+	reverse_iterator		rend () {
+		reverse_iterator	ret(this->_array);
+		return ret;
+	}
 	// If the vector is const qualifed
-	// const_reverse_iterator	rend () const {
-		// const_reverse_iterator	ret(this->_array);
-		// return ret;
-	// }
+	const_reverse_iterator	rend () const {
+		const_reverse_iterator	ret(this->_array);
+		return ret;
+	}
 
 	/*
 	 _____                        _ _         
@@ -342,7 +342,7 @@ public:
 	// Any elements held in the container before the call are destroyed and replaced by newly constructed
 	// elements (no assignments of elements take place)
 	template	< typename InputIterator >
-	void		assign (InputIterator first, InputIterator last) { // range
+	void		assign (InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) { // range
 		difference_type distance = ft::distance(first, last);
 		// If need be, reduce size of vector to a size of (distance) elements
 		this->_reduce_size(distance);

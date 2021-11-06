@@ -341,4 +341,12 @@ void	testIterator(const std::vector<int> & actual_vector, const ft::vector<int> 
 		testItOffsetDereference(my_cur_it, true);
 		std::cout << std::endl;
 	}
+
+}
+
+void	testReverseIterator(std::vector<int> & actual_vector, ft::vector<int> & my_vector) {
+	std::vector<int>::reverse_iterator act_rit(actual_vector.rbegin());
+	ft::vector<int>::reverse_iterator my_rit(my_vector.rbegin());
+
+	std::cout << *act_rit << " " << *my_rit << std::endl;
 }
