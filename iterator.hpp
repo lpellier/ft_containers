@@ -176,7 +176,7 @@ public:
 	// destructor
 	~random_access_const_iterator (void) {}
 	// copy constructor
-	random_access_const_iterator (const random_access_const_iterator & src) : ptr(src->ptr) {}
+	random_access_const_iterator (const random_access_const_iterator & src) : ptr(src.ptr) {}
 	// random_access_const_iterator (const ft::random_access_iterator<T> & src) : ptr(src.ptr) {}
 	// assignment operator
 	random_access_const_iterator & operator= (const random_access_const_iterator & src) {
