@@ -7,7 +7,7 @@
 
 namespace ft {
 
-template < typename T >
+template < typename T, typename Alloc = std::allocator<T> >
 class vector {
 public:
 	
@@ -23,7 +23,7 @@ public:
 	*/
 
 	typedef T					value_type;
-	typedef std::allocator<T>	allocator_type;
+	typedef Alloc				allocator_type;
 
 	// for default allocator : value_type &
 	typedef typename allocator_type::reference				reference;
@@ -35,13 +35,13 @@ public:
 	typedef typename allocator_type::const_pointer			const_pointer;
 
 	// Iterators point to an element in a vector and point to the next one when incremented
-	typedef ft::random_access_iterator<value_type>			iterator;
+	typedef ft::random_access_iterator<pointer>				iterator;
+	// A const iterator is an iteraror that points to const content
+	typedef ft::random_access_iterator<const_pointer>		const_iterator;
 	// Reverse iterators point to an element in a vector and point to the previous one when incremented
 	typedef ft::reverse_iterator<iterator>					reverse_iterator;
-	// A const iterator is an iteraror that points to const content
-	typedef ft::random_access_const_iterator<value_type>	const_iterator;
 	// A const reverse iterator is a reverse iterator that points to const content
-	typedef ft::reverse_const_iterator<iterator>			const_reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 
 	// size_type is size of type
 	typedef std::size_t			size_type;
@@ -133,47 +133,39 @@ public:
 
 	// Returns an iterator pointing to the first element in the vector
 	iterator				begin () {
-		iterator ret(this->_array);
-		return ret;
+		return iterator(this->_array);
 	}
 	// If the vector is const-qualified
 	const_iterator			begin () const {
-		const_iterator ret(this->_array);
-		return ret;
+		return const_iterator(this->_array);
 	}
 
 	// Returns an iterator pointing to the past-the-end element in the vector
 	iterator				end () {
-		iterator ret(this->_array + this->_size);
-		return ret;
+		return iterator(this->_array + this->_size);
 	}
 	// If the vector is const-qualified
 	const_iterator			end () const {
-		const_iterator ret(this->_array + this->_size);
-		return ret;
+		return const_iterator(this->_array + this->_size);
 	}
 
 	// Returns a reverse iterator pointing to the last element in the vector
 	reverse_iterator		rbegin () {
-		reverse_iterator	ret(this->_array + this->_size);
-		return ret;
+		return reverse_iterator(this->_array + this->_size);
 	}
 	// If the vector is const qualifed
 	const_reverse_iterator	rbegin () const {
-		const_reverse_iterator	ret(this->_array + this->_size);
-		return ret;
+		return const_reverse_iterator(this->_array + this->_size);
 	}
 
 	// Returns a reverse iterator pointing to the theroritocal element preceding the 
 	// first element in the vector (which is considered its reverse end)
 	reverse_iterator		rend () {
-		reverse_iterator	ret(this->_array);
-		return ret;
+		return reverse_iterator(this->_array);
 	}
 	// If the vector is const qualifed
 	const_reverse_iterator	rend () const {
-		const_reverse_iterator	ret(this->_array);
-		return ret;
+		return const_reverse_iterator(this->_array);
 	}
 
 	/*
@@ -343,9 +335,7 @@ public:
 	// elements (no assignments of elements take place)
 	template	< typename InputIterator >
 	void		assign (InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) { // range
-		difference_type distance = ft::distance(first, last);
-		// If need be, reduce size of vector to a size of (distance) elements
-		this->_reduce_size(distance);
+		this->_reduce_size(0);
 		// adding each element of the first to last iterator range
 		// each time increasing size by one and checking if we ever need a reallocation
 		while (first != last) {
@@ -354,7 +344,7 @@ public:
 		}
 	}
 	void		assign (size_type n, const value_type & val) { // fill
-		this->_reduce_size(n);
+		this->_reduce_size(0);
 		this->_increase_size(n, val);
 	} 
 	
@@ -580,7 +570,7 @@ protected:
 
 template	< typename T >
 bool		operator== (const vector<T> & lhs, const vector<T> & rhs) {
-	if (lhs.size != rhs.size)
+	if (lhs.size() != rhs.size())
 		return false;
 	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 }

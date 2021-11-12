@@ -95,24 +95,67 @@ void	testVecSwap(Vec & vec, bool mine) {
 	outputVecCapacity(vec, mine);
 }
 
+template < typename Vec >
+void	testVecAssign(Vec & vec, bool mine) {
+	std::cout << RED;
+	if (mine)
+		std::cout << CYAN;
+
+	outputVecContents(vec, mine);
+	outputVecCapacity(vec, mine);
+	
+	Vec assignContent(18, 5);
+
+	vec.assign(assignContent.begin(), assignContent.end());
+
+	outputVecContents(vec, mine);
+	outputVecCapacity(vec, mine);
+}
+
+template < typename Vec >
+void	testVecPushback(Vec & vec, bool mine) {
+	std::cout << RED;
+	if (mine)
+		std::cout << CYAN;
+
+	outputVecContents(vec, mine);
+	outputVecCapacity(vec, mine);
+	
+	for (typename Vec::size_type i = 0; i < 30; i++)
+		vec.push_back(i);
+
+	outputVecContents(vec, mine);
+	outputVecCapacity(vec, mine);
+}
+
 void	testVector(std::vector<int> & act_vec, ft::vector<int> & my_vec) {
 	std::cout << RESET << "Simple loop" << std::endl;
 	outputVecContents(act_vec, false);
 	outputVecContents(my_vec, true);
 	std::cout << std::endl;
 
-	std::cout << RESET << "Insert tests" << std::endl;
-	testVecInsert(act_vec, false);
-	testVecInsert(my_vec, true);
-	std::cout << std::endl;
+	// std::cout << RESET << "Assign tests" << std::endl;
+	// testVecAssign(act_vec, false);
+	// testVecAssign(my_vec, true);
+	// std::cout << std::endl;
 
-	std::cout << RESET << "Erase tests" << std::endl;
-	testVecErase(act_vec, false);
-	testVecErase(my_vec, true);
-	std::cout << std::endl;
+	// std::cout << RESET << "Push back tests" << std::endl;
+	// testVecPushback(act_vec, false);
+	// testVecPushback(my_vec, true);
+	// std::cout << std::endl;
 
-	std::cout << RESET << "Swap tests" << std::endl;
-	testVecSwap(act_vec, false);
-	testVecSwap(my_vec, true);
-	std::cout << std::endl;
+	// std::cout << RESET << "Insert tests" << std::endl;
+	// testVecInsert(act_vec, false);
+	// testVecInsert(my_vec, true);
+	// std::cout << std::endl;
+
+	// std::cout << RESET << "Erase tests" << std::endl;
+	// testVecErase(act_vec, false);
+	// testVecErase(my_vec, true);
+	// std::cout << std::endl;
+
+	// std::cout << RESET << "Swap tests" << std::endl;
+	// testVecSwap(act_vec, false);
+	// testVecSwap(my_vec, true);
+	// std::cout << std::endl;
 }

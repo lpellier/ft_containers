@@ -4,9 +4,9 @@ CC = clang++
 
 CFLAGS = -g -Wall -Werror -Wextra -std=c++98
 
-SRCS =	./vecTest.cpp \
-		./itTest.cpp \
-		./main.cpp 
+# SRCS =	./vecTest.cpp \
+# 		./itTest.cpp 
+SRCS = 		./main.cpp 
 
 OBJS = $(SRCS:.c=.o)
 
