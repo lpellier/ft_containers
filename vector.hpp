@@ -35,13 +35,13 @@ public:
 	typedef typename allocator_type::const_pointer			const_pointer;
 
 	// Iterators point to an element in a vector and point to the next one when incremented
-	typedef ft::random_access_iterator<pointer>				iterator;
+	typedef random_access_iterator<pointer>					iterator;
 	// A const iterator is an iteraror that points to const content
-	typedef ft::random_access_iterator<const_pointer>		const_iterator;
+	typedef random_access_iterator<const_pointer>			const_iterator;
 	// Reverse iterators point to an element in a vector and point to the previous one when incremented
-	typedef ft::reverse_iterator<iterator>					reverse_iterator;
+	typedef random_access_reverse_iterator<iterator>		reverse_iterator;
 	// A const reverse iterator is a reverse iterator that points to const content
-	typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
+	typedef random_access_reverse_iterator<const_iterator>	const_reverse_iterator;
 
 	// size_type is size of type
 	typedef std::size_t			size_type;
@@ -57,7 +57,7 @@ public:
 	*/
 
 	// Constucts an empty vector, with no elements
-	explicit vector (void) : _array(nullptr), _size(0), _capacity(static_cast<size_type>(CAPACITY_MARGIN)) {} // default
+	explicit vector (void) : _array(NULL), _size(0), _capacity(static_cast<size_type>(CAPACITY_MARGIN)) {} // default
 
 	// Constructs a vector with n elements
 	// Each element is a copy of val
@@ -75,7 +75,7 @@ public:
 
 	// using enable_if here forbids any integral type to get into this function
 	// so that only iterators may use this function
-	vector (InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) { // range
+	vector (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		this->_size = ft::distance(first, last);
 		this->_capacity = this->_size + CAPACITY_MARGIN;
 		this->_array = this->_alloc.allocate(this->_capacity);
@@ -132,11 +132,11 @@ public:
 	// are random access iterators (RAI)
 
 	// Returns an iterator pointing to the first element in the vector
-	iterator				begin (typename ft::enable_if<!ft::is_const<T>::value, T>::type* = nullptr) {
-		return iterator(this->_array);
-	}
+	// iterator				begin () {
+	// 	return iterator(this->_array);
+	// }
 	// If the vector is const-qualified
-	const_iterator			begin (typename ft::enable_if<ft::is_const<T>::value, void>::type* = nullptr) const {
+	const_iterator			begin () const {
 		return const_iterator(this->_array);
 	}
 
@@ -334,7 +334,7 @@ public:
 	// Any elements held in the container before the call are destroyed and replaced by newly constructed
 	// elements (no assignments of elements take place)
 	template	< typename InputIterator >
-	void		assign (InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) { // range
+	void		assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		this->_reduce_size(0);
 		// adding each element of the first to last iterator range
 		// each time increasing size by one and checking if we ever need a reallocation
@@ -366,7 +366,7 @@ public:
 	// the elements that were after position to their new positions
 	iterator	insert (iterator position, const value_type & val) { // single element
 		// diff is distance from position to the end
-		difference_type diff = ft::distance(position, this->end());
+		difference_type diff = distance(position, this->end());
 		// tmp is size before any changes to it
 		size_type	tmp = this->_size;
 		// adding the new element at the end of the vector
@@ -384,7 +384,7 @@ public:
 	}
 	void		insert (iterator position, size_type n, const value_type & val) { // fill
 		// diff is distance from position to the end
-		difference_type diff = ft::distance(position, this->end());
+		difference_type diff = distance(position, this->end());
 		// tmp is size before any changes to it
 		size_type	tmp = this->_size;
 		this->_increase_size(this->_size + n, val);
@@ -395,7 +395,7 @@ public:
 		while (cur_position > position) {
 			// moving each new element backwards until we arrive at desired position
 			for (size_type i = 0; i < n; i++)
-				this->_move_back(ft::distance(this->begin(), cur_position + i));
+				this->_move_back(distance(this->begin(), cur_position + i));
 			cur_position--;
 		}
 	} 
@@ -403,13 +403,13 @@ public:
 	template	< typename InputIterator >
 	// using enable_if here forbids any integral type to get into this function
 	// so that only iterators may use this function
-	void		insert (iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) { // range
+	void		insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		// diff is distance from position to the end
-		difference_type diff = ft::distance(position, this->end());
+		difference_type diff = distance(position, this->end());
 		// tmp is size before any changes to it
 		size_type	tmp = this->_size;
 		// n is the number of elements added to the vector
-		size_type	n = ft::distance(first, last);
+		size_type	n = distance(first, last);
 		while (first != last) {
 			this->_increase_size(this->_size + 1, *first);
 			first++;
@@ -421,7 +421,7 @@ public:
 		while (cur_position > position) {
 			// moving each new element backwards until we arrive at desired position
 			for (size_type i = 0; i < n; i++)
-				this->_move_back(ft::distance(this->begin(), cur_position + i));
+				this->_move_back(distance(this->begin(), cur_position + i));
 			cur_position--;
 		}
 	}
@@ -432,13 +432,13 @@ public:
 	// elements after the segment erased to their new positions
 	iterator	erase (iterator position) { // single element
 		// this is the distance from the begin to the point of erasure
-		size_type distance = ft::distance(this->begin(), position);
+		size_type distance = distance(this->begin(), position);
 		// destroy element pointed to by position
 		this->_alloc.destroy(this->_array + distance);
 		// move backwards every element after position
 		position++;
 		while (position != this->end()) {
-			this->_move_back(ft::distance(this->begin(), position));
+			this->_move_back(distance(this->begin(), position));
 			position++;
 		}
 		// reduce size by one
@@ -448,9 +448,9 @@ public:
 	}
 	iterator	erase (iterator first, iterator last) { // range
 		// this is the distance from the begin to the point of erasure
-		size_type distance = ft::distance(this->begin(), first);
+		size_type distance = distance(this->begin(), first);
 		// n is the number of elements erased
-		size_type n = ft::distance(first, last);
+		size_type n = distance(first, last);
 		// erasing elements pointed to by first one by one
 		for (size_type i = 0; i < n; i++)
 			erase(this->begin() + distance);
@@ -572,7 +572,7 @@ template	< typename T >
 bool		operator== (const vector<T> & lhs, const vector<T> & rhs) {
 	if (lhs.size() != rhs.size())
 		return false;
-	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+	return equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 template	< typename T >
 bool		operator!= (const vector<T> & lhs, const vector<T> & rhs) {
@@ -580,7 +580,7 @@ bool		operator!= (const vector<T> & lhs, const vector<T> & rhs) {
 }
 template	< typename T >
 bool		operator<  (const vector<T> & lhs, const vector<T> & rhs) {
-	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 template	< typename T >
 bool		operator<= (const vector<T> & lhs, const vector<T> & rhs) {

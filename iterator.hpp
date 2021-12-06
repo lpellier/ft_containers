@@ -41,14 +41,14 @@ struct iterator {
 template < typename T >
 class random_access_iterator {
 public:
-	typedef typename ft::iterator_traits<T>::value_type			value_type;
-	typedef typename ft::iterator_traits<T>::difference_type	difference_type;
-	typedef typename ft::iterator_traits<T>::pointer			pointer;
-	typedef typename ft::iterator_traits<T>::reference			reference;
-	typedef typename ft::iterator_traits<T>::iterator_category	iterator_category;
+	typedef typename iterator_traits<T>::value_type			value_type;
+	typedef typename iterator_traits<T>::difference_type	difference_type;
+	typedef typename iterator_traits<T>::pointer			pointer;
+	typedef typename iterator_traits<T>::reference			reference;
+	typedef typename iterator_traits<T>::iterator_category	iterator_category;
 
 	// default constructor
-	random_access_iterator (void) : _ptr(nullptr) {}
+	random_access_iterator (void) : _ptr(NULL) {}
 	// parametric constructor
 	random_access_iterator (pointer new_ptr) : _ptr(new_ptr) {}
 	// destructor
@@ -173,31 +173,31 @@ random_access_iterator<U>	operator+  (const int & lhs, const random_access_itera
 */
 
 template < typename Iter >
-class reverse_iterator {
+class random_access_reverse_iterator {
 protected:
 	Iter	_iter;
 
 public:
 	typedef Iter													iterator_type;
-	typedef	typename ft::iterator_traits<Iter>::difference_type		difference_type;
-	typedef	typename ft::iterator_traits<Iter>::value_type			value_type;
-	typedef	typename ft::iterator_traits<Iter>::pointer				pointer;
-	typedef	typename ft::iterator_traits<Iter>::reference			reference;
-	typedef	typename ft::iterator_traits<Iter>::iterator_category	iterator_category;
+	typedef	typename iterator_traits<Iter>::difference_type		difference_type;
+	typedef	typename iterator_traits<Iter>::value_type			value_type;
+	typedef	typename iterator_traits<Iter>::pointer				pointer;
+	typedef	typename iterator_traits<Iter>::reference			reference;
+	typedef	typename iterator_traits<Iter>::iterator_category	iterator_category;
 
-	reverse_iterator (void) { // default
+	random_access_reverse_iterator (void) { // default
 		this->_iter = value_type();
 	}
-	explicit reverse_iterator (iterator_type x) { // initialization
+	explicit random_access_reverse_iterator (iterator_type x) { // initialization
 		this->_iter = x;
 	}
 	template < typename Iterator >
-	reverse_iterator (const reverse_iterator<Iter> & src) { // copy
+	random_access_reverse_iterator (const random_access_reverse_iterator<Iter> & src) { // copy
 		this->_iter = src._iter;
 	}
 
 	template < typename Iterator >
-	reverse_iterator & operator= (const reverse_iterator<Iter> & src) { // assignment operator
+	random_access_reverse_iterator & operator= (const random_access_reverse_iterator<Iter> & src) { // assignment operator
 		this->_iter = src._iter;
 		return *this;
 	}
@@ -221,98 +221,98 @@ public:
 		return this->base()[-n - 1];
 	}
 
-	reverse_iterator & operator++ () {
+	random_access_reverse_iterator & operator++ () {
 		this->_iter--;
 	}
 
-	reverse_iterator operator++(int) {
+	random_access_reverse_iterator operator++(int) {
 		--this->_iter;
 	}
 
-	reverse_iterator & operator-- () {
+	random_access_reverse_iterator & operator-- () {
 		this->_iter++;
 	}
 
-	reverse_iterator operator--(int) {
+	random_access_reverse_iterator operator--(int) {
 		++this->_iter;
 	}
 
 	// Returns a reverse iterator pointing to the element located a n positions away from the
 	// element the iterator currently points to
 	// This function requires the base operator to be a random-access iterator
-	reverse_iterator				operator+  (difference_type n) const {
-		reverse_iterator ret(this->_iter);
+	random_access_reverse_iterator				operator+  (difference_type n) const {
+		random_access_reverse_iterator ret(this->_iter);
 		ret._iter -= n;
 
 		return ret;
 	}
 	template < typename It >
-	friend reverse_iterator<It>		operator+  (typename reverse_iterator<It>::difference_type n, const reverse_iterator<It> & it);
+	friend random_access_reverse_iterator<It>		operator+  (typename random_access_reverse_iterator<It>::difference_type n, const random_access_reverse_iterator<It> & it);
 
 	// Returns a reverse iterator pointing to the element located n positions before the element the
 	// iterator currently points to
-	reverse_iterator				operator-  (difference_type n) const {
-		reverse_iterator ret (this->_iter);
+	random_access_reverse_iterator				operator-  (difference_type n) const {
+		random_access_reverse_iterator ret (this->_iter);
 		ret._iter += n;
 
 		return ret;
 	}
-	friend typename reverse_iterator<Iter>::difference_type operator-  (const reverse_iterator<Iter> & lhs, const reverse_iterator<Iter> & rhs);
+	friend typename random_access_reverse_iterator<Iter>::difference_type operator-  (const random_access_reverse_iterator<Iter> & lhs, const random_access_reverse_iterator<Iter> & rhs);
 
-	// Advances the reverse_iterator by n element positions
+	// Advances the random_access_reverse_iterator by n element positions
 	// Requires the base iterator to be a random access iterator
-	reverse_iterator &				operator+= (difference_type n) {
+	random_access_reverse_iterator &				operator+= (difference_type n) {
 		this->_iter -= n;
 		return *this;
 	}
 
-	// Decreases the reverse_iterator by n element positions
+	// Decreases the random_access_reverse_iterator by n element positions
 	// Requires the base iterator to be a random access iterator
-	reverse_iterator &				operator-= (difference_type n) {
+	random_access_reverse_iterator &				operator-= (difference_type n) {
 		this->_iter += n;
 		return *this;
 	}
 
 	template < typename Iter2 >
-	bool	operator== (const reverse_iterator<Iter2> & rhs) const {
+	bool	operator== (const random_access_reverse_iterator<Iter2> & rhs) const {
 		return (this->base() == rhs.base());
 	}
 
 	template < typename Iter2 >
-	bool	operator!= (const reverse_iterator<Iter2> & rhs) const {
+	bool	operator!= (const random_access_reverse_iterator<Iter2> & rhs) const {
 		return (this->base() != rhs.base());
 	}
 
 	template < typename Iter2 >
-	bool	operator<  (const reverse_iterator<Iter2> & rhs) const {
+	bool	operator<  (const random_access_reverse_iterator<Iter2> & rhs) const {
 		return (this->base() < rhs.base());
 	}
 
 	template < typename Iter2 >
-	bool	operator<= (const reverse_iterator<Iter2> & rhs) const {
+	bool	operator<= (const random_access_reverse_iterator<Iter2> & rhs) const {
 		return (this->base() <= rhs.base());
 	}
 
 	template < typename Iter2 >
-	bool	operator>  (const reverse_iterator<Iter2> & rhs) const {
+	bool	operator>  (const random_access_reverse_iterator<Iter2> & rhs) const {
 		return (this->base() > rhs.base());
 	}
 
 	template < typename Iter2 >
-	bool	operator>= (const reverse_iterator<Iter2> & rhs) const {
+	bool	operator>= (const random_access_reverse_iterator<Iter2> & rhs) const {
 		return (this->base() >= rhs.base());
 	}
 
 };
 
 template < typename Iter >
-reverse_iterator<Iter> operator+  (typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter> & rev_it) {
-	reverse_iterator<Iter> ret(rev_it);
+random_access_reverse_iterator<Iter> operator+  (typename random_access_reverse_iterator<Iter>::difference_type n, const random_access_reverse_iterator<Iter> & rev_it) {
+	random_access_reverse_iterator<Iter> ret(rev_it);
 	return ret + n;
 }
 
 template < typename Iter >
-typename reverse_iterator<Iter>::difference_type operator-  (const reverse_iterator<Iter> & lhs, const reverse_iterator<Iter> & rhs) {
+typename random_access_reverse_iterator<Iter>::difference_type operator-  (const random_access_reverse_iterator<Iter> & lhs, const random_access_reverse_iterator<Iter> & rhs) {
 	return (rhs.base() - lhs.base());
 }
 

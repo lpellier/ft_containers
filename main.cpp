@@ -1,4 +1,5 @@
 #include "test.hpp"
+#include <typeinfo>
 
 int main() {
 	std::vector<int>	template_vector(0);
@@ -9,6 +10,7 @@ int main() {
 	// std::vector<int>				actual_vector(template_vector);
 	ft::vector<int>				my_vector(template_vector.begin(), template_vector.end());
 
+	std::cout << typeid(my_vector.begin()).name() << std::endl;
 	ft::vector<int>::const_iterator it_foo = my_vector.begin();
 	// std::vector<int>::const_iterator it_foo = actual_vector.begin();
 	std::cout << *it_foo;

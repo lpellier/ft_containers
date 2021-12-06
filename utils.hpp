@@ -5,22 +5,21 @@
 #include <iostream>
 #include "type_traits.hpp"
 
-const // It is a const object...
-class nullptr_t
-{
-  public:
-    template<class T>
-    inline operator T*() const // convertible to any type of null non-member pointer...
-    { return 0; }
+// const class NULL_t
+// {
+//   public:
+//     template<class T>
+//     inline operator T*() const // convertible to any type of null non-member pointer...
+//     { return 0; }
 
-    template<class C, class T>
-    inline operator T C::*() const   // or any type of null member pointer...
-    { return 0; }
+//     template<class C, class T>
+//     inline operator T C::*() const   // or any type of null member pointer...
+//     { return 0; }
 
-  private:
-    void operator&() const;  // Can't take address of nullptr
+//   private:
+//     void operator&() const;  // Can't take address of NULL
 
-} nullptr = {};
+// }; NULL = {};
 
 namespace ft {
 /*
@@ -48,8 +47,8 @@ struct enable_if<true, T> { typedef T type; };
 */
 
 template < typename Iter >
-typename ft::iterator_traits<Iter>::difference_type	distance(Iter from, Iter until) {
-	typename ft::iterator_traits<Iter>::difference_type ret = 0;
+typename iterator_traits<Iter>::difference_type	distance(Iter from, Iter until) {
+	typename iterator_traits<Iter>::difference_type ret = 0;
 	while (from != until) {
 		ret++;
 		from++;
