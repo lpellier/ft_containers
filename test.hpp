@@ -7,6 +7,7 @@
 
 #include "vector.hpp"
 #include <vector>
+#include <stdlib.h>
 
 void	testVector(std::vector<int> & act_vec, ft::vector<int> & my_vec);
 void	testIterator(std::vector<int> & actual_vector, ft::vector<int> & my_vector);

@@ -37,6 +37,7 @@ struct iterator {
 |_|  \__,_|_| |_|\__,_|\___/|_| |_| |_|   \__,_|\___\___\___||___/___/  |_|\__\___|_|  \__,_|\__\___/|_|   
 */
 
+// Here T is a pointer on value_type
 template < typename T >
 class random_access_iterator {
 public:
@@ -45,47 +46,48 @@ public:
 	typedef typename ft::iterator_traits<T>::pointer			pointer;
 	typedef typename ft::iterator_traits<T>::reference			reference;
 	typedef typename ft::iterator_traits<T>::iterator_category	iterator_category;
+
 	// default constructor
-	random_access_iterator (void) : ptr(nullptr) {}
+	random_access_iterator (void) : _ptr(nullptr) {}
 	// parametric constructor
-	random_access_iterator (pointer new_ptr) : ptr(new_ptr) {}
+	random_access_iterator (pointer new_ptr) : _ptr(new_ptr) {}
 	// destructor
 	~random_access_iterator (void) {}
 	// copy constructor
-	random_access_iterator (const random_access_iterator & src) : ptr(src.ptr) {}
+	random_access_iterator (const random_access_iterator & src) : _ptr(src._ptr) {}
 	// assignment operator
 	random_access_iterator & operator= (const random_access_iterator & src) {
-		this->ptr = src.ptr;
+		this->_ptr = src._ptr;
 		return *this;
 	}
 
 	// Comparison operators
 	bool		operator== (const random_access_iterator & rhs) const {
-		return this->ptr == rhs.ptr;
+		return this->_ptr == rhs._ptr;
 	}
 	bool		operator!= (const random_access_iterator & rhs) const {
-		return this->ptr != rhs.ptr;
+		return this->_ptr != rhs._ptr;
 	}
 	bool		operator<  (const random_access_iterator & rhs) const {
-		return this->ptr < rhs.ptr;
+		return this->_ptr < rhs._ptr;
 	}
 	bool		operator>  (const random_access_iterator & rhs) const {
-		return this->ptr > rhs.ptr;
+		return this->_ptr > rhs._ptr;
 	}
 	bool		operator<= (const random_access_iterator & rhs) const {
-		return this->ptr <= rhs.ptr;
+		return this->_ptr <= rhs._ptr;
 	}
 	bool		operator>= (const random_access_iterator & rhs) const {
-		return this->ptr >= rhs.ptr;
+		return this->_ptr >= rhs._ptr;
 	}
 
 
 	reference			operator*  (void) const {
-		return *(this->ptr);
+		return *(this->_ptr);
 	}
 
 	reference			operator[] (const int & offset) const {
-		return *(this->ptr + offset);
+		return *(this->_ptr + offset);
 	}
 
 	pointer				operator-> () const {
@@ -94,11 +96,11 @@ public:
 
 	// for non constant iterators
 	void		operator*  (const reference ref) {
-		*(this->ptr) = ref;
+		*(this->_ptr) = ref;
 	}
 
 	random_access_iterator	&	operator++ (void) {
-		this->ptr++;
+		this->_ptr++;
 		return *this;
 	}
 	random_access_iterator		operator++ (int) {
@@ -118,7 +120,7 @@ public:
 	friend random_access_iterator<U>	operator+  (const int & lhs, const random_access_iterator<U> & rhs);
 	
 	random_access_iterator &	operator-- (void) {
-		this->ptr--;
+		this->_ptr--;
 		return *this;
 	}
 	random_access_iterator		operator-- (int) {
@@ -129,27 +131,27 @@ public:
 
 	random_access_iterator		operator-  (const int & subbed) const {
 		random_access_iterator ret(*this);
-		ret.ptr -= subbed;
+		ret._ptr -= subbed;
 		return ret;
 	}
 
 	std::ptrdiff_t				operator-  (const random_access_iterator & subbed) const {
-		std::ptrdiff_t ret = static_cast<std::ptrdiff_t>(this->ptr - subbed.ptr);
+		std::ptrdiff_t ret = static_cast<std::ptrdiff_t>(this->_ptr - subbed.ptr);
 		return ret;
 	}
 
 	random_access_iterator &	operator+= (const int & added) {
-		this->ptr += added;
+		this->_ptr += added;
 		return *this;
 	}
 
 	random_access_iterator &	operator-= (const int & subbed) {
-		this->ptr -= subbed;
+		this->_ptr -= subbed;
 		return *this;
 	}
 
 protected:
-	pointer	ptr;
+	pointer	_ptr;
 
 };
 

@@ -73,58 +73,42 @@ struct iterator_traits<const T*> {
                           |___/             
 */
 
+template <bool B>
+struct bool_wrapper {
+	static const bool value = B;
+};
+
+// check if type is const
+
+template < typename T >
+struct is_const : bool_wrapper<false> {};
+
+template < typename T >
+struct is_const<const T> : bool_wrapper<true> {};
+
 // integral types : bool, char, char_16t, char32_t, wchar_t, short, int, long, long long
 
 template < typename T >
-struct is_integral {
-	const static bool value = false;
-};
+struct is_integral : bool_wrapper<false> {};
 
 template <>
-struct is_integral<bool> {
-	const static bool value = true;
-};
-
+struct is_integral<bool> : bool_wrapper<true> {};
 template <>
-struct is_integral<char> {
-	const static bool value = true;
-};
-
+struct is_integral<char> : bool_wrapper<true> {};
 template <>
-struct is_integral<char16_t> {
-	const static bool value = true;
-};
-
+struct is_integral<char16_t> : bool_wrapper<true> {};
 template <>
-struct is_integral<char32_t> {
-	const static bool value = true;
-};
-
+struct is_integral<char32_t> : bool_wrapper<true> {};
 template <>
-struct is_integral<wchar_t> {
-	const static bool value = true;
-};
-
+struct is_integral<wchar_t> : bool_wrapper<true> {};
 template <>
-struct is_integral<short> {
-	const static bool value = true;
-};
-
+struct is_integral<short> : bool_wrapper<true> {};
 template <>
-struct is_integral<int> {
-	const static bool value = true;
-};
-
+struct is_integral<int> : bool_wrapper<true> {};
 template <>
-struct is_integral<long> {
-	const static bool value = true;
-};
-
+struct is_integral<long> : bool_wrapper<true> {};
 template <>
-struct is_integral<long long> {
-	const static bool value = true;
-};
-
+struct is_integral<long long> : bool_wrapper<true> {};
 }
 
 #endif

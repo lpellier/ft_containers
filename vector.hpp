@@ -132,11 +132,11 @@ public:
 	// are random access iterators (RAI)
 
 	// Returns an iterator pointing to the first element in the vector
-	iterator				begin () {
+	iterator				begin (typename ft::enable_if<!ft::is_const<T>::value, T>::type* = nullptr) {
 		return iterator(this->_array);
 	}
 	// If the vector is const-qualified
-	const_iterator			begin () const {
+	const_iterator			begin (typename ft::enable_if<ft::is_const<T>::value, void>::type* = nullptr) const {
 		return const_iterator(this->_array);
 	}
 
