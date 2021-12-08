@@ -1,7 +1,7 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-#include "iterator.hpp"
+#include "iterator/iterator.hpp"
 
 # define CAPACITY_MARGIN 16
 
