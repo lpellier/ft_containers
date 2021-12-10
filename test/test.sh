@@ -16,14 +16,14 @@ BLUE="\e[34m"
 MAGENTA="\e[35m"
 RESET="\e[0m"
 
-STD_VECTOR="const std::vector<int>"
-FT_VECTOR="const ft::vector<int>"
+STD_VECTOR="std::vector<int>"
+FT_VECTOR="ft::vector<int>"
 
 _loop_in_category() {
 	for filename in $1*.cpp; do
 		printf "$CYAN%-45s" $filename
 		printf "| "
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_VECTOR" $filename 2> /dev/null
+		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_VECTOR" $filename 2> $filename".compile_error"
 		if [ $? -ne 0 ]; then
 			echo -e $RED"Compiler error"
 			continue
@@ -35,6 +35,7 @@ _loop_in_category() {
 		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_VECTOR" $filename 2> $filename".compile_error"
 		if [ $? -ne 0 ]; then
 			echo -e $RED$NONO$CYAN
+			rm -rf "$filename.actual_output"
 			continue
 		else
 			echo -ne $GREEN$OKAY$CYAN"  | "
@@ -87,18 +88,18 @@ rm -rf */*/*.your_output
 rm -rf */*/*.compile_error
 rm -rf */*/*.leaks_error
 
-if [ $# -eq 0 ]; then
-	echo -e $CYAN"Enter one of the following :"
-	echo -e $BLUE"all"$CYAN" : test every container"
-	echo -e $BLUE"<container_name>"$CYAN" : test a specific container -> $BLUE bash test.sh vector"
-	echo -e $BLUE"<container_name> <category_name>"$CYAN" : test a specific category of a specific container -> $BLUE bash test vector constructor"
-	exit
-elif [[ $# -eq 1 && $1 -eq "all" ]]; then
+if [[ $# -eq 1 && $1 -eq "all" ]]; then
 	_loop_all
 elif [[ $# -eq 1 && -d "$1" ]]; then
 	_loop_in_container "$1/"
 elif [[ $# -eq 2 && -d "$1/$2" ]]; then
 	_loop_in_category "$1/$2/"
+else
+	echo -e $CYAN"Enter one of the following :"
+	echo -e $BLUE"all"$CYAN" : test every container"
+	echo -e $BLUE"<container_name>"$CYAN" : test a specific container -> $BLUE bash test.sh vector"
+	echo -e $BLUE"<container_name> <category_name>"$CYAN" : test a specific category of a specific container -> $BLUE bash test vector constructor"
+	exit
 fi
 
 

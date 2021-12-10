@@ -7,7 +7,7 @@ void	begin() {
 
 	CONTAINER	test(foo.begin(), foo.end());
 
-	CONTAINER::const_iterator it_foo = test.begin();
+	CONTAINER::iterator it_foo = test.begin();
 	std::cout << *it_foo << std::endl;
 	it_foo++;
 	std::cout << *it_foo << std::endl;

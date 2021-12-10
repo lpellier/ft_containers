@@ -132,9 +132,9 @@ public:
 	// are random access iterators (RAI)
 
 	// Returns an iterator pointing to the first element in the vector
-	// iterator				begin () {
-	// 	return iterator(this->_array);
-	// }
+	iterator				begin () {
+		return iterator(this->_array);
+	}
 	// If the vector is const-qualified
 	const_iterator			begin () const {
 		return const_iterator(this->_array);

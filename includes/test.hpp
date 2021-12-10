@@ -18,7 +18,17 @@ void	_print(int a) {
 	std::cout << a << std::endl; 
 }
 
-template <typename container>
-int		constructor();
+/* template for testing
+#include "../../../includes/test.hpp"
+
+void	templ() {
+	CONTAINER test;
+}
+
+int main() {
+	templ();
+	exit(EXIT_SUCCESS);
+}
+*/
 
 #endif
