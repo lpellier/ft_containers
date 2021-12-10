@@ -1,53 +1,104 @@
 #!/bin/bash
 
+VALGRIND=1
+which valgrind 1> /dev/null 2> /dev/null
+if [ $? -ne 0 ]; then
+	VALGRIND=0
+fi
+
 OKAY="\e[92m\xE2\x9C\x94"
 NONO="\xE2\x9D\x8C"
 
 RED="\e[31m"
 GREEN="\e[32m"
 CYAN="\e[36m"
+BLUE="\e[34m"
+MAGENTA="\e[35m"
 RESET="\e[0m"
 
 STD_VECTOR="const std::vector<int>"
 FT_VECTOR="const ft::vector<int>"
-GRADE="$GREEN$OKAY"
 
-rm -rf */*.actual_output
-rm -rf */*.your_output
-rm -rf */*.compile_error
-rm -rf */*.leaks_error
-for folder in */; do
-	for filename in $folder*.cpp; do
-		clang++ -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_VECTOR" $filename 2> $filename".compile_error"
+_loop_in_category() {
+	for filename in $1*.cpp; do
+		printf "$CYAN%-45s" $filename
+		printf "| "
+		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_VECTOR" $filename 2> /dev/null
+		if [ $? -ne 0 ]; then
+			echo -e $RED"Compiler error"
+			continue
+		fi
 		./a.out > "$filename.actual_output"
 		rm -rf a.out
 		
-		clang++ -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_VECTOR" $filename 2> $filename".compile_error"
+		echo -ne $BLUE"Compile"$RESET" : "
+		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_VECTOR" $filename 2> $filename".compile_error"
 		if [ $? -ne 0 ]; then
-			GRADE="$RED$NONO Compile error"
-			echo -e "$RESET\e[36m$filename : $GRADE$RESET"
+			echo -e $RED$NONO$CYAN
 			continue
+		else
+			echo -ne $GREEN$OKAY$CYAN"  | "
+			rm -rf $filename".compile_error"
 		fi
 		
-		valgrind --error-exitcode=2 --leak-check=full --show-leak-kinds=all ./a.out 1> $filename".your_output" 2> $filename".leaks_error"
-		if [ $? -ne 0 ]; then
-			GRADE="$RED$NONO Leaks detected"
-			echo -e "$RESET\e[36m$filename : $GRADE$RESET"
-			continue
+		echo -ne $BLUE"Leaks"$RESET" : "
+		if [ $VALGRIND -eq 1 ]; then
+			valgrind --error-exitcode=1 --leak-check=full --show-leak-kinds=all ./a.out 1> $filename".your_output" 2> $filename".leaks_error"
+			if [ $? -ne 0 ]; then
+				echo -ne $RED$NONO$CYAN" | "
+			else
+				echo -ne $GREEN$OKAY$CYAN"  | "
+				rm -rf $filename".leaks_error"
+			fi
+		else
+			./a.out > $filename".your_output"
 		fi
 		rm -rf a.out
 		
+		echo -ne $BLUE"Diff"$RESET" : "
 		diff $filename".your_output" $filename".actual_output" 1> /dev/null 2> /dev/null
 		if [ $? -ne 0 ]; then
-			GRADE="$RED$NONO Different output"
-			echo -e "$RESET\e[36m$filename : $GRADE$RESET"
-			continue
+			echo -ne $RED$NONO$CYAN
+		else
+			echo -ne $GREEN$OKAY$CYAN" "
+			rm -rf $filename".your_output"
+			rm -rf $filename".actual_output"
 		fi
-		
-		rm -rf $filename".your_output"
-		rm -rf $filename".actual_output"
-		rm -rf $filename".compile_error"
-		echo -e "$RESET\e[36m$filename : $GRADE$RESET"
-		GRADE="$GREEN$OKAY"
+		echo
 	done
-done
+}
+
+_loop_in_container() {
+	for category in $1*/; do
+		_loop_in_category "$category"
+		echo
+	done
+}
+
+_loop_all() {
+	for container in */; do
+		_loop_in_container "$container"
+		echo
+	done
+}
+
+rm -rf */*/*.actual_output
+rm -rf */*/*.your_output
+rm -rf */*/*.compile_error
+rm -rf */*/*.leaks_error
+
+if [ $# -eq 0 ]; then
+	echo -e $CYAN"Enter one of the following :"
+	echo -e $BLUE"all"$CYAN" : test every container"
+	echo -e $BLUE"<container_name>"$CYAN" : test a specific container -> $BLUE bash test.sh vector"
+	echo -e $BLUE"<container_name> <category_name>"$CYAN" : test a specific category of a specific container -> $BLUE bash test vector constructor"
+	exit
+elif [[ $# -eq 1 && $1 -eq "all" ]]; then
+	_loop_all
+elif [[ $# -eq 1 && -d "$1" ]]; then
+	_loop_in_container "$1/"
+elif [[ $# -eq 2 && -d "$1/$2" ]]; then
+	_loop_in_category "$1/$2/"
+fi
+
+
