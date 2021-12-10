@@ -44,6 +44,7 @@ public:
 	typedef typename iterator_traits<T>::value_type			value_type;
 	typedef typename iterator_traits<T>::difference_type	difference_type;
 	typedef typename iterator_traits<T>::pointer			pointer;
+	typedef const pointer									const_pointer;
 	typedef typename iterator_traits<T>::reference			reference;
 	typedef typename iterator_traits<T>::iterator_category	iterator_category;
 
@@ -61,6 +62,10 @@ public:
 		return *this;
 	}
 
+	operator const random_access_iterator<const_pointer>() {
+		
+	}
+	
 	// Comparison operators
 	bool		operator== (const random_access_iterator & rhs) const {
 		return this->_ptr == rhs._ptr;
