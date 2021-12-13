@@ -1,34 +1,14 @@
 #!/bin/bash
 
-# little cat or coffee ascii art
-#                                 /|
-#                                ///
-#                               / /
-#                              ||\\
-#                              /   \
-#                              |   |
-#                        r     \   \     r^-
-#                        |\---- |   |---/|
-#                        /      |   | |  \
-#           - - - - -   (      /   /      ) - - - - - - -
-#             - - - - - \      |   |      / - - - - -
-#                  __-----^----|   |----^--#----+
-#                 H            |   |             #
-#               /             /     \             \
-#             {          /       *                 \
-#             -/       /                 9\         \-
-#             {        |                   |        }
-#             {        }                   {        }
-#             #   ^    }                   {        }
-#             {        }-\__---\____-----#-{        }
-#            {^_^} v{-_-}                 {*_*} v(0_0}
-
+#AVL TREE!!!!!!
 
 VALGRIND=1
 which valgrind 1> /dev/null 2> /dev/null
 if [ $? -ne 0 ]; then
 	VALGRIND=0
 fi
+
+ERRORS=0
 
 OKAY="\e[92m\xE2\x9C\x94"
 NONO="\xE2\x9D\x8C"
@@ -58,6 +38,7 @@ _loop_in_category() {
 		echo -ne $BLUE"Compile"$RESET" : "
 		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_VECTOR" $filename 2> $filename".compile_error"
 		if [ $? -ne 0 ]; then
+			let "ERRORS += 1"
 			echo -e $RED$NONO$CYAN
 			rm -rf "$filename.actual_output"
 			continue
@@ -68,6 +49,7 @@ _loop_in_category() {
 		
 		echo -ne $BLUE"Leaks"$RESET" : "
 		if [ $VALGRIND -eq 1 ]; then
+			let "ERRORS += 1"
 			valgrind --error-exitcode=1 --leak-check=full --show-leak-kinds=all ./a.out 1> $filename".your_output" 2> $filename".leaks_error"
 			if [ $? -ne 0 ]; then
 				echo -ne $RED$NONO$CYAN" | "
@@ -83,6 +65,7 @@ _loop_in_category() {
 		echo -ne $BLUE"Diff"$RESET" : "
 		diff $filename".your_output" $filename".actual_output" 1> /dev/null 2> /dev/null
 		if [ $? -ne 0 ]; then
+			let "ERRORS += 1"
 			echo -ne $RED$NONO$CYAN
 		else
 			echo -ne $GREEN$OKAY$CYAN" "
@@ -124,6 +107,15 @@ else
 	echo -e $BLUE"<container_name>"$CYAN" : test a specific container -> $BLUE bash test.sh vector"
 	echo -e $BLUE"<container_name> <category_name>"$CYAN" : test a specific category of a specific container -> $BLUE bash test vector constructor"
 	exit
+fi
+
+let "ERRORS = 11"
+if [ $ERRORS -eq 0 ]; then
+echo -e "$GREEN" ; cat .ascii_art/goodkitty.txt
+elif [ $ERRORS -lt 10 ]; then 
+echo -e "$RED" ; cat .ascii_art/badkitty.txt
+else
+echo -e "$RED" ; cat .ascii_art/verybadkitty.txt
 fi
 
 

@@ -13,8 +13,6 @@ void	begin() {
 	std::cout << *it_foo << std::endl;
 	it_foo--;
 	std::cout << *it_foo << std::endl;
-	it_foo--;
-	std::cout << *it_foo << std::endl;
 }
 
 int main() {
