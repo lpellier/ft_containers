@@ -109,13 +109,13 @@ else
 	exit
 fi
 
-let "ERRORS = 11"
+let "ERRORS = 0"
 if [ $ERRORS -eq 0 ]; then
 echo -e "$GREEN" ; cat .ascii_art/goodkitty.txt
-elif [ $ERRORS -lt 10 ]; then 
+else 
 echo -e "$RED" ; cat .ascii_art/badkitty.txt
-else
-echo -e "$RED" ; cat .ascii_art/verybadkitty.txt
+# else
+# echo -e "$RED" ; cat .ascii_art/verybadkitty.txt
 fi
 
 
