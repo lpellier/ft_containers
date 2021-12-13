@@ -42,6 +42,7 @@ template < typename T >
 class random_access_iterator {
 public:
 	typedef typename iterator_traits<T>::value_type			value_type;
+	typedef const value_type *								const_iterator;
 	typedef typename iterator_traits<T>::difference_type	difference_type;
 	typedef typename iterator_traits<T>::pointer			pointer;
 	typedef const pointer									const_pointer;
@@ -62,8 +63,8 @@ public:
 		return *this;
 	}
 
-	operator const random_access_iterator<const_pointer>() {
-		
+	operator const random_access_iterator<const_iterator>() {
+		return (random_access_iterator<const_iterator>(const_cast<const T>(_ptr)));
 	}
 	
 	// Comparison operators
@@ -156,7 +157,7 @@ public:
 	}
 
 protected:
-	pointer	_ptr;
+	T	_ptr;
 
 };
 

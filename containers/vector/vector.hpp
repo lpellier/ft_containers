@@ -1,5 +1,4 @@
-#ifndef VECTOR_HPP
-# define VECTOR_HPP
+#pragma once
 
 #include "iterator/iterator.hpp"
 
@@ -601,5 +600,3 @@ void		swap (vector<T> & x, vector<T> & y) {
 }
 
 }
-
-#endif

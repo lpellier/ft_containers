@@ -1,5 +1,4 @@
-#ifndef UTILS_HPP
-# define UTILS_HPP
+#pragma once
 
 #include <cstddef>
 #include <iostream>
@@ -135,5 +134,3 @@ bool	lexicographical_compare (InputIterator1 first1, InputIterator1 last1, Input
 }
 
 }
-
-#endif

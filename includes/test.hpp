@@ -1,5 +1,4 @@
-#ifndef TEST_HPP
-# define TEST_HPP
+#pragma once
 
 # define CYAN           "\e[34m"
 # define RED            "\e[31m"
@@ -30,5 +29,3 @@ int main() {
 	exit(EXIT_SUCCESS);
 }
 */
-
-#endif

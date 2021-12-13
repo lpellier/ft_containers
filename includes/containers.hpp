@@ -1,7 +1,2 @@
-#ifndef CONTAINERS_HPP
-# define CONTAINERS_HPP
-
+#pragma once
 #include "../containers/vector/vector.hpp"
-
-#endif
-

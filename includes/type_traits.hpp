@@ -1,5 +1,4 @@
-#ifndef TYPE_TRAITS_HPP
-# define TYPE_TRAITS_HPP
+#pragma once
 
 #ifdef __APPLE__
 #include <stdint.h>
@@ -110,5 +109,3 @@ struct is_integral<long> : bool_wrapper<true> {};
 template <>
 struct is_integral<long long> : bool_wrapper<true> {};
 }
-
-#endif
