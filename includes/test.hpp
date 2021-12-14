@@ -14,7 +14,13 @@
 #include <stdlib.h>
 
 void	_print(int a) {
-	std::cout << a << std::endl; 
+	std::cout << a; 
+}
+
+template <typename vector>
+void	_print_vec(vector a) {
+	std::for_each(a.begin(), a.end(), _print);
+	std::cout << std::endl;
 }
 
 /* template for testing

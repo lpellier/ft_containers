@@ -142,7 +142,7 @@ public:
 	}
 
 	std::ptrdiff_t				operator-  (const random_access_iterator & subbed) const {
-		std::ptrdiff_t ret = static_cast<std::ptrdiff_t>(this->_ptr - subbed.ptr);
+		std::ptrdiff_t ret = static_cast<std::ptrdiff_t>(this->_ptr - subbed._ptr);
 		return ret;
 	}
 

@@ -2,8 +2,6 @@
 
 #include "iterator/iterator.hpp"
 
-# define CAPACITY_MARGIN 16
-
 namespace ft {
 
 template < typename T, typename Alloc = std::allocator<T> >
@@ -56,11 +54,11 @@ public:
 	*/
 
 	// Constucts an empty vector, with no elements
-	explicit vector (void) : _array(NULL), _size(0), _capacity(static_cast<size_type>(CAPACITY_MARGIN)) {} // default
+	explicit vector (void) : _array(NULL), _size(0), _capacity(0) {} // default
 
 	// Constructs a vector with n elements
 	// Each element is a copy of val
-	explicit vector (size_type n, const value_type & val = value_type()) : _size(n), _capacity(n + static_cast<size_type>(CAPACITY_MARGIN)){ // fill
+	explicit vector (size_type n, const value_type & val = value_type()) : _size(n), _capacity(n){ // fill
 		this->_array = this->_alloc.allocate(this->_capacity);
 		for (size_type i = 0; i < this->_size; i++) {
 			this->_alloc.construct(this->_array + i, val);
@@ -76,7 +74,7 @@ public:
 	// so that only iterators may use this function
 	vector (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		this->_size = ft::distance(first, last);
-		this->_capacity = this->_size + CAPACITY_MARGIN;
+		this->_capacity = this->_size;
 		this->_array = this->_alloc.allocate(this->_capacity);
 		for (size_type i = 0; i < this->_size; i++) {
 			this->_alloc.construct(this->_array + i, *first);
@@ -241,7 +239,6 @@ public:
 
 	// Requests that the vector capacity be at least enough to contain n elements
 	void		reserve (size_type n) {
-		n += static_cast<size_type>(CAPACITY_MARGIN);
 		// If n is greater than max_size, throw an exception
 		if (n > this->max_size())
 			throw std::length_error("Cannot allocate size\n");
@@ -350,6 +347,8 @@ public:
 	// Adds a new element at the end of the vector, after its current last element
 	// The content of val is copied (or moved) to the new element
 	void		push_back (const value_type & val) {
+		if (this->_size + 1 > this->_capacity)
+			this->reserve(this->_size * 2);
 		this->_increase_size(this->_size + 1, val);
 	}
 
@@ -366,6 +365,8 @@ public:
 	iterator	insert (iterator position, const value_type & val) { // single element
 		// diff is distance from position to the end
 		difference_type diff = distance(position, this->end());
+		if (this->_size + 1 > this->_capacity)
+			this->reserve(this->_size * 2);
 		// tmp is size before any changes to it
 		size_type	tmp = this->_size;
 		// adding the new element at the end of the vector
@@ -384,6 +385,8 @@ public:
 	void		insert (iterator position, size_type n, const value_type & val) { // fill
 		// diff is distance from position to the end
 		difference_type diff = distance(position, this->end());
+		if (this->_size + n > this->_capacity)
+			this->reserve(this->_size * 2);
 		// tmp is size before any changes to it
 		size_type	tmp = this->_size;
 		this->_increase_size(this->_size + n, val);
@@ -409,6 +412,8 @@ public:
 		size_type	tmp = this->_size;
 		// n is the number of elements added to the vector
 		size_type	n = distance(first, last);
+		if (this->_size + n > this->_capacity)
+			this->reserve(this->_size * 2);
 		while (first != last) {
 			this->_increase_size(this->_size + 1, *first);
 			first++;
