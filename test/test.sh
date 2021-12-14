@@ -35,8 +35,7 @@ _loop_in_category() {
 		./a.out > "$filename.actual_output"
  
 		{ time ./a.out ; } 2> time.txt 1>/dev/null
-		ACT_TIME=$(cat time.txt)
-		echo $ACT_TIME
+		ACT_TIME=$(tail -n +3 time.txt | grep -o '......$' | cut -c -5 | awk '{sum += $1;} END{print sum;}')
 
 		echo -ne $BLUE"Compile"$RESET" : "
 		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_VECTOR" $filename 2> $filename".compile_error"
@@ -50,9 +49,9 @@ _loop_in_category() {
 			rm -rf $filename".compile_error"
 		fi
 		
-		# { time ./a.out ; } 2> time.txt 1>/dev/null
-		# ACT_TIME=$(awk -F'/t' '{sum+=$1;} END{print sum;}' time.txt)
-		echo $ACT_TIME
+		{ time ./a.out ; } 2> time.txt 1>/dev/null
+		YOUR_TIME=$(tail -n +3 time.txt | grep -o '......$' | cut -c -5 | awk '{sum += $1;} END{print sum;}')
+		rm -rf time.txt
 		echo -ne $BLUE"Leaks"$RESET" : "
 		if [ $VALGRIND -eq 1 ]; then
 			valgrind --error-exitcode=1 --leak-check=full --show-leak-kinds=all ./a.out 1> $filename".your_output" 2> $filename".leaks_error"
@@ -72,12 +71,21 @@ _loop_in_category() {
 		diff $filename".your_output" $filename".actual_output" 1> /dev/null 2> /dev/null
 		if [ $? -ne 0 ]; then
 			let "ERRORS += 1"
-			echo -ne $RED$NONO$CYAN
+			echo -ne $RED$NONO$CYAN" | "
 		else
-			echo -ne $GREEN$OKAY$CYAN" "
+			echo -ne $GREEN$OKAY$CYAN"  | "
 			rm -rf $filename".your_output"
 			rm -rf $filename".actual_output"
 		fi
+
+		echo -ne $BLUE"Time"$RESET" : "
+		if (( $(echo "$YOUR_TIME > $ACT_TIME * 20" |bc -l) )); then
+			let "ERRORS += 1"
+			echo -ne $RED$NONO$CYAN
+		else
+			echo -ne $GREEN$OKAY$CYAN
+		fi
+		# echo -ne " -> your time $YOUR_TIME vs actual time $ACT_TIME"
 		echo
 	done
 }
@@ -115,6 +123,7 @@ else
 	exit
 fi
 
+# let "ERRORS=1"
 if [ $ERRORS -eq 0 ]; then
 echo -e "$GREEN" ; cat .ascii_art/goodkitty.txt
 else 
