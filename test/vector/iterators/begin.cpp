@@ -8,11 +8,24 @@ void	begin() {
 	CONTAINER	test(foo.begin(), foo.end());
 
 	CONTAINER::iterator it_foo = test.begin();
+	CONTAINER::const_iterator const_it_foo = test.begin();
 	std::cout << *it_foo << std::endl;
 	it_foo++;
 	std::cout << *it_foo << std::endl;
 	it_foo--;
 	std::cout << *it_foo << std::endl;
+
+	std::cout << *const_it_foo << std::endl;
+	const_it_foo++;
+	std::cout << *const_it_foo << std::endl;
+	const_it_foo--;
+	std::cout << *const_it_foo << std::endl;
+
+	CONTAINER::iterator test_it = test.begin();
+	while (test_it != test.end()) {
+		std::cout << *test_it << std::endl;
+		test_it++;
+	}
 }
 
 int main() {

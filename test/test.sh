@@ -33,8 +33,11 @@ _loop_in_category() {
 			continue
 		fi
 		./a.out > "$filename.actual_output"
-		rm -rf a.out
-		
+ 
+		{ time ./a.out ; } 2> time.txt 1>/dev/null
+		ACT_TIME=$(cat time.txt)
+		echo $ACT_TIME
+
 		echo -ne $BLUE"Compile"$RESET" : "
 		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_VECTOR" $filename 2> $filename".compile_error"
 		if [ $? -ne 0 ]; then
@@ -47,11 +50,14 @@ _loop_in_category() {
 			rm -rf $filename".compile_error"
 		fi
 		
+		# { time ./a.out ; } 2> time.txt 1>/dev/null
+		# ACT_TIME=$(awk -F'/t' '{sum+=$1;} END{print sum;}' time.txt)
+		echo $ACT_TIME
 		echo -ne $BLUE"Leaks"$RESET" : "
 		if [ $VALGRIND -eq 1 ]; then
-			let "ERRORS += 1"
 			valgrind --error-exitcode=1 --leak-check=full --show-leak-kinds=all ./a.out 1> $filename".your_output" 2> $filename".leaks_error"
 			if [ $? -ne 0 ]; then
+				let "ERRORS += 1"
 				echo -ne $RED$NONO$CYAN" | "
 			else
 				echo -ne $GREEN$OKAY$CYAN"  | "
@@ -109,7 +115,6 @@ else
 	exit
 fi
 
-let "ERRORS = 0"
 if [ $ERRORS -eq 0 ]; then
 echo -e "$GREEN" ; cat .ascii_art/goodkitty.txt
 else 

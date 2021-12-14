@@ -1,10 +1,10 @@
 #include "../../../includes/test.hpp"
 
-void	templ() {
+void	capacity() {
 	CONTAINER test;
 }
 
 int main() {
-	templ();
+	capacity();
 	exit(EXIT_SUCCESS);
 }
