@@ -332,6 +332,7 @@ public:
 	template	< typename InputIterator >
 	void		assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		this->_reduce_size(0);
+		this->reserve(_next_pow_two(ft::distance(first, last)));
 		// adding each element of the first to last iterator range
 		// each time increasing size by one and checking if we ever need a reallocation
 		while (first != last) {
@@ -341,6 +342,7 @@ public:
 	}
 	void		assign (size_type n, const value_type & val) { // fill
 		this->_reduce_size(0);
+		this->reserve(_next_pow_two(n));
 		this->_increase_size(n, val);
 	} 
 	
@@ -348,7 +350,7 @@ public:
 	// The content of val is copied (or moved) to the new element
 	void		push_back (const value_type & val) {
 		if (this->_size + 1 > this->_capacity)
-			this->reserve(this->_size * 2);
+			this->reserve(_next_pow_two(this->_size + 1));
 		this->_increase_size(this->_size + 1, val);
 	}
 
@@ -366,7 +368,7 @@ public:
 		// diff is distance from position to the end
 		difference_type diff = distance(position, this->end());
 		if (this->_size + 1 > this->_capacity)
-			this->reserve(this->_size * 2);
+			this->reserve(_next_pow_two(this->_size + 1));
 		// tmp is size before any changes to it
 		size_type	tmp = this->_size;
 		// adding the new element at the end of the vector
@@ -386,7 +388,7 @@ public:
 		// diff is distance from position to the end
 		difference_type diff = distance(position, this->end());
 		if (this->_size + n > this->_capacity)
-			this->reserve(this->_size * 2);
+			this->reserve(_next_pow_two(this->_size + n));
 		// tmp is size before any changes to it
 		size_type	tmp = this->_size;
 		this->_increase_size(this->_size + n, val);
@@ -413,7 +415,7 @@ public:
 		// n is the number of elements added to the vector
 		size_type	n = distance(first, last);
 		if (this->_size + n > this->_capacity)
-			this->reserve(this->_size * 2);
+			this->reserve(_next_pow_two(this->_size + n));
 		while (first != last) {
 			this->_increase_size(this->_size + 1, *first);
 			first++;
@@ -554,6 +556,14 @@ protected:
 		value_type tmp = this->_array[position - 1];
 		this->_array[position - 1] = this->_array[position];
 		this->_array[position] = tmp;
+	}
+
+	size_type	_next_pow_two(size_type n) {
+		size_type 	pow = 2;
+
+		while (n > pow)
+			pow *= 2;
+		return (pow);
 	}
 };
 

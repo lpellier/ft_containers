@@ -1,5 +1,4 @@
-#ifndef ITERATOR_HPP
-# define ITERATOR_HPP
+#pragma once
 
 #include "../../../includes/utils.hpp"
 
@@ -323,5 +322,3 @@ typename random_access_reverse_iterator<Iter>::difference_type operator-  (const
 }
 
 }
-
-#endif

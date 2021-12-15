@@ -2,13 +2,14 @@
 
 void	push_back() {
 	CONTAINER test(15, 2);
-	std::cout << test.capacity() << std::endl;
 	_print_vec(test);
 	test.push_back(3);
-	std::cout << test.capacity() << std::endl;
 	_print_vec(test);
 	test.push_back(3);
-	std::cout << test.capacity() << std::endl;
+	_print_vec(test);
+	for (unsigned long i = 0; i < 10000; i++) {
+		test.push_back(i);
+	}
 	_print_vec(test);
 }
 

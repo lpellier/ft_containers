@@ -14,13 +14,16 @@
 #include <stdlib.h>
 
 void	_print(int a) {
-	std::cout << a; 
+	std::cout << a << " ";
 }
 
 template <typename vector>
 void	_print_vec(vector a) {
+	std::cout << "Contents : ";
 	std::for_each(a.begin(), a.end(), _print);
 	std::cout << std::endl;
+	// std::cout << "Capacity : " << a.capacity() << std::endl;
+	std::cout << "Size : " << a.size() << std::endl;
 }
 
 /* template for testing

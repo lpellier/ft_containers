@@ -21,6 +21,17 @@ RESET="\e[0m"
 STD_VECTOR="std::vector<int>"
 FT_VECTOR="ft::vector<int>"
 
+_output_kitty() {
+	# let "ERRORS=1"
+	if [ $ERRORS -eq 0 ]; then
+		echo -e "$GREEN" ; cat .ascii_art/goodkitty.txt
+	else 
+		echo -e "$RED" ; cat .ascii_art/badkitty.txt
+		# else
+		# echo -e "$RED" ; cat .ascii_art/verybadkitty.txt
+	fi
+}
+
 _execute() {
 	printf "$CYAN%-45s" $1
 	if [ $2 -eq 1 ]; then
@@ -132,6 +143,7 @@ _loop_in_category() {
 	for filename in $1*.cpp; do
 		_execute "$filename" "0"
 	done
+	_output_kitty
 }
 
 _loop_in_container() {
@@ -139,6 +151,7 @@ _loop_in_container() {
 		_loop_in_category "$category"
 		echo
 	done
+	_output_kitty
 }
 
 _loop_all() {
@@ -146,16 +159,7 @@ _loop_all() {
 		_loop_in_container "$container"
 		echo
 	done
-
-	# let "ERRORS=1"
-	if [ $ERRORS -eq 0 ]; then
-	echo -e "$GREEN" ; cat .ascii_art/goodkitty.txt
-	else 
-	echo -e "$RED" ; cat .ascii_art/badkitty.txt
-	# else
-	# echo -e "$RED" ; cat .ascii_art/verybadkitty.txt
-	fi
-
+	_output_kitty
 }
 
 bash clean.sh
