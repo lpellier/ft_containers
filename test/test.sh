@@ -143,7 +143,6 @@ _loop_in_category() {
 	for filename in $1*.cpp; do
 		_execute "$filename" "0"
 	done
-	_output_kitty
 }
 
 _loop_in_container() {
@@ -151,7 +150,6 @@ _loop_in_container() {
 		_loop_in_category "$category"
 		echo
 	done
-	_output_kitty
 }
 
 _loop_all() {
@@ -159,17 +157,19 @@ _loop_all() {
 		_loop_in_container "$container"
 		echo
 	done
-	_output_kitty
 }
 
 bash clean.sh
 
 if [[ $# -eq 1 && $1 == "all" ]]; then
 	_loop_all
+	_output_kitty
 elif [[ $# -eq 1 && -d "$1" ]]; then
 	_loop_in_container "$1/"
+	_output_kitty
 elif [[ $# -eq 2 && -d "$1/$2" ]]; then
 	_loop_in_category "$1/$2/"
+	_output_kitty
 elif [[ $# -eq 3 && -f "$1/$2/$3.cpp" ]]; then
 	_execute "$1/$2/$3.cpp" "1"
 else

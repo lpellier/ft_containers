@@ -1,4 +1,4 @@
-#include "../../../includes/test.hpp"
+#include "../../test.hpp"
 
 void	templ() {
 	CONTAINER test;

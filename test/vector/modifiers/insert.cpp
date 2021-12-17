@@ -1,4 +1,4 @@
-#include "../../../includes/test.hpp"
+#include "../../test.hpp"
 
 void	insert() {
 	CONTAINER test(14, 2);

@@ -1,4 +1,4 @@
-#include "../../../includes/test.hpp"
+#include "../../test.hpp"
 
 void	copy_constructor() {
 	CONTAINER	copy_guy(10, 1);

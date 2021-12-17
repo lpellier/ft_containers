@@ -183,12 +183,13 @@ protected:
 	Iter	_iter;
 
 public:
-	typedef Iter													iterator_type;
+	typedef Iter												iterator_type;
 	typedef	typename iterator_traits<Iter>::difference_type		difference_type;
 	typedef	typename iterator_traits<Iter>::value_type			value_type;
 	typedef	typename iterator_traits<Iter>::pointer				pointer;
 	typedef	typename iterator_traits<Iter>::reference			reference;
 	typedef	typename iterator_traits<Iter>::iterator_category	iterator_category;
+	typedef const Iter											const_iterator;
 
 	random_access_reverse_iterator (void) { // default
 		this->_iter = value_type();
@@ -206,7 +207,11 @@ public:
 		this->_iter = src._iter;
 		return *this;
 	}
-
+	
+	operator const random_access_iterator<const_iterator>() {
+		return (random_access_iterator<const_iterator>(const_cast<const Iter>(_iter)));
+	}
+	
 	// Returns a copy of the underlying iterator
 	iterator_type base () const {
 		return this->_iter;

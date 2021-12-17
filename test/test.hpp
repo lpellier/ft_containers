@@ -8,7 +8,8 @@
 # define CONTAINER const std::vector<int>
 #endif
 
-#include "containers.hpp"
+#include "../includes/containers.hpp"
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <stdlib.h>
@@ -22,12 +23,13 @@ void	_print_vec(vector a) {
 	std::cout << "Contents : ";
 	std::for_each(a.begin(), a.end(), _print);
 	std::cout << std::endl;
+	std::cout << "Max size : " << a.max_size() << std::endl;
 	// std::cout << "Capacity : " << a.capacity() << std::endl;
 	std::cout << "Size : " << a.size() << std::endl;
 }
 
 /* template for testing
-#include "../../../includes/test.hpp"
+#include "../../test.hpp"
 
 void	templ() {
 	CONTAINER test;
