@@ -41,10 +41,8 @@ template < typename T >
 class random_access_iterator {
 public:
 	typedef typename iterator_traits<T>::value_type			value_type;
-	typedef const value_type *								const_iterator;
 	typedef typename iterator_traits<T>::difference_type	difference_type;
 	typedef typename iterator_traits<T>::pointer			pointer;
-	typedef const pointer									const_pointer;
 	typedef typename iterator_traits<T>::reference			reference;
 	typedef typename iterator_traits<T>::iterator_category	iterator_category;
 
@@ -62,8 +60,8 @@ public:
 		return *this;
 	}
 
-	operator const random_access_iterator<const_iterator>() {
-		return (random_access_iterator<const_iterator>(const_cast<const T>(_ptr)));
+	operator const random_access_iterator<const value_type *>() {
+		return (random_access_iterator<const value_type *>(const_cast<const T>(_ptr)));
 	}
 	
 	// Comparison operators
@@ -189,7 +187,6 @@ public:
 	typedef	typename iterator_traits<Iter>::pointer				pointer;
 	typedef	typename iterator_traits<Iter>::reference			reference;
 	typedef	typename iterator_traits<Iter>::iterator_category	iterator_category;
-	typedef const Iter											const_iterator;
 
 	random_access_reverse_iterator (void) { // default
 		this->_iter = value_type();
@@ -197,19 +194,17 @@ public:
 	explicit random_access_reverse_iterator (iterator_type x) { // initialization
 		this->_iter = x;
 	}
-	template < typename Iterator >
 	random_access_reverse_iterator (const random_access_reverse_iterator<Iter> & src) { // copy
 		this->_iter = src._iter;
 	}
 
-	template < typename Iterator >
 	random_access_reverse_iterator & operator= (const random_access_reverse_iterator<Iter> & src) { // assignment operator
 		this->_iter = src._iter;
 		return *this;
 	}
-	
-	operator const random_access_iterator<const_iterator>() {
-		return (random_access_iterator<const_iterator>(const_cast<const Iter>(_iter)));
+
+	operator const random_access_reverse_iterator<const Iter>() {
+		return (random_access_reverse_iterator<const Iter>(const_cast<const Iter>(_iter)));
 	}
 	
 	// Returns a copy of the underlying iterator

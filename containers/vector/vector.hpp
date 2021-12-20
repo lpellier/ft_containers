@@ -409,11 +409,11 @@ public:
 	// so that only iterators may use this function
 	void		insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		// diff is distance from position to the end
-		difference_type diff = distance(position, this->end());
+		difference_type diff = ft::distance(position, this->end());
 		// tmp is size before any changes to it
 		size_type	tmp = this->_size;
 		// n is the number of elements added to the vector
-		size_type	n = distance(first, last);
+		size_type	n = ft::distance(first, last);
 		if (this->_size + n > this->_capacity)
 			this->reserve(_next_pow_two(this->_size + n));
 		while (first != last) {
@@ -427,7 +427,7 @@ public:
 		while (cur_position > position) {
 			// moving each new element backwards until we arrive at desired position
 			for (size_type i = 0; i < n; i++)
-				this->_move_back(distance(this->begin(), cur_position + i));
+				this->_move_back(ft::distance(this->begin(), cur_position + i));
 			cur_position--;
 		}
 	}
@@ -438,13 +438,13 @@ public:
 	// elements after the segment erased to their new positions
 	iterator	erase (iterator position) { // single element
 		// this is the distance from the begin to the point of erasure
-		size_type distance = distance(this->begin(), position);
+		difference_type distance = ft::distance(this->begin(), position);
 		// destroy element pointed to by position
 		this->_alloc.destroy(this->_array + distance);
 		// move backwards every element after position
 		position++;
 		while (position != this->end()) {
-			this->_move_back(distance(this->begin(), position));
+			this->_move_back(ft::distance(this->begin(), position));
 			position++;
 		}
 		// reduce size by one
@@ -454,9 +454,9 @@ public:
 	}
 	iterator	erase (iterator first, iterator last) { // range
 		// this is the distance from the begin to the point of erasure
-		size_type distance = distance(this->begin(), first);
+		difference_type distance = ft::distance(this->begin(), first);
 		// n is the number of elements erased
-		size_type n = distance(first, last);
+		size_type n = ft::distance(first, last);
 		// erasing elements pointed to by first one by one
 		for (size_type i = 0; i < n; i++)
 			erase(this->begin() + distance);

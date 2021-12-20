@@ -1,3 +1,4 @@
 .vscode
 *.dSYM
 containers_test
+containers/*/containers_test
