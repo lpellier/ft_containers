@@ -2,23 +2,7 @@
 
 #include <cstddef>
 #include <iostream>
-#include "type_traits.hpp"
-
-// const class NULL_t
-// {
-//   public:
-//     template<class T>
-//     inline operator T*() const // convertible to any type of null non-member pointer...
-//     { return 0; }
-
-//     template<class C, class T>
-//     inline operator T C::*() const   // or any type of null member pointer...
-//     { return 0; }
-
-//   private:
-//     void operator&() const;  // Can't take address of NULL
-
-// }; NULL = {};
+#include <functional>
 
 namespace ft {
 /*
@@ -30,10 +14,10 @@ namespace ft {
  \___|_| |_|\__,_|_.__/|_|\___|  |_|_|  
 */
 
-template < bool B, typename T = void >
+template < bool B, class T = void >
 struct enable_if {};
 
-template < typename T >
+template < class T >
 struct enable_if<true, T> { typedef T type; };
 
 /*
@@ -45,7 +29,7 @@ struct enable_if<true, T> { typedef T type; };
  \__,_|_|___/\__\__,_|_| |_|\___\___|
 */
 
-template < typename Iter >
+template < class Iter >
 typename iterator_traits<Iter>::difference_type	distance(Iter from, Iter until) {
 	typename iterator_traits<Iter>::difference_type ret = 0;
 	while (from != until) {
@@ -131,6 +115,34 @@ bool	lexicographical_compare (InputIterator1 first1, InputIterator1 last1, Input
 		first2++;
 	}
 	return (first2 != last2);
+}
+
+template < class T1, class T2 >
+struct pair {
+
+public:
+	
+	typedef T1	first_type;
+	typedef T2	second_type;
+
+	first_type	first;
+	second_type	second;	
+
+	pair () : first(fist_type()), second(second_type()) {}
+	template < class U, class V >
+	pair (const pair<U,V> & pr) : first(pr.first), second(pr.second) {}
+	pair (const first_type & a, const second_type & b) : first(a), second(b) {}
+
+	pair &	operator= (const pair & pr) {
+		this->first = pr.first;
+		this->second = pr.second;
+		return *this;
+	}
+};
+
+template < class T1, class T2 >
+pair<T1, T2> make_pair (T1 x, T2 y) {
+	return (pair<T1, T2>(x, y));
 }
 
 }

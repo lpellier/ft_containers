@@ -1,10 +1,10 @@
 #pragma once
 
-#include "iterator/iterator.hpp"
+#include "../../includes/containers.hpp"
 
 namespace ft {
 
-template < typename T, typename Alloc = std::allocator<T> >
+template < class T, class Alloc = std::allocator<T> >
 class vector {
 public:
 	
@@ -68,11 +68,10 @@ public:
 	// Constructs a vector with as many elements as the range [first, last],
 	// with each element constructed from its corresponding element
 	// in that range, in the same order
-	template < typename InputIterator >
-
+	template < class InputIterator >
 	// using enable_if here forbids any integral type to get into this function
 	// so that only iterators may use this function
-	vector (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
+	vector (InputIterator first, InputIterator last, class enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		this->_size = ft::distance(first, last);
 		this->_capacity = this->_size;
 		this->_array = this->_alloc.allocate(this->_capacity);
@@ -329,8 +328,8 @@ public:
 	// Asign new contents to the vector, replacing its current contents, and modifying its size accordingly
 	// Any elements held in the container before the call are destroyed and replaced by newly constructed
 	// elements (no assignments of elements take place)
-	template	< typename InputIterator >
-	void		assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
+	template	< class InputIterator >
+	void		assign (InputIterator first, InputIterator last, class enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		this->_reduce_size(0);
 		this->reserve(_next_pow_two(ft::distance(first, last)));
 		// adding each element of the first to last iterator range
@@ -404,10 +403,10 @@ public:
 		}
 	} 
 
-	template	< typename InputIterator >
+	template	< class InputIterator >
 	// using enable_if here forbids any integral type to get into this function
 	// so that only iterators may use this function
-	void		insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
+	void		insert (iterator position, InputIterator first, InputIterator last, class enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
 		// diff is distance from position to the end
 		difference_type diff = ft::distance(position, this->end());
 		// tmp is size before any changes to it
@@ -503,6 +502,7 @@ public:
 	}                 
 
 protected:
+
 	/*
 	 _   _           _             _   _            _                     _ 
 	| | | |         | |           | | | |          | |                   | |
@@ -582,34 +582,34 @@ protected:
 |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|  \___/ \_/ \___|_|  |_|\___/ \__,_|\__,_|___/                                                                                                                                 
 */
 
-template	< typename T >
+template	< class T >
 bool		operator== (const vector<T> & lhs, const vector<T> & rhs) {
 	if (lhs.size() != rhs.size())
 		return false;
-	return equal(lhs.begin(), lhs.end(), rhs.begin());
+	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
-template	< typename T >
+template	< class T >
 bool		operator!= (const vector<T> & lhs, const vector<T> & rhs) {
 	return !(lhs == rhs);
 }
-template	< typename T >
+template	< class T >
 bool		operator<  (const vector<T> & lhs, const vector<T> & rhs) {
-	return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
-template	< typename T >
+template	< class T >
 bool		operator<= (const vector<T> & lhs, const vector<T> & rhs) {
 	return !(rhs < lhs);
 }
-template	< typename T >
+template	< class T >
 bool		operator>  (const vector<T> & lhs, const vector<T> & rhs) {
 	return (rhs < lhs);
 }
-template	< typename T >
+template	< class T >
 bool		operator>= (const vector<T> & lhs, const vector<T> & rhs) {
 	return !(lhs < rhs);
 }
 
-template	< typename T >
+template	< class T >
 void		swap (vector<T> & x, vector<T> & y) {
 	x.swap(y);
 }

@@ -21,6 +21,15 @@ RESET="\e[0m"
 STD_VECTOR="std::vector<int>"
 FT_VECTOR="ft::vector<int>"
 
+STD_MAP="std::map<int, int>"
+FT_MAP="ft::map<int, int>"
+
+STD_STACK="std::stack<std::vector<int> >"
+FT_STACK="ft::stack<ft::vector<int> >"
+
+STD_CONTAINER=""
+FT_CONTAINER=""
+
 _output_kitty() {
 	# let "ERRORS=1"
 	if [ $ERRORS -eq 0 ]; then
@@ -34,12 +43,25 @@ _output_kitty() {
 
 _execute() {
 	printf "$CYAN%-45s" $1
+	folder = $(echo $1 | head -n1 | cut -d "/" -f1)
+	if [ folder == "map" ]; then
+		STD_CONTAINER=$STD_MAP
+		FT_CONTAINER=$FT_MAP
+	elif [ folder == "vector" ]; then
+		STD_CONTAINER=$STD_VECTOR
+		FT_CONTAINER=$FT_VECTOR
+	elif [ folder == "stack" ]; then
+		STD_CONTAINER=$STD_STACK
+		FT_CONTAINER=$FT_STACK
+	else
+		return 1
+	fi
 	if [ $2 -eq 1 ]; then
 		echo
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_VECTOR" $1
+		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_CONTAINER" $1
 	else
 		printf "| "
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_VECTOR" $1 2> $1".compile_error"
+		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_CONTAINER" $1 2> $1".compile_error"
 	fi
 	if [ $? -ne 0 ]; then
 		echo -e $RED"Compiler error"
@@ -52,10 +74,10 @@ _execute() {
 
 	if [ $2 -eq 1 ]; then
 		echo -ne $BLUE"Compile"$RESET" : "
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_VECTOR" $1
+		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_CONTAINER" $1
 	else
 		echo -ne $BLUE"Compile"$RESET" : "
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_VECTOR" $1 2> $1".compile_error"
+		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_CONTAINER" $1 2> $1".compile_error"
 	fi
 	if [ $? -ne 0 ]; then
 		let "ERRORS += 1"

@@ -34,7 +34,7 @@ struct random_access_iterator_tag {};
 |_|\__\___|_|  \__,_|\__\___/|_(_)   \__|_|  \__,_|_|\__|___/
 */
 
-template < typename Iter >
+template < class Iter >
 struct iterator_traits {
 	typedef typename Iter::difference_type		difference_type;
 	typedef typename Iter::value_type			value_type;
@@ -43,7 +43,7 @@ struct iterator_traits {
 	typedef typename Iter::iterator_category	iterator_category;
 };
 
-template < typename T >
+template < class T >
 struct iterator_traits<T*> {
 	typedef std::ptrdiff_t					difference_type;
 	typedef T								value_type;
@@ -52,7 +52,7 @@ struct iterator_traits<T*> {
 	typedef random_access_iterator_tag	iterator_category;
 };
 
-template < typename T >
+template < class T >
 struct iterator_traits<const T*> {
 	typedef std::ptrdiff_t					difference_type;
 	typedef T								value_type;
@@ -79,15 +79,15 @@ struct bool_wrapper {
 
 // check if type is const
 
-template < typename T >
+template < class T >
 struct is_const : bool_wrapper<false> {};
 
-template < typename T >
+template < class T >
 struct is_const<const T> : bool_wrapper<true> {};
 
 // integral types : bool, char, char_16t, char32_t, wchar_t, short, int, long, long long
 
-template < typename T >
+template < class T >
 struct is_integral : bool_wrapper<false> {};
 
 template <>
