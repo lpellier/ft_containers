@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../includes/containers.hpp"
+#include <memory>
+#include "iterator/iterator.hpp"
 
 namespace ft {
 
@@ -32,13 +33,13 @@ public:
 	typedef typename allocator_type::const_pointer			const_pointer;
 
 	// Iterators point to an element in a vector and point to the next one when incremented
-	typedef random_access_iterator<pointer>					iterator;
+	typedef ft::random_access_iterator<pointer>					iterator;
 	// A const iterator is an iteraror that points to const content
-	typedef random_access_iterator<const_pointer>			const_iterator;
+	typedef ft::random_access_iterator<const_pointer>			const_iterator;
 	// Reverse iterators point to an element in a vector and point to the previous one when incremented
-	typedef random_access_reverse_iterator<iterator>		reverse_iterator;
+	typedef ft::random_access_reverse_iterator<iterator>		reverse_iterator;
 	// A const reverse iterator is a reverse iterator that points to const content
-	typedef random_access_reverse_iterator<const_iterator>	const_reverse_iterator;
+	typedef ft::random_access_reverse_iterator<const_iterator>	const_reverse_iterator;
 
 	// size_type is size of type
 	typedef std::size_t			size_type;

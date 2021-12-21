@@ -2,7 +2,7 @@
 
 #include <cstddef>
 #include <iostream>
-#include <functional>
+#include "type_traits.hpp"
 
 namespace ft {
 /*
@@ -30,8 +30,8 @@ struct enable_if<true, T> { typedef T type; };
 */
 
 template < class Iter >
-typename iterator_traits<Iter>::difference_type	distance(Iter from, Iter until) {
-	typename iterator_traits<Iter>::difference_type ret = 0;
+typename ft::iterator_traits<Iter>::difference_type	distance(Iter from, Iter until) {
+	typename ft::iterator_traits<Iter>::difference_type ret = 0;
 	while (from != until) {
 		ret++;
 		from++;
@@ -128,7 +128,7 @@ public:
 	first_type	first;
 	second_type	second;	
 
-	pair () : first(fist_type()), second(second_type()) {}
+	pair () : first(first_type()), second(second_type()) {}
 	template < class U, class V >
 	pair (const pair<U,V> & pr) : first(pr.first), second(pr.second) {}
 	pair (const first_type & a, const second_type & b) : first(a), second(b) {}

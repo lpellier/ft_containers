@@ -43,14 +43,14 @@ _output_kitty() {
 
 _execute() {
 	printf "$CYAN%-45s" $1
-	folder = $(echo $1 | head -n1 | cut -d "/" -f1)
-	if [ folder == "map" ]; then
+	folder=$(echo $1 | head -n1 | cut -d "/" -f1)
+	if [ $folder == "map" ]; then
 		STD_CONTAINER=$STD_MAP
 		FT_CONTAINER=$FT_MAP
-	elif [ folder == "vector" ]; then
+	elif [ $folder == "vector" ]; then
 		STD_CONTAINER=$STD_VECTOR
 		FT_CONTAINER=$FT_VECTOR
-	elif [ folder == "stack" ]; then
+	elif [ $folder == "stack" ]; then
 		STD_CONTAINER=$STD_STACK
 		FT_CONTAINER=$FT_STACK
 	else

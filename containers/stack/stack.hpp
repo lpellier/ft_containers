@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../includes/containers.hpp"
 
 namespace ft {
 
@@ -34,7 +33,7 @@ public:
 
 	// Constructs a stack with a copy of the underlying container
 	explicit	stack (const container_type & ctnr = container_type()) {
-		this->_container = cntr;
+		this->_container = ctnr;
 	}
 
 	// Returns whether the stack is empty: i.e. whether its size is zero
@@ -63,23 +62,17 @@ public:
 
 	// Removes the element on top of the stack, effectively reducing its size by one
 	void	pop () {
-		this->_container.pop_back(val);
+		this->_container.pop_back();
 	}
 
 protected:
 	container_type	_container;
 
-template < class T, class Container >
 friend bool	operator== (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-template < class T, class Container >
 friend bool	operator!= (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-template < class T, class Container >
 friend bool	operator< (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-template < class T, class Container >
 friend bool	operator<= (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-template < class T, class Container >
 friend bool	operator> (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-template < class T, class Container >
 friend bool	operator>= (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
 
 };
