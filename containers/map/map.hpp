@@ -71,13 +71,18 @@ public:
 	// so that only iterators may use this function
 	map (InputIterator first, InputIterator last, const key_compare & comp = key_compare(), const allocator_type & alloc = allocator_type()) { // range
 		_root = NULL;
+		_size = 0;
 		_comp = comp;
 		_alloc = alloc;
 		while (first != last) {
-			_add_node(&_root, make_pair(*first, *first));
+			int val = rand() % 100 + 1;
+			_add_node(&_root, make_pair(val, val));
 			first++;
+			_size++;
 		}
-		_display_tree("", _root, false);
+		_display_tree("", _root, false, (_root->right ? true : false));
+		int balanced = is_balanced(_root);
+		std::cout << "Is tree balanced ? " << (balanced > 0 ? "No" : "Yes")  << std::endl;
 	}
 
 	// Constructs a map with a copy of each of the elements in x
@@ -348,9 +353,10 @@ protected:
 
 	typedef struct		s_node {
 		value_type		data;
-		struct s_node	*left_child;
-		struct s_node	*right_child;
-	}					node;
+		int				height;
+		struct s_node	*left;
+		struct s_node	*right;
+	}					t_node;
 
 	// to allocate storage
 	allocator_type	_alloc;
@@ -359,53 +365,169 @@ protected:
 	// size of map
 	size_type		_size;
 	// root of binary tree
-	node *			_root;
+	t_node *			_root;
 
-	void	_add_node(node ** binary_tree, const value_type & val) {
-		node *	tmp = NULL;
-		if (!(*binary_tree)) {
-			tmp = (node *)malloc(sizeof(node));
+	int		maxChildHeight(t_node * node) {
+		if (!node || (!node->left && !node->right))
+			return (0);
+		if (!node->left)
+			return node->right->height;
+		if (!node->right)
+			return node->left->height;
+		return (node->left->height > node->right->height ? node->left->height : node->right->height);
+	}
+
+	bool		is_balanced(t_node * node) {
+		if (!node)
+			return true;
+		if (abs(getBalance(node)) <= 1 && is_balanced(node->left) && is_balanced(node->right))
+			return true;
+		return false;
+	}
+
+	int		getBalance(t_node * node) {
+		if (!node || (!node->left && !node->right))
+			return (0);
+		if (!node->left)
+			return -node->right->height;
+		if (!node->right)
+			return node->left->height;
+		return node->left->height - node->right->height;
+	}
+
+	// A utility function to right
+	// rotate subtree rooted with y
+	// See the diagram given above.
+	void	rightRotate(t_node **tree)
+	{
+		t_node *y = *tree;
+		t_node *x = y->left;
+		if (!x)
+			return;
+		t_node *T2 = x->right;
+			
+		// Perform rotation
+		x->right = y;
+		y->left = T2;
+	
+		// Update heights
+		y->height = 1 + maxChildHeight(y);
+		x->height = 1 + maxChildHeight(x);
+		
+		// Return new root
+		*tree = x;
+	}
+	
+	// A utility function to left
+	// rotate subtree rooted with x
+	// See the diagram given above.
+void	leftRotate(t_node **tree)
+	{
+		t_node *x = *tree;
+		t_node *y = x->right;
+		if (!y)
+			return;
+		t_node *T2 = y->left;
+	
+		// Perform rotation
+		x->right = T2;
+		y->left = x;
+	
+		// Update heights
+		x->height = 1 + maxChildHeight(x);
+		y->height = 1 + maxChildHeight(y);
+		
+		// Return new root
+		*tree = y;
+	}
+
+	void	_add_node(t_node ** node, const value_type & val) {
+		t_node *	tmp = NULL;
+		// inefficient
+		if (_search_node(node, val))
+			return ;
+		if (!(*node)) {
+			tmp = (t_node *)malloc(sizeof(t_node));
 			if (!tmp)
 				throw std::bad_alloc();
-			tmp->left_child = tmp->right_child = NULL;
+			tmp->left = tmp->right = NULL;
 			tmp->data = val;
-			*binary_tree = tmp;
-			return ;
+			tmp->height = 1;
+			*node = tmp;
 		}
 		else {
-			if (val.first < (*binary_tree)->data.first)
-				_add_node(&(*binary_tree)->left_child, val);
-			else if (val.first > (*binary_tree)->data.first)
-				_add_node(&(*binary_tree)->right_child, val);
+			if (_comp(val.second, (*node)->data.second))
+				_add_node(&(*node)->left, val);
+			else if (!_comp(val.second, (*node)->data.second))
+				_add_node(&(*node)->right, val);
+			else
+				return ;
+			
+			(*node)->height = 1 + maxChildHeight(*node);
+			int balance = getBalance(*node);
+			std::cout << "node " << (*node)->data.second << " balance : " << balance << std::endl;
+
+			// Left left case
+			if (balance < -1 || balance > 1) {
+				_display_tree("", _root, false, (_root->right ? true : false));
+				std::cout << std::endl;
+			}
+			if ((*node)->left && balance > 1 && _comp(val.second, (*node)->left->data.second))
+				rightRotate(node);
+			
+			// Right Right Case
+			if ((*node)->right && balance < -1 && !_comp(val.second, (*node)->right->data.second))
+				leftRotate(node);
+		
+			// Left Right Case
+			if ((*node)->left && balance > 1 && !_comp(val.second, (*node)->left->data.second))
+			{
+				leftRotate(&((*node)->left));
+				rightRotate(node);
+			}
+		
+			// Right Left Case
+			if ((*node)->right && balance < -1 && _comp(val.second, (*node)->right->data.second))
+			{
+				rightRotate(&((*node)->right));
+				leftRotate(node);
+			}
+			if (balance < -1 || balance > 1) {
+				_display_tree("", _root, false, (_root->right ? true : false));
+				std::cout << std::endl << std::endl;
+			}
 		}
 	}
 
-	node *	_search_node(node ** binary_tree, const value_type & val) {
-		if (!(*binary_tree))
+	t_node *	_search_node(t_node ** node, const value_type & val) {
+		if (!(*node))
 			return (NULL);
-		if (val.first == (*binary_tree)->data.first)
-			return *binary_tree;
-		else if (val.first < (*binary_tree)->data.first)
-			_search_node(&(*binary_tree)->left_child, val);
-		else if (val.first > (*binary_tree)->data.first)
-			_search_node(&(*binary_tree)->right_child, val);
+		if (val.first == (*node)->data.first)
+			return *node;
+		else if (_comp(val.first, (*node)->data.first))
+			return _search_node(&(*node)->left, val);
+		else if (!_comp(val.first, (*node)->data.first))
+			return _search_node(&(*node)->right, val);
+		return (NULL);
 	}
 
-	void	_delete_tree(node * binary_tree) {
-		if (binary_tree) {
-			_delete_tree(binary_tree->left_child);
-			_delete_tree(binary_tree->right_child);
-			free(binary_tree);
+	void	_delete_tree(t_node * node) {
+		if (node) {
+			_delete_tree(node->left);
+			_delete_tree(node->right);
+			free(node);
 		}
 	}
 
-	void	_display_tree(const std::string & prefix, node * binary_tree, bool isLeft) {
-		if (binary_tree) {
+	void	_display_tree(const std::string & prefix, t_node * node, bool isLeft, bool childInRight) {
+		if (node) {
 			std::cout << prefix;
-			std::cout << (isLeft ? "├──" : "└──");
-			std::cout << binary_tree->data.second << std::endl;
-			_display_tree(prefix + (isLeft ? "│   " : "    "), binary_tree->left_child, true);
-			_display_tree(prefix + (isLeft ? "│   " : "    "), binary_tree->right_child, false);
+			std::cout << (isLeft && childInRight ? "├──" : "└──");
+			std::cout << (isLeft ? "\e[34m" : "\e[31m");
+			std::cout << node->data.second << std::endl;
+			std::cout << "\e[0m";
+			_display_tree(prefix + (isLeft && childInRight ? "│   " : "    "), node->left, true, (node->right ? true : false));
+			_display_tree(prefix + (isLeft && childInRight ? "│   " : "    "), node->right, false, (node->right ? true : false));
 		}
 	}
 
