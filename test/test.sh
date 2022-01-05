@@ -164,20 +164,20 @@ bash clean.sh
 if [[ $# -eq 1 && $1 == "all" ]]; then
 	_loop_all
 	_output_kitty
-elif [[ $# -eq 1 && -d "$1" ]]; then
+elif [[ $# -eq 1 && -f "$1" ]]; then
+	_execute "$1" "1"
+elif [[ $# -eq 1 && -d "$1" ]] && [[ $1 == "vector"  ||  $1 == "stack"  ||  $1 == "map" ]]; then
 	_loop_in_container "$1/"
 	_output_kitty
-elif [[ $# -eq 2 && -d "$1/$2" ]]; then
-	_loop_in_category "$1/$2/"
+elif [[ $# -eq 1 && -d "$1" ]]; then
+	_loop_in_category "$1/"
 	_output_kitty
-elif [[ $# -eq 3 && -f "$1/$2/$3.cpp" ]]; then
-	_execute "$1/$2/$3.cpp" "1"
 else
 	echo -e $CYAN"Enter one of the following :"
 	echo -e $BLUE"all"$CYAN" : test every container"
-	echo -e $BLUE"<container_name>"$CYAN" : test a specific container -> $BLUE bash test.sh vector"
-	echo -e $BLUE"<container_name> <category_name>"$CYAN" : test a specific category of a specific container -> $BLUE bash test vector constructor"
-	echo -e $BLUE"<container_name> <category_name> <test_name>"$CYAN" : test a specific test of a specific category of a specific container -> $BLUE bash test vector modifiers insert"
+	echo -e $BLUE"path/to/container"$CYAN" : test a specific container -> $BLUE bash test.sh vector"
+	echo -e $BLUE"path/to/category"$CYAN" : test a specific category of a specific container -> $BLUE bash test vector/constructor"
+	echo -e $BLUE"path/to/test"$CYAN" : test a specific test of a specific category of a specific container -> $BLUE bash test vector/modifiers/insert"
 	exit
 fi
 

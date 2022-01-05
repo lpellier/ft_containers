@@ -5,6 +5,7 @@ void	begin() {
 	for (int i = 0; i < 10; i++)
 		foo.push_back(i);
 
+
 	CONTAINER	test(foo.begin(), foo.end());
 
 	CONTAINER::iterator it_foo = test.begin();

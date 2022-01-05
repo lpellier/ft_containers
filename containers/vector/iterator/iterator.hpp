@@ -203,8 +203,8 @@ public:
 		return *this;
 	}
 
-	operator const random_access_reverse_iterator<const Iter>() {
-		return (random_access_reverse_iterator<const Iter>(const_cast<const Iter>(_iter)));
+	operator const random_access_reverse_iterator<Iter>() {
+		return (random_access_reverse_iterator<Iter>(const_cast<const Iter>(_iter)));
 	}
 	
 	// Returns a copy of the underlying iterator
