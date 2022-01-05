@@ -6,7 +6,7 @@ namespace ft {
 template <	class Key,												// map::key_type
 			class T,												// map::mapped_type
 			class Compare = std::less<Key>,							// map::key_compare
-			class Alloc = std::allocator<std::pair<const Key,T> >	// map::allocator_type
+			class Alloc = std::allocator<ft::pair<const Key,T> >	// map::allocator_type
 			> 
 class map {
 public:
@@ -36,7 +36,7 @@ public:
 	// Type of the allocator (by default : std::allocator)
 	typedef Alloc	allocator_type;
 	
-	typedef typename ft::pair<key_type, mapped_type>	value_type;
+	typedef typename ft::pair<const key_type, mapped_type>	value_type;
 	typedef typename allocator_type::reference			reference;
 	typedef typename allocator_type::const_reference	const_reference;
 	typedef typename allocator_type::pointer			pointer;
@@ -71,18 +71,12 @@ public:
 	// so that only iterators may use this function
 	map (InputIterator first, InputIterator last, const key_compare & comp = key_compare(), const allocator_type & alloc = allocator_type()) { // range
 		_root = NULL;
-		_size = 0;
 		_comp = comp;
 		_alloc = alloc;
 		while (first != last) {
-			int val = rand() % 100 + 1;
-			_add_node(&_root, make_pair(val, val));
+			_add_one(*first);
 			first++;
-			_size++;
 		}
-		_display_tree("", _root, false, (_root->right ? true : false));
-		int balanced = is_balanced(_root);
-		std::cout << "Is tree balanced ? " << (balanced > 0 ? "No" : "Yes")  << std::endl;
 	}
 
 	// Constructs a map with a copy of each of the elements in x
@@ -93,7 +87,7 @@ public:
 	// This destroys all map elements, and deallocates all the storage capacity allocated by the map container
 	// using its allocator
 	~map () {
-
+		_delete_tree(_root);
 	}
 
 	// Assigns new contents to the container, replacing its current content and changing its size accordingly
@@ -340,6 +334,18 @@ public:
 
 	// }
 
+	void	erase(const key_type & key) {
+		_delete_one(key);
+	}
+
+	// TO BE REMOVED
+	void	display_tree(void) {
+		// DEBUG
+		_display_tree("", _root, false, (_root->right ? true : false));
+		bool balanced = _is_balanced(_root);
+		std::cout << "Is tree balanced ? " << (!balanced ? "No" : "Yes")  << std::endl;
+	}
+
 protected:
 
 	/*
@@ -352,7 +358,7 @@ protected:
 	*/
 
 	typedef struct		s_node {
-		value_type		data;
+		value_type		*data;
 		int				height;
 		struct s_node	*left;
 		struct s_node	*right;
@@ -367,7 +373,19 @@ protected:
 	// root of binary tree
 	t_node *			_root;
 
-	int		maxChildHeight(t_node * node) {
+	void	_add_one(const value_type & element) {
+		_add_node(&_root, element);
+		_balance_tree(&_root, true);
+		_size++;
+	}
+	
+	void	_delete_one(const key_type & key) {
+		_root = _delete_node(_root, key);
+		_balance_tree(&_root, true);
+		_size--;
+	}
+
+	int		_max_child_height(t_node * node) {
 		if (!node || (!node->left && !node->right))
 			return (0);
 		if (!node->left)
@@ -377,15 +395,15 @@ protected:
 		return (node->left->height > node->right->height ? node->left->height : node->right->height);
 	}
 
-	bool		is_balanced(t_node * node) {
+	bool		_is_balanced(t_node * node) {
 		if (!node)
 			return true;
-		if (abs(getBalance(node)) <= 1 && is_balanced(node->left) && is_balanced(node->right))
+		if (abs(_get_balance(node)) <= 1 && _is_balanced(node->left) && _is_balanced(node->right))
 			return true;
 		return false;
 	}
 
-	int		getBalance(t_node * node) {
+	int		_get_balance(t_node * node) {
 		if (!node || (!node->left && !node->right))
 			return (0);
 		if (!node->left)
@@ -395,50 +413,61 @@ protected:
 		return node->left->height - node->right->height;
 	}
 
-	// A utility function to right
-	// rotate subtree rooted with y
-	// See the diagram given above.
-	void	rightRotate(t_node **tree)
-	{
-		t_node *y = *tree;
+	// Rotate right
+	t_node *_right_rotation(t_node * y) {
 		t_node *x = y->left;
 		if (!x)
-			return;
+			return y;
 		t_node *T2 = x->right;
-			
-		// Perform rotation
 		x->right = y;
 		y->left = T2;
-	
-		// Update heights
-		y->height = 1 + maxChildHeight(y);
-		x->height = 1 + maxChildHeight(x);
-		
-		// Return new root
-		*tree = x;
+		y->height = _max_child_height(y) + 1;
+		x->height = _max_child_height(x) + 1;
+		return x;
 	}
-	
-	// A utility function to left
-	// rotate subtree rooted with x
-	// See the diagram given above.
-void	leftRotate(t_node **tree)
-	{
-		t_node *x = *tree;
+
+	// Rotate left
+	t_node *_left_rotation(t_node * x) {
 		t_node *y = x->right;
 		if (!y)
-			return;
+			return x;
 		t_node *T2 = y->left;
-	
-		// Perform rotation
-		x->right = T2;
 		y->left = x;
-	
-		// Update heights
-		x->height = 1 + maxChildHeight(x);
-		y->height = 1 + maxChildHeight(y);
+		x->right = T2;
 		
-		// Return new root
-		*tree = y;
+		x->height = _max_child_height(x) + 1;
+		y->height = _max_child_height(y) + 1;
+		return y;
+	}
+
+	void	_balance_tree(t_node ** node, bool recursion) {
+		if (!(*node))
+			return ;
+	
+		(*node)->height = 1 + _max_child_height(*node);
+		int balance = _get_balance(*node);
+		
+		if (balance > 1) {
+			if ((*node)->left && !_comp((*node)->data->first, (*node)->left->data->first))
+				*node = _right_rotation(*node);
+			else if ((*node)->left && _comp((*node)->data->first, (*node)->left->data->first)) {
+				(*node)->left = _left_rotation((*node)->left);
+				*node = _right_rotation(*node);
+			}
+		}
+		else if (balance < -1) {
+			if ((*node)->right && _comp((*node)->data->first, (*node)->right->data->first))
+				*node = _left_rotation(*node);
+			else if ((*node)->right && !_comp((*node)->data->first, (*node)->right->data->first)) {
+				(*node)->right = _right_rotation((*node)->right);
+				*node = _left_rotation(*node);
+			}
+		}
+
+		if (recursion) {
+			_balance_tree(&(*node)->left, true);
+			_balance_tree(&(*node)->right, true);
+		}
 	}
 
 	void	_add_node(t_node ** node, const value_type & val) {
@@ -447,66 +476,99 @@ void	leftRotate(t_node **tree)
 		if (_search_node(node, val))
 			return ;
 		if (!(*node)) {
-			tmp = (t_node *)malloc(sizeof(t_node));
-			if (!tmp)
-				throw std::bad_alloc();
+			// need to use std allocator
+			tmp = new t_node;
 			tmp->left = tmp->right = NULL;
-			tmp->data = val;
+			tmp->data = _alloc.allocate(1);
+			_alloc.construct(tmp->data, val);
 			tmp->height = 1;
 			*node = tmp;
 		}
 		else {
-			if (_comp(val.second, (*node)->data.second))
+			if (_comp(val.first, (*node)->data->first))
 				_add_node(&(*node)->left, val);
-			else if (!_comp(val.second, (*node)->data.second))
+			else if (!_comp(val.first, (*node)->data->first))
 				_add_node(&(*node)->right, val);
-			else
-				return ;
-			
-			(*node)->height = 1 + maxChildHeight(*node);
-			int balance = getBalance(*node);
-			std::cout << "node " << (*node)->data.second << " balance : " << balance << std::endl;
+		}
+		_balance_tree(node, false);
+	}
 
-			// Left left case
-			if (balance < -1 || balance > 1) {
-				_display_tree("", _root, false, (_root->right ? true : false));
-				std::cout << std::endl;
-			}
-			if ((*node)->left && balance > 1 && _comp(val.second, (*node)->left->data.second))
-				rightRotate(node);
-			
-			// Right Right Case
-			if ((*node)->right && balance < -1 && !_comp(val.second, (*node)->right->data.second))
-				leftRotate(node);
-		
-			// Left Right Case
-			if ((*node)->left && balance > 1 && !_comp(val.second, (*node)->left->data.second))
+	/* Given a non-empty binary search tree,
+	return the node with minimum key value
+	found in that tree. Note that the entire
+	tree does not need to be searched. */
+	t_node * minValueNode(t_node* node)
+	{
+		t_node* current = node;
+	
+		/* loop down to find the leftmost leaf */
+		while (current->left != NULL)
+			current = current->left;
+	
+		return current;
+	}
+
+	t_node *	_delete_node(t_node * node, const key_type & key) {
+		// STEP 1: PERFORM STANDARD BST DELETE
+		if (node == NULL)
+			return node;
+		// If the key to be deleted is smaller
+		// than the node's key, then it lies
+		// in left subtree
+		if (!_comp(key, node->data->first))
+			node->left = _delete_node(node->left, key);
+		// If the key to be deleted is greater
+		// than the node's key, then it lies
+		// in right subtree
+		else if (_comp(key, node->data->first))
+			node->right = _delete_node(node->right, key);
+		// if key is same as node's key, then
+		// This is the node to be deleted
+		else
+		{
+			// node with only one child or no child
+			if( (node->left == NULL) || (node->right == NULL) )
 			{
-				leftRotate(&((*node)->left));
-				rightRotate(node);
+				t_node *temp = node->left ? node->left : node->right;
+				// No child case
+				if (temp == NULL)
+				{
+					temp = node;
+					node = NULL;
+				}
+				else {
+					*node = *temp; // Copy the contents of the non-empty child
+					free(temp);
+				}
 			}
-		
-			// Right Left Case
-			if ((*node)->right && balance < -1 && _comp(val.second, (*node)->right->data.second))
+			else
 			{
-				rightRotate(&((*node)->right));
-				leftRotate(node);
-			}
-			if (balance < -1 || balance > 1) {
-				_display_tree("", _root, false, (_root->right ? true : false));
-				std::cout << std::endl << std::endl;
+				// node with two children: Get the inorder
+				// successor (smallest in the right subtree)
+				t_node * temp = minValueNode(node->right);
+				// Copy the inorder successor's
+				// data to this node
+				_alloc.destroy(node->data);
+				_alloc.deallocate(node->data, 1);
+				node->data = temp->data;
+				// Delete the inorder successor
+				node->right = _delete_node(node->right, temp->data->first);
 			}
 		}
+		if (node == NULL)
+			return node;
+		_balance_tree(&node, false);
+		return node;	
 	}
 
 	t_node *	_search_node(t_node ** node, const value_type & val) {
 		if (!(*node))
 			return (NULL);
-		if (val.first == (*node)->data.first)
+		if (val.first == (*node)->data->first)
 			return *node;
-		else if (_comp(val.first, (*node)->data.first))
+		else if (_comp(val.first, (*node)->data->first))
 			return _search_node(&(*node)->left, val);
-		else if (!_comp(val.first, (*node)->data.first))
+		else if (!_comp(val.first, (*node)->data->first))
 			return _search_node(&(*node)->right, val);
 		return (NULL);
 	}
@@ -515,7 +577,10 @@ void	leftRotate(t_node **tree)
 		if (node) {
 			_delete_tree(node->left);
 			_delete_tree(node->right);
-			free(node);
+			// need to use std allocator
+			_alloc.destroy(node->data);
+			_alloc.deallocate(node->data, 1);
+			delete node;
 		}
 	}
 
@@ -524,7 +589,7 @@ void	leftRotate(t_node **tree)
 			std::cout << prefix;
 			std::cout << (isLeft && childInRight ? "├──" : "└──");
 			std::cout << (isLeft ? "\e[34m" : "\e[31m");
-			std::cout << node->data.second << std::endl;
+			std::cout << node->data->second << std::endl;
 			std::cout << "\e[0m";
 			_display_tree(prefix + (isLeft && childInRight ? "│   " : "    "), node->left, true, (node->right ? true : false));
 			_display_tree(prefix + (isLeft && childInRight ? "│   " : "    "), node->right, false, (node->right ? true : false));

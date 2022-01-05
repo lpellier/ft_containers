@@ -1,0 +1,28 @@
+vector/iterators/rbegin.cpp:8:12: error: no matching constructor for initialization of 'ft::vector<int>'
+        CONTAINER       test(foo.rbegin(), foo.rend());
+                        ^    ~~~~~~~~~~~~~~~~~~~~~~~~
+vector/iterators/../../../includes/../containers/vector/vector.hpp:62:11: note: candidate constructor not viable: no known conversion from 'std::vector<int>::reverse_iterator' (aka 'reverse_iterator<__wrap_iter<int *> >') to 'ft::vector::size_type' (aka 'unsigned long') for 1st argument
+        explicit vector (size_type n, const value_type & val = value_type()) : _size(n), _capacity(n){ // fill
+                 ^
+vector/iterators/../../../includes/../containers/vector/vector.hpp:75:2: note: candidate template ignored: substitution failure [with InputIterator = std::reverse_iterator<std::__wrap_iter<int *> >]: typedef 'type' cannot be referenced with a class specifier
+        vector (InputIterator first, InputIterator last, class enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
+        ^                                                                                                                    ~~~~
+vector/iterators/../../../includes/../containers/vector/vector.hpp:86:2: note: candidate constructor not viable: requires single argument 'src', but 2 arguments were provided
+        vector (const vector & src) { // copy
+        ^
+vector/iterators/../../../includes/../containers/vector/vector.hpp:58:11: note: candidate constructor not viable: requires 0 arguments, but 2 were provided
+        explicit vector (void) : _array(NULL), _size(0), _capacity(0) {} // default
+                 ^
+vector/iterators/rbegin.cpp:11:36: error: no viable conversion from 'random_access_reverse_iterator<random_access_iterator<ft::vector<int>::pointer>>' to 'random_access_reverse_iterator<random_access_iterator<ft::vector<int>::const_pointer>>'
+        CONTAINER::const_reverse_iterator const_it_foo = test.rbegin();
+                                          ^              ~~~~~~~~~~~~~
+vector/iterators/../../../includes/../containers/vector/iterator/iterator.hpp:198:2: note: candidate constructor not viable: no known conversion from 'ft::vector<int>::reverse_iterator' (aka 'random_access_reverse_iterator<random_access_iterator<int *> >') to 'const random_access_reverse_iterator<ft::random_access_iterator<const int *> > &' for 1st argument
+        random_access_reverse_iterator (const random_access_reverse_iterator<Iter> & src) { // copy
+        ^
+vector/iterators/../../../includes/../containers/vector/iterator/iterator.hpp:195:11: note: explicit constructor is not a candidate
+        explicit random_access_reverse_iterator (iterator_type x) { // initialization
+                 ^
+vector/iterators/../../../includes/../containers/vector/iterator/iterator.hpp:207:2: note: candidate function
+        operator const random_access_reverse_iterator<const Iter>() {
+        ^
+2 errors generated.
