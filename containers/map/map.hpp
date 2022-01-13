@@ -80,9 +80,13 @@ public:
 	}
 
 	// Constructs a map with a copy of each of the elements in x
-	// map (const map & x) { // copy
-
-	// }
+	map (const map & x) { // copy
+		_root = x._root;
+		// Need to do a deep copy so iterate over x map and copy all of the elements in this
+		_comp = x._comp;
+		_alloc = x._alloc;
+		_size = x._size;
+	}
 
 	// This destroys all map elements, and deallocates all the storage capacity allocated by the map container
 	// using its allocator
@@ -92,9 +96,14 @@ public:
 
 	// Assigns new contents to the container, replacing its current content and changing its size accordingly
 	// The map preserves its current allocator, which is used to allocate additional storage if needed
-	// map &	operator= (const map & x) {
-
-	// }
+	map &	operator= (const map & x) {
+		_root = x._root;
+		// Need to do a deep copy so iterate over x map and copy all of the elements in this
+		_comp = x._comp;
+		_alloc = x._alloc;
+		_size = x._size;
+		return  *this;
+	}
 
 	/*
 	_____ _                 _                 
@@ -160,12 +169,12 @@ public:
 
 	// Returns the number of elements in the map container
 	size_type	size () const {
-
+		return _size;
 	}
 
 	// Returns the maximum number of elements that the map container can hold
 	size_type	max_size () const {
-
+		return this->_alloc.max_size();
 	}
 
 	/*
@@ -248,15 +257,16 @@ public:
 
 	// Returns a copy of the comparison object used by the
 	// map container to compare keys
-	// key_compare	key_comp () const {
-
-	// }
+	key_compare	key_comp () const {
+		return _comp;
+	}
 
 	// Returns a comparison object that can be used to compare two
 	// elements to get whether the key of the first one goes before the second
-	// value_compare value_comp() const {
-
-	// }
+	value_compare value_comp() const {
+		value_compare ret(_comp);
+		return ret;
+	}
 
 	/*
 	_____                      _   _                 
@@ -286,7 +296,9 @@ public:
 	// Because all elements in a map container are unique, the function can
 	// only return 1 or 0
 	// size_type		count (const key_type & k) const {
-
+	// 	if (_search_node(_root, k))
+	// 		return (1);
+	// 	return (0);
 	// }
 
 	// Returns an iterator pointing to the first element in the container
@@ -330,9 +342,9 @@ public:
 	*/
 
 	// Returns a copy of the allocator object associated with the map
-	// allocator_type	get_allocator () const {
-
-	// }
+	allocator_type	get_allocator () const {
+		return _alloc;
+	}
 
 	void	erase(const key_type & key) {
 		_delete_one(key);
