@@ -58,10 +58,10 @@ _execute() {
 	fi
 	if [ $2 -eq 1 ]; then
 		echo
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_CONTAINER" $1
+		c++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_CONTAINER" $1
 	else
 		printf "| "
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_CONTAINER" $1 2> $1".compile_error"
+		c++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_CONTAINER" $1 2> $1".compile_error"
 	fi
 	if [ $? -ne 0 ]; then
 		echo -e $RED"Compiler error"
@@ -74,10 +74,10 @@ _execute() {
 
 	if [ $2 -eq 1 ]; then
 		echo -ne $BLUE"Compile"$RESET" : "
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_CONTAINER" $1
+		c++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_CONTAINER" $1
 	else
 		echo -ne $BLUE"Compile"$RESET" : "
-		clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_CONTAINER" $1 2> $1".compile_error"
+		c++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_CONTAINER" $1 2> $1".compile_error"
 	fi
 	if [ $? -ne 0 ]; then
 		let "ERRORS += 1"

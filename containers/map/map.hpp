@@ -371,28 +371,31 @@ protected:
 	// size of map
 	size_type		_size;
 	// root of binary tree
-	t_node *			_root;
+	t_node *		_root;
 
 	void	_add_one(const value_type & element) {
-		_add_node(&_root, element);
-		_balance_tree(&_root, true);
+		if (_search_node(_root, element.first)) // no equal keys
+			return ;
+		_root = _add_node(_root, element);
 		_size++;
 	}
 	
 	void	_delete_one(const key_type & key) {
+		if (!_search_node(_root, key)) // if key doesnt exist in map
+			return ;
 		_root = _delete_node(_root, key);
-		_balance_tree(&_root, true);
 		_size--;
 	}
 
-	int		_max_child_height(t_node * node) {
-		if (!node || (!node->left && !node->right))
-			return (0);
-		if (!node->left)
-			return node->right->height;
-		if (!node->right)
-			return node->left->height;
-		return (node->left->height > node->right->height ? node->left->height : node->right->height);
+	int _get_height(t_node *N) 
+	{ 
+		if (N == NULL) 
+			return 0; 
+		return N->height; 
+	} 
+
+	int		_max(int a, int b) {
+		return (a > b)? a : b; 
 	}
 
 	bool		_is_balanced(t_node * node) {
@@ -413,93 +416,99 @@ protected:
 		return node->left->height - node->right->height;
 	}
 
-	// Rotate right
-	t_node *_right_rotation(t_node * y) {
-		t_node *x = y->left;
-		if (!x)
-			return y;
-		t_node *T2 = x->right;
-		x->right = y;
-		y->left = T2;
-		y->height = _max_child_height(y) + 1;
-		x->height = _max_child_height(x) + 1;
-		return x;
+	// A utility function to right
+	// rotate subtree rooted with y 
+	// See the diagram given above. 
+	t_node *_right_rotation(t_node *y) 
+	{ 
+		t_node *x = y->left; 
+		t_node *T2 = x->right; 
+
+		// Perform rotation 
+		x->right = y; 
+		y->left = T2; 
+
+		// Update heights 
+		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1; 
+		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1; 
+
+		// Return new root 
+		return x; 
+	} 
+
+	// A utility function to left 
+	// rotate subtree rooted with x 
+	// See the diagram given above. 
+	t_node *_left_rotation(t_node *x) 
+	{ 
+		t_node *y = x->right; 
+		t_node *T2 = y->left; 
+
+		// Perform rotation 
+		y->left = x; 
+		x->right = T2; 
+
+		// Update heights 
+		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1; 
+		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1; 
+
+		// Return new root 
+		return y; 
+	} 
+
+
+	t_node *	_balance_tree(t_node * node, const value_type & val) {
+		node->height = 1 + _max(_get_height(node->left), _get_height(node->right));
+		int balance = _get_balance(node);
+
+		// Left Left Case 
+		if (balance > 1 && _comp(val.first, node->left->data->first)) 
+			return _right_rotation(node); 
+
+		// Right Right Case 
+		if (balance < -1 && !_comp(val.first, node->right->data->first)) 
+			return _left_rotation(node); 
+
+		// Left Right Case 
+		if (balance > 1 && !_comp(val.first, node->left->data->first)) 
+		{ 
+			node->left = _left_rotation(node->left); 
+			return _right_rotation(node); 
+		}
+
+		// Right Left Case 
+		if (balance < -1 && _comp(val.first, node->right->data->first)) 
+		{ 
+			node->right = _right_rotation(node->right); 
+			return _left_rotation(node); 
+		}
+
+		return node;
 	}
 
-	// Rotate left
-	t_node *_left_rotation(t_node * x) {
-		t_node *y = x->right;
-		if (!y)
-			return x;
-		t_node *T2 = y->left;
-		y->left = x;
-		x->right = T2;
-		
-		x->height = _max_child_height(x) + 1;
-		y->height = _max_child_height(y) + 1;
-		return y;
+	t_node * newNode(const value_type & val) {
+		t_node *node = new t_node();
+		node->left = NULL;
+		node->right = NULL;
+		node->data = _alloc.allocate(1);
+		_alloc.construct(node->data, val);
+		node->height = 1;
+		return node;
 	}
 
-	void	_balance_tree(t_node ** node, bool recursion) {
-		if (!(*node))
-			return ;
-	
-		(*node)->height = 1 + _max_child_height(*node);
-		int balance = _get_balance(*node);
-		
-		if (balance > 1) {
-			if ((*node)->left && !_comp((*node)->data->first, (*node)->left->data->first))
-				*node = _right_rotation(*node);
-			else if ((*node)->left && _comp((*node)->data->first, (*node)->left->data->first)) {
-				(*node)->left = _left_rotation((*node)->left);
-				*node = _right_rotation(*node);
-			}
-		}
-		else if (balance < -1) {
-			if ((*node)->right && _comp((*node)->data->first, (*node)->right->data->first))
-				*node = _left_rotation(*node);
-			else if ((*node)->right && !_comp((*node)->data->first, (*node)->right->data->first)) {
-				(*node)->right = _right_rotation((*node)->right);
-				*node = _left_rotation(*node);
-			}
-		}
-
-		if (recursion) {
-			_balance_tree(&(*node)->left, true);
-			_balance_tree(&(*node)->right, true);
-		}
+	t_node *	_add_node(t_node * node, const value_type & val) {
+		if (!node)
+			return newNode(val);
+		if (_comp(val.first, node->data->first))
+			node->left = _add_node(node->left, val);
+		else if (!_comp(val.first, node->data->first))
+			node->right = _add_node(node->right, val);
+		return _balance_tree(node, val);
 	}
 
-	void	_add_node(t_node ** node, const value_type & val) {
-		t_node *	tmp = NULL;
-		// inefficient
-		if (_search_node(node, val))
-			return ;
-		if (!(*node)) {
-			// need to use std allocator
-			tmp = new t_node;
-			tmp->left = tmp->right = NULL;
-			tmp->data = _alloc.allocate(1);
-			_alloc.construct(tmp->data, val);
-			tmp->height = 1;
-			*node = tmp;
-		}
-		else {
-			if (_comp(val.first, (*node)->data->first))
-				_add_node(&(*node)->left, val);
-			else if (!_comp(val.first, (*node)->data->first))
-				_add_node(&(*node)->right, val);
-		}
-		_balance_tree(node, false);
-	}
-
-	/* Given a non-empty binary search tree,
-	return the node with minimum key value
-	found in that tree. Note that the entire
-	tree does not need to be searched. */
-	t_node * minValueNode(t_node* node)
+	t_node * _get_min_node(t_node * node)
 	{
-		t_node* current = node;
+		t_node * current = node;
 	
 		/* loop down to find the leftmost leaf */
 		while (current->left != NULL)
@@ -509,67 +518,74 @@ protected:
 	}
 
 	t_node *	_delete_node(t_node * node, const key_type & key) {
-		// STEP 1: PERFORM STANDARD BST DELETE
 		if (node == NULL)
 			return node;
-		// If the key to be deleted is smaller
-		// than the node's key, then it lies
-		// in left subtree
-		if (!_comp(key, node->data->first))
-			node->left = _delete_node(node->left, key);
-		// If the key to be deleted is greater
-		// than the node's key, then it lies
-		// in right subtree
-		else if (_comp(key, node->data->first))
-			node->right = _delete_node(node->right, key);
-		// if key is same as node's key, then
-		// This is the node to be deleted
-		else
-		{
-			// node with only one child or no child
-			if( (node->left == NULL) || (node->right == NULL) )
-			{
-				t_node *temp = node->left ? node->left : node->right;
-				// No child case
-				if (temp == NULL)
-				{
+	
+		if (key == node->data->first) {
+			if(node->left == NULL || node->right == NULL) {
+				t_node * temp = node->left ? node->left : node->right;
+				if (temp == NULL) {
 					temp = node;
 					node = NULL;
 				}
 				else {
-					*node = *temp; // Copy the contents of the non-empty child
-					free(temp);
+					*node = *temp;
+					_alloc.destroy(temp->data);
+					_alloc.deallocate(temp->data, 1);
+					delete temp;
 				}
 			}
-			else
-			{
-				// node with two children: Get the inorder
-				// successor (smallest in the right subtree)
-				t_node * temp = minValueNode(node->right);
-				// Copy the inorder successor's
-				// data to this node
+			else {
+				t_node * temp = _get_min_node(node->right);
 				_alloc.destroy(node->data);
 				_alloc.deallocate(node->data, 1);
 				node->data = temp->data;
-				// Delete the inorder successor
 				node->right = _delete_node(node->right, temp->data->first);
 			}
 		}
-		if (node == NULL)
-			return node;
-		_balance_tree(&node, false);
-		return node;	
+		else if (_comp(key, node->data->first))
+			node->left = _delete_node(node->left, key);
+		else if (!_comp(key, node->data->first))
+			node->right = _delete_node(node->right, key);
+
+		if (node == NULL) 
+			return node; 
+
+		node->height = 1 + _max(_get_height(node->left), _get_height(node->right)); 
+		int balance = _get_balance(node); 
+
+		// Left Left Case 
+		if (balance > 1 && _get_balance(node->left) >= 0) 
+			return _right_rotation(node); 
+
+		// Left Right Case 
+		if (balance > 1 && _get_balance(node->left) < 0) { 
+			node->left = _left_rotation(node->left); 
+			return _right_rotation(node); 
+		} 
+
+		// Right Right Case 
+		if (balance < -1 && _get_balance(node->right) <= 0) 
+			return _left_rotation(node); 
+
+		// Right Left Case 
+		if (balance < -1 && _get_balance(node->right) > 0) { 
+			node->right = _right_rotation(node->right); 
+			return _left_rotation(node); 
+		} 
+
+		return node; 	
 	}
 
-	t_node *	_search_node(t_node ** node, const value_type & val) {
-		if (!(*node))
+	t_node *	_search_node(t_node * node, const key_type & val) {
+		if (!node)
 			return (NULL);
-		if (val.first == (*node)->data->first)
-			return *node;
-		else if (_comp(val.first, (*node)->data->first))
-			return _search_node(&(*node)->left, val);
-		else if (!_comp(val.first, (*node)->data->first))
-			return _search_node(&(*node)->right, val);
+		if (val == node->data->first)
+			return node;
+		else if (_comp(val, node->data->first))
+			return _search_node(node->left, val);
+		else if (!_comp(val, node->data->first))
+			return _search_node(node->right, val);
 		return (NULL);
 	}
 
@@ -577,7 +593,6 @@ protected:
 		if (node) {
 			_delete_tree(node->left);
 			_delete_tree(node->right);
-			// need to use std allocator
 			_alloc.destroy(node->data);
 			_alloc.deallocate(node->data, 1);
 			delete node;
