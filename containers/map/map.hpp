@@ -1,5 +1,6 @@
-
 #pragma once
+
+#include <funcional>
 
 namespace ft {
 
@@ -586,7 +587,7 @@ protected:
 			return _search_node(node->left, val);
 		else if (!_comp(val, node->data->first))
 			return _search_node(node->right, val);
-		return (NULL);
+		return ();
 	}
 
 	void	_delete_tree(t_node * node) {

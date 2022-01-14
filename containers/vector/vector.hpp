@@ -193,13 +193,7 @@ public:
 	// guaranteed to be able to reach that size: it can still fail to allocate storage
 	// at any point before that size is reached
 	size_type	max_size () const {
-		try {
-			return this->_alloc.max_size();
-		}
-		catch (std::exception & e) {
-			std::cout << e.what() << std::endl; 
-			return (-1);
-		}
+		return this->_alloc.max_size();
 	}
 
 	// Resizes the container so that it contains n elements
