@@ -49,9 +49,9 @@ void	test() {
 
 	ft::map<int, int> test(test_vec.begin(), test_vec.end());
 	test.display_tree();
-	for (int i = 0; i < 150; i++) {
-		test.erase(i);
-	}
+	// for (int i = 0; i < 150; i++) {
+	// 	test.erase(i);
+	// }
 	// test.erase(10);
 	// test.display_tree();
 	// std::cout << "Deleting " << saved << " node" << std::endl;

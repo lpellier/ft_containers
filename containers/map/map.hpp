@@ -1,6 +1,6 @@
 #pragma once
 
-#include <funcional>
+#include <functional>
 
 namespace ft {
 
@@ -530,7 +530,7 @@ protected:
 					node = NULL;
 				}
 				else {
-					*node = *temp;
+					// *node = *temp;
 					_alloc.destroy(temp->data);
 					_alloc.deallocate(temp->data, 1);
 					delete temp;
@@ -540,6 +540,7 @@ protected:
 				t_node * temp = _get_min_node(node->right);
 				_alloc.destroy(node->data);
 				_alloc.deallocate(node->data, 1);
+				delete node;
 				node->data = temp->data;
 				node->right = _delete_node(node->right, temp->data->first);
 			}
@@ -587,7 +588,7 @@ protected:
 			return _search_node(node->left, val);
 		else if (!_comp(val, node->data->first))
 			return _search_node(node->right, val);
-		return ();
+		return (NULL);
 	}
 
 	void	_delete_tree(t_node * node) {
