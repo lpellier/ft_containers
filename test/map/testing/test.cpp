@@ -32,8 +32,8 @@ void	test() {
 		test_vec.push_back(ft::make_pair(random, random));
 	}
 
-	ft::map<int, int> test(test_vec.begin(), test_vec.end());
-	test.display_tree();
+	ft::map<int, int> test_map(test_vec.begin(), test_vec.end());
+	test_map.display_tree();
 	// test.erase(25);
 	// test.erase(50);
 	// test.erase(100);

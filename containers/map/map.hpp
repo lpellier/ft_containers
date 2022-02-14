@@ -423,20 +423,30 @@ protected:
 	// A utility function to right
 	// rotate subtree rooted with y 
 	// See the diagram given above. 
-	t_node *_right_rotation(t_node *y) 
+	t_node *_right_rotation(t_node *x) 
 	{ 
-		t_node *x = y->left; 
-		t_node *T2 = x->right;
+		t_node *y = x->left; 
+		x->left = y->right; 
+
+		if (y->right)
+			y->right->parent = x;
+		y->parent = x->parent;
+		if (!x->parent)
+			_root = y;
+		else if (x == x->parent->right)
+			x->parent->right = y;
+		else
+			x->parent->left = y;
 
 		// Perform rotation 
-		x->right = y; 
-		y->left = T2; 
+		y->right = x; 
+		x->parent = y;
 
 		// Update heights 
-		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1; 
-		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1; 
+		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1;
+		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1;
 	
-		return x;
+		return y;
 	}
 
 	// A utility function to left 
@@ -445,11 +455,21 @@ protected:
 	t_node *_left_rotation(t_node *x) 
 	{ 
 		t_node *y = x->right; 
-		t_node *T2 = y->left; 
+		x->right = y->left;
+
+		if (y->left)
+			y->left->parent = x;
+		y->parent = x->parent;
+		if (!x->parent)
+			_root = y;
+		else if (x == x->parent->left)
+			x->parent->left = y;
+		else
+			x->parent->right = y;
 
 		// Perform rotation 
 		y->left = x; 
-		x->right = T2; 
+		x->parent = y;
 
 		// Update heights 
 		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1; 
@@ -476,7 +496,7 @@ protected:
 		if (balance > 1 && !_comp(val.first, node->left->data->first)) 
 		{ 
 			node->left = _left_rotation(node->left); 
-			return _right_rotation(node); 
+			return _right_rotation(node);
 		}
 
 		// Right Left Case 
