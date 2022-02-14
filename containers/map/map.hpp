@@ -362,10 +362,11 @@ protected:
 
 	typedef struct		s_node {
 		value_type		*data;
-		int				height;
 		struct s_node	*parent;
 		struct s_node	*left;
 		struct s_node	*right;
+
+		int				bf;
 	}					t_node;
 
 	// to allocate storage
@@ -380,134 +381,142 @@ protected:
 	void	_add_one(const value_type & element) {
 		if (_search_node(_root, element.first)) // no equal keys
 			return ;
-		_root = _add_node(NULL, _root, element);
+		_add_node(element);
 		_size++;
 	}
 	
 	void	_delete_one(const key_type & key) {
 		if (!_search_node(_root, key)) // if key doesnt exist in map
 			return ;
-		_root = _delete_node(_root, key);
+		_delete_node(_root, key);
 		_size--;
-	}
-
-	int _get_height(t_node *N) 
-	{ 
-		if (N == NULL) 
-			return 0; 
-		return N->height; 
-	} 
-
-	int		_max(int a, int b) {
-		return (a > b)? a : b; 
 	}
 
 	bool		_is_balanced(t_node * node) {
 		if (!node)
 			return true;
-		if (abs(_get_balance(node)) <= 1 && _is_balanced(node->left) && _is_balanced(node->right))
+		if (abs(node->bf) <= 1 && _is_balanced(node->left) && _is_balanced(node->right))
 			return true;
 		return false;
-	}
-
-	int		_get_balance(t_node * node) {
-		if (!node || (!node->left && !node->right))
-			return (0);
-		if (!node->left)
-			return -node->right->height;
-		if (!node->right)
-			return node->left->height;
-		return node->left->height - node->right->height;
 	}
 
 	// A utility function to right
 	// rotate subtree rooted with y 
 	// See the diagram given above. 
-	t_node *_right_rotation(t_node *y) 
+	void	_right_rotation(t_node *x) 
 	{ 
-		t_node *x = y->left; 
-		t_node *T2 = x->right;
+		t_node * y = x->left;
+		x->left = y->right;
+		if (y->right != NULL) {
+			y->right->parent = x;
+		}
+		y->parent = x->parent;
+		if (x->parent == NULL) {
+			_root = y;
+		} else if (x == x->parent->right) {
+			x->parent->right = y;
+		} else {
+			x->parent->left = y;
+		}
+		y->right = x;
+		x->parent = y;
 
-		// Perform rotation 
-		x->right = y; 
-		y->left = T2; 
-
-		// Update heights 
-		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1; 
-		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1; 
-	
-		return x;
+		// update the balance factor
+		x->bf = x->bf + 1 - std::min(0, y->bf);
+		y->bf = y->bf + 1 + std::max(0, x->bf);
 	}
 
 	// A utility function to left 
 	// rotate subtree rooted with x 
 	// See the diagram given above. 
-	t_node *_left_rotation(t_node *x) 
+	void	_left_rotation(t_node *x) 
 	{ 
-		t_node *y = x->right; 
-		t_node *T2 = y->left; 
+		t_node * y = x->right;
+		x->right = y->left;
+		if (y->left != NULL) {
+			y->left->parent = x;
+		}
+		y->parent = x->parent;
+		if (x->parent == NULL) {
+			_root = y;
+		} else if (x == x->parent->left) {
+			x->parent->left = y;
+		} else {
+			x->parent->right = y;
+		}
+		y->left = x;
+		x->parent = y;
 
-		// Perform rotation 
-		y->left = x; 
-		x->right = T2; 
-
-		// Update heights 
-		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1; 
-		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1; 
-
-		// Return new root 
-		return y; 
+		// update the balance factor
+		x->bf = x->bf - 1 - std::max(0, y->bf);
+		y->bf = y->bf - 1 + std::min(0, x->bf);
 	} 
 
 
-	t_node *	_balance_tree(t_node * node, const value_type & val) {
-		node->height = 1 + _max(_get_height(node->left), _get_height(node->right));
-		int balance = _get_balance(node);
-
-		// Left Left Case 
-		if (balance > 1 && _comp(val.first, node->left->data->first)) 
-			return _right_rotation(node); 
-
-		// Right Right Case 
-		if (balance < -1 && !_comp(val.first, node->right->data->first)) 
-			return _left_rotation(node); 
-
-		// Left Right Case 
-		if (balance > 1 && !_comp(val.first, node->left->data->first)) 
-		{ 
-			node->left = _left_rotation(node->left); 
-			return _right_rotation(node); 
+	void	_balance_tree(t_node * node) {
+		if (node->bf < -1 || node->bf > 1) {
+			_rebalance(node);
+			return ;
 		}
 
-		// Right Left Case 
-		if (balance < -1 && _comp(val.first, node->right->data->first)) 
-		{ 
-			node->right = _right_rotation(node->right); 
-			return _left_rotation(node); 
+		if (node->parent != NULL) {
+			if (node == node->parent->left)
+				node->parent->bf -= 1;
+			if (node == node->parent->right)
+				node->parent->bf += 1;
+			if (node->parent->bf)
+				_balance_tree(node->parent);
 		}
-
-		return node;
 	}
 
-	t_node * newNode(const value_type & val, t_node * parent) {
-		t_node *node = new t_node();
+	void	_rebalance(t_node * node) {
+		if (node->bf > 0) {
+			if (node->right->bf < 0) {
+				_right_rotation(node->right);
+				_left_rotation(node);
+			}
+			else
+				_left_rotation(node);
+		}
+		else if (node->bf < 0) {
+			if (node->left->bf > 0) {
+				_left_rotation(node->left);
+				_right_rotation(node);
+			}
+			else
+				_right_rotation(node);
+		}
+	}
+
+	void	_add_node(const value_type & val) {
+		t_node * node = new t_node;
+		node->parent = NULL;
 		node->left = NULL;
 		node->right = NULL;
-		node->parent = parent;
 		node->data = _alloc.allocate(1);
 		_alloc.construct(node->data, val);
-		node->height = 1;
-		return node;
-	}
+		node->bf = 0;
+		
+		t_node * y = NULL;
+		t_node * x = _root;
 
-	t_node *	_add_node(t_node * parent, t_node * node, const value_type & val) {
-		if (!node)
-			return newNode(val, parent);
-		if (_comp(val.first, node->data->first))
-			node->left = _add_node(node, node->left, val);
-		else if (!_comp(val.first, node->data->first))
-			node->right = _add_node(node, node->right, val);
-		return _balance_tree(node, val);
+		while (x != NULL) {
+			y = x;
+			if (_comp(node->data->first, x->data->first))
+				x = x->left;
+			else
+				x = x ->right;
+		}
+
+		node->parent = y;
+		if (y == NULL)
+			_root = node;
+		else if (node->data < y->data)
+			y->left = node;
+		else
+			y->right = node;
+	
+		_balance_tree(node);
 	}
 
 	t_node * _get_min_node(t_node * node)
