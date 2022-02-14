@@ -73,6 +73,7 @@ public:
 	// so that only iterators may use this function
 	map (InputIterator first, InputIterator last, const key_compare & comp = key_compare(), const allocator_type & alloc = allocator_type()) { // range
 		_root = NULL;
+		_size = 0;
 		_comp = comp;
 		_alloc = alloc;
 		while (first != last) {
@@ -161,9 +162,9 @@ public:
 	// }
 
 	// Returns the number of elements in the map container
-	// size_type	size () const {
-
-	// }
+	size_type	size () const {
+		return _size;
+	}
 
 	// Returns the maximum number of elements that the map container can hold
 	// size_type	max_size () const {
@@ -343,7 +344,6 @@ public:
 	// TO BE REMOVED
 	void	display_tree(void) {
 		// DEBUG
-		std::cout << "Parent of " << _root->right->data->second << " is " << _root->right->parent->data->second << std::endl;
 		_display_tree("", _root, false, (_root->right ? true : false));
 		bool balanced = _is_balanced(_root);
 		std::cout << "Is tree balanced ? " << (!balanced ? "No" : "Yes")  << std::endl;
@@ -542,64 +542,45 @@ protected:
 	}
 
 	t_node *	_delete_node(t_node * node, const key_type & key) {
-		if (node == NULL)
+		t_node * tmp;
+		if (!node)
 			return node;
-	
-		if (key == node->data->first) {
-			if(node->left == NULL || node->right == NULL) {
-				t_node * temp = node->left ? node->left : node->right;
-				if (temp == NULL) {
-					temp = node;
-					node = NULL;
-				}
-				else {
-					// *node = *temp;
-					_alloc.destroy(temp->data);
-					_alloc.deallocate(temp->data, 1);
-					delete temp;
-				}
-			}
-			else {
-				t_node * temp = _get_min_node(node->right);
-				_alloc.destroy(node->data);
-				_alloc.deallocate(node->data, 1);
-				delete node;
-				node->data = temp->data;
-				node->right = _delete_node(node->right, temp->data->first);
-			}
-		}
 		else if (_comp(key, node->data->first))
 			node->left = _delete_node(node->left, key);
 		else if (!_comp(key, node->data->first))
 			node->right = _delete_node(node->right, key);
-
-		if (node == NULL) 
-			return node; 
-
-		node->height = 1 + _max(_get_height(node->left), _get_height(node->right)); 
-		int balance = _get_balance(node); 
-
-		// Left Left Case 
-		if (balance > 1 && _get_balance(node->left) >= 0) 
-			return _right_rotation(node); 
-
-		// Left Right Case 
-		if (balance > 1 && _get_balance(node->left) < 0) { 
-			node->left = _left_rotation(node->left); 
-			return _right_rotation(node); 
-		} 
-
-		// Right Right Case 
-		if (balance < -1 && _get_balance(node->right) <= 0) 
-			return _left_rotation(node); 
-
-		// Right Left Case 
-		if (balance < -1 && _get_balance(node->right) > 0) { 
-			node->right = _right_rotation(node->right); 
-			return _left_rotation(node); 
-		} 
-
-		return node; 	
+		else {
+			// case 1 : node is a leaf node
+			if(!node->left && !node->right) {
+				_alloc.destroy(node->data);
+				_alloc.deallocate(node->data, 1);
+				delete node;
+				node = NULL;
+			}
+			// case 2 : node has only one child
+			else if (!node->left) {
+				tmp = node;
+				node = node->right;
+				_alloc.destroy(tmp->data);
+				_alloc.deallocate(tmp->data, 1);
+				delete tmp;
+			}
+			else if (!node->right) {
+				tmp = node;
+				node = node->left;
+				_alloc.destroy(tmp->data);
+				_alloc.deallocate(tmp->data, 1);
+				delete tmp;
+			}
+			// case 3 : has both children
+			else {
+				tmp = _get_min_node(node->right);
+				node->data = tmp->data;
+				node->right = _delete_node(node->right, tmp->data->first);
+			}
+		}
+		return node;
+		// return _balance_tree(node, *(node->data));
 	}
 
 	t_node *	_search_node(t_node * node, const key_type & val) {

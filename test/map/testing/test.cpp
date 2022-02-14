@@ -34,11 +34,13 @@ void	test() {
 
 	ft::map<int, int> test_map(test_vec.begin(), test_vec.end());
 	test_map.display_tree();
-	// test.erase(25);
-	// test.erase(50);
-	// test.erase(100);
-	// test.erase(125);
-	// test.display_tree();
+	std::cout << "map size is " << test_map.size() << std::endl;
+	test_map.erase(25);
+	test_map.erase(50);
+	test_map.erase(100);
+	test_map.erase(125);
+	std::cout << "map size is " << test_map.size() << std::endl;
+	test_map.display_tree();
 }
 
 int main() {
