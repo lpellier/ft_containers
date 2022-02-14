@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <cstdlib>
 
 namespace ft {
 
@@ -155,19 +156,19 @@ public:
 	*/
 
 	// Returns whether the map container is empty
-	bool	empty () const {
+	// bool	empty () const {
 
-	}
+	// }
 
 	// Returns the number of elements in the map container
-	size_type	size () const {
+	// size_type	size () const {
 
-	}
+	// }
 
 	// Returns the maximum number of elements that the map container can hold
-	size_type	max_size () const {
+	// size_type	max_size () const {
 
-	}
+	// }
 
 	/*
 	 _____ _                           _      ___                        
@@ -342,6 +343,7 @@ public:
 	// TO BE REMOVED
 	void	display_tree(void) {
 		// DEBUG
+		std::cout << "Parent of " << _root->right->data->second << " is " << _root->right->parent->data->second << std::endl;
 		_display_tree("", _root, false, (_root->right ? true : false));
 		bool balanced = _is_balanced(_root);
 		std::cout << "Is tree balanced ? " << (!balanced ? "No" : "Yes")  << std::endl;
@@ -361,6 +363,7 @@ protected:
 	typedef struct		s_node {
 		value_type		*data;
 		int				height;
+		struct s_node	*parent;
 		struct s_node	*left;
 		struct s_node	*right;
 	}					t_node;
@@ -377,7 +380,7 @@ protected:
 	void	_add_one(const value_type & element) {
 		if (_search_node(_root, element.first)) // no equal keys
 			return ;
-		_root = _add_node(_root, element);
+		_root = _add_node(NULL, _root, element);
 		_size++;
 	}
 	
@@ -423,7 +426,7 @@ protected:
 	t_node *_right_rotation(t_node *y) 
 	{ 
 		t_node *x = y->left; 
-		t_node *T2 = x->right; 
+		t_node *T2 = x->right;
 
 		// Perform rotation 
 		x->right = y; 
@@ -432,10 +435,9 @@ protected:
 		// Update heights 
 		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1; 
 		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1; 
-
-		// Return new root 
-		return x; 
-	} 
+	
+		return x;
+	}
 
 	// A utility function to left 
 	// rotate subtree rooted with x 
@@ -487,23 +489,24 @@ protected:
 		return node;
 	}
 
-	t_node * newNode(const value_type & val) {
+	t_node * newNode(const value_type & val, t_node * parent) {
 		t_node *node = new t_node();
 		node->left = NULL;
 		node->right = NULL;
+		node->parent = parent;
 		node->data = _alloc.allocate(1);
 		_alloc.construct(node->data, val);
 		node->height = 1;
 		return node;
 	}
 
-	t_node *	_add_node(t_node * node, const value_type & val) {
+	t_node *	_add_node(t_node * parent, t_node * node, const value_type & val) {
 		if (!node)
-			return newNode(val);
+			return newNode(val, parent);
 		if (_comp(val.first, node->data->first))
-			node->left = _add_node(node->left, val);
+			node->left = _add_node(node, node->left, val);
 		else if (!_comp(val.first, node->data->first))
-			node->right = _add_node(node->right, val);
+			node->right = _add_node(node, node->right, val);
 		return _balance_tree(node, val);
 	}
 

@@ -61,9 +61,9 @@ public:
 		return *this;
 	}
 
-	operator const random_access_iterator<const value_type *>() {
-		return (random_access_iterator<const value_type *>(const_cast<const T>(_ptr)));
-	}
+	// operator const random_access_iterator<const value_type *>() {
+	// 	return (random_access_iterator<const value_type *>(const_cast<const T>(_ptr)));
+	// }
 	
 	// Comparison operators
 	bool		operator== (const random_access_iterator & rhs) const {
@@ -204,9 +204,9 @@ public:
 		return *this;
 	}
 
-	operator const random_access_reverse_iterator<Iter>() {
-		return (random_access_reverse_iterator<Iter>(const_cast<const Iter>(_iter)));
-	}
+	// operator const random_access_reverse_iterator<Iter>() {
+	// 	return (random_access_reverse_iterator<Iter>(const_cast<const Iter>(_iter)));
+	// }
 	
 	// Returns a copy of the underlying iterator
 	iterator_type base () const {
@@ -263,6 +263,7 @@ public:
 
 		return ret;
 	}
+	template < class It >
 	friend typename random_access_reverse_iterator<Iter>::difference_type operator-  (const random_access_reverse_iterator<Iter> & lhs, const random_access_reverse_iterator<Iter> & rhs);
 
 	// Advances the random_access_reverse_iterator by n element positions

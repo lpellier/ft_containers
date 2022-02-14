@@ -64,16 +64,15 @@ public:
 		this->c.pop_back();
 	}
 
+// friend bool	operator== (const stack<T, Container> & lhs, const stack<T, Container> & rhs);
+// friend bool	operator!= (const stack & lhs, const stack & rhs);
+// friend bool	operator< (const stack & lhs, const stack & rhs);
+// friend bool	operator<= (const stack & lhs, const stack & rhs);
+// friend bool	operator> (const stack & lhs, const stack & rhs);
+// friend bool	operator>= (const stack & lhs, const stack & rhs);
+
 protected:
 	container_type	c;
-
-friend bool	operator== (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-friend bool	operator!= (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-friend bool	operator< (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-friend bool	operator<= (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-friend bool	operator> (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-friend bool	operator>= (const stack<T, Container>& lhs, const stack<T, Container>& rhs);
-
 };
 
 /*
