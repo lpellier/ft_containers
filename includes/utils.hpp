@@ -1,7 +1,10 @@
 #pragma once
 
-#include <cstddef>
+// #include <cstddef>
+// #include <functional>
+// #include <memory>
 #include <iostream>
+#include <cstdlib>
 #include "type_traits.hpp"
 
 namespace ft {
@@ -30,8 +33,8 @@ struct enable_if<true, T> { typedef T type; };
 */
 
 template < class Iter >
-typename ft::iterator_traits<Iter>::difference_type	distance(Iter from, Iter until) {
-	typename ft::iterator_traits<Iter>::difference_type ret = 0;
+typename iterator_traits<Iter>::difference_type	distance(Iter from, Iter until) {
+	typename iterator_traits<Iter>::difference_type ret = 0;
 	while (from != until) {
 		ret++;
 		from++;
@@ -134,8 +137,8 @@ public:
 	pair (const first_type & a, const second_type & b) : first(a), second(b) {}
 
 	pair &	operator= (const pair & pr) {
-		this->first = pr.first;
-		this->second = pr.second;
+		first = pr.first;
+		second = pr.second;
 		return *this;
 	}
 };
@@ -148,10 +151,15 @@ pair<T1, T2> make_pair (T1 x, T2 y) {
 template < class T >
 struct		s_node {
 	T				*data;
-	int				height;
 	struct s_node	*parent;
 	struct s_node	*left;
 	struct s_node	*right;
+
+	struct s_node	*_end;
+	struct s_node	*_rend;
+
+	int				height;
+	bool			node_read;
 };
 
 }

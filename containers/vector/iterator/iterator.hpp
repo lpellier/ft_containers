@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../../includes/utils.hpp"
-#include "../../../includes/type_traits.hpp"
 
 namespace ft {
 
@@ -57,7 +56,7 @@ public:
 	random_access_iterator (const random_access_iterator & src) : _ptr(src._ptr) {}
 	// assignment operator
 	random_access_iterator & operator= (const random_access_iterator & src) {
-		this->_ptr = src._ptr;
+		_ptr = src._ptr;
 		return *this;
 	}
 
@@ -67,49 +66,49 @@ public:
 	
 	// Comparison operators
 	bool		operator== (const random_access_iterator & rhs) const {
-		return this->_ptr == rhs._ptr;
+		return _ptr == rhs._ptr;
 	}
 	bool		operator!= (const random_access_iterator & rhs) const {
-		return this->_ptr != rhs._ptr;
+		return _ptr != rhs._ptr;
 	}
 	bool		operator<  (const random_access_iterator & rhs) const {
-		return this->_ptr < rhs._ptr;
+		return _ptr < rhs._ptr;
 	}
 	bool		operator>  (const random_access_iterator & rhs) const {
-		return this->_ptr > rhs._ptr;
+		return _ptr > rhs._ptr;
 	}
 	bool		operator<= (const random_access_iterator & rhs) const {
-		return this->_ptr <= rhs._ptr;
+		return _ptr <= rhs._ptr;
 	}
 	bool		operator>= (const random_access_iterator & rhs) const {
-		return this->_ptr >= rhs._ptr;
+		return _ptr >= rhs._ptr;
 	}
 
 
 	reference			operator*  (void) const {
-		return *(this->_ptr);
+		return *(_ptr);
 	}
 
 	reference			operator[] (const int & offset) const {
-		return *(this->_ptr + offset);
+		return *(_ptr + offset);
 	}
 
 	pointer				operator-> () const {
-		return &(this->operator*());
+		return &(operator*());
 	}
 
 	// for non constant iterators
 	void		operator*  (const reference ref) {
-		*(this->_ptr) = ref;
+		*(_ptr) = ref;
 	}
 
 	random_access_iterator	&	operator++ (void) {
-		this->_ptr++;
+		_ptr++;
 		return *this;
 	}
 	random_access_iterator		operator++ (int) {
 		random_access_iterator tmp(*this);
-		this->operator++();
+		operator++();
 		return tmp;
 	}
 
@@ -124,12 +123,12 @@ public:
 	friend random_access_iterator<U>	operator+  (const int & lhs, const random_access_iterator<U> & rhs);
 	
 	random_access_iterator &	operator-- (void) {
-		this->_ptr--;
+		_ptr--;
 		return *this;
 	}
 	random_access_iterator		operator-- (int) {
 		random_access_iterator tmp(*this);
-		this->operator--();
+		operator--();
 		return tmp;
 	}
 
@@ -140,17 +139,17 @@ public:
 	}
 
 	std::ptrdiff_t				operator-  (const random_access_iterator & subbed) const {
-		std::ptrdiff_t ret = static_cast<std::ptrdiff_t>(this->_ptr - subbed._ptr);
+		std::ptrdiff_t ret = static_cast<std::ptrdiff_t>(_ptr - subbed._ptr);
 		return ret;
 	}
 
 	random_access_iterator &	operator+= (const int & added) {
-		this->_ptr += added;
+		_ptr += added;
 		return *this;
 	}
 
 	random_access_iterator &	operator-= (const int & subbed) {
-		this->_ptr -= subbed;
+		_ptr -= subbed;
 		return *this;
 	}
 
@@ -165,162 +164,6 @@ random_access_iterator<U>	operator+  (const int & lhs, const random_access_itera
 	random_access_iterator<U> ret(rhs);
 	ret += lhs;
 	return ret;
-}
-
-/*
-                                     _ _                 _             
-                                    (_) |               | |            
- _ __ _____   _____ _ __ ___  ___    _| |_ ___ _ __ __ _| |_ ___  _ __ 
-| '__/ _ \ \ / / _ \ '__/ __|/ _ \  | | __/ _ \ '__/ _` | __/ _ \| '__|
-| | |  __/\ V /  __/ |  \__ \  __/  | | ||  __/ | | (_| | || (_) | |   
-|_|  \___| \_/ \___|_|  |___/\___|  |_|\__\___|_|  \__,_|\__\___/|_|   
-*/
-
-template < class Iter >
-class random_access_reverse_iterator {
-protected:
-	Iter	_iter;
-
-public:
-	typedef Iter												iterator_type;
-	typedef	typename iterator_traits<Iter>::difference_type		difference_type;
-	typedef	typename iterator_traits<Iter>::value_type			value_type;
-	typedef	typename iterator_traits<Iter>::pointer				pointer;
-	typedef	typename iterator_traits<Iter>::reference			reference;
-	typedef	typename iterator_traits<Iter>::iterator_category	iterator_category;
-
-	random_access_reverse_iterator (void) { // default
-		this->_iter = value_type();
-	}
-	explicit random_access_reverse_iterator (iterator_type x) { // initialization
-		this->_iter = x;
-	}
-	random_access_reverse_iterator (const random_access_reverse_iterator<Iter> & src) { // copy
-		this->_iter = src._iter;
-	}
-
-	random_access_reverse_iterator & operator= (const random_access_reverse_iterator<Iter> & src) { // assignment operator
-		this->_iter = src._iter;
-		return *this;
-	}
-
-	// operator const random_access_reverse_iterator<Iter>() {
-	// 	return (random_access_reverse_iterator<Iter>(const_cast<const Iter>(_iter)));
-	// }
-	
-	// Returns a copy of the underlying iterator
-	iterator_type base () const {
-		return this->_iter;
-	}
-
-	// Returns a reference to the element pointed to by the iterator
-	reference operator* () const {
-		return *(this->_iter - 1);
-	}
-
-	// Returns a pointer to the element pointed to by the iterator
-	pointer operator-> () const {
-		return &(this->operator*());
-	}
-
-	reference operator[] (difference_type n) const {
-		return this->base()[-n - 1];
-	}
-
-	random_access_reverse_iterator & operator++ () {
-		this->_iter--;
-	}
-
-	random_access_reverse_iterator operator++(int) {
-		--this->_iter;
-	}
-
-	random_access_reverse_iterator & operator-- () {
-		this->_iter++;
-	}
-
-	random_access_reverse_iterator operator--(int) {
-		++this->_iter;
-	}
-
-	// Returns a reverse iterator pointing to the element located a n positions away from the
-	// element the iterator currently points to
-	// This function requires the base operator to be a random-access iterator
-	random_access_reverse_iterator				operator+  (difference_type n) const {
-		random_access_reverse_iterator ret(this->_iter);
-		ret._iter -= n;
-
-		return ret;
-	}
-	template < class It >
-	friend random_access_reverse_iterator<It>		operator+  (typename random_access_reverse_iterator<It>::difference_type n, const random_access_reverse_iterator<It> & it);
-
-	// Returns a reverse iterator pointing to the element located n positions before the element the
-	// iterator currently points to
-	random_access_reverse_iterator				operator-  (difference_type n) const {
-		random_access_reverse_iterator ret (this->_iter);
-		ret._iter += n;
-
-		return ret;
-	}
-	template < class It >
-	friend typename random_access_reverse_iterator<Iter>::difference_type operator-  (const random_access_reverse_iterator<Iter> & lhs, const random_access_reverse_iterator<Iter> & rhs);
-
-	// Advances the random_access_reverse_iterator by n element positions
-	// Requires the base iterator to be a random access iterator
-	random_access_reverse_iterator &				operator+= (difference_type n) {
-		this->_iter -= n;
-		return *this;
-	}
-
-	// Decreases the random_access_reverse_iterator by n element positions
-	// Requires the base iterator to be a random access iterator
-	random_access_reverse_iterator &				operator-= (difference_type n) {
-		this->_iter += n;
-		return *this;
-	}
-
-	template < class Iter2 >
-	bool	operator== (const random_access_reverse_iterator<Iter2> & rhs) const {
-		return (this->base() == rhs.base());
-	}
-
-	template < class Iter2 >
-	bool	operator!= (const random_access_reverse_iterator<Iter2> & rhs) const {
-		return (this->base() != rhs.base());
-	}
-
-	template < class Iter2 >
-	bool	operator<  (const random_access_reverse_iterator<Iter2> & rhs) const {
-		return (this->base() < rhs.base());
-	}
-
-	template < class Iter2 >
-	bool	operator<= (const random_access_reverse_iterator<Iter2> & rhs) const {
-		return (this->base() <= rhs.base());
-	}
-
-	template < class Iter2 >
-	bool	operator>  (const random_access_reverse_iterator<Iter2> & rhs) const {
-		return (this->base() > rhs.base());
-	}
-
-	template < class Iter2 >
-	bool	operator>= (const random_access_reverse_iterator<Iter2> & rhs) const {
-		return (this->base() >= rhs.base());
-	}
-
-};
-
-template < class Iter >
-random_access_reverse_iterator<Iter> operator+  (typename random_access_reverse_iterator<Iter>::difference_type n, const random_access_reverse_iterator<Iter> & rev_it) {
-	random_access_reverse_iterator<Iter> ret(rev_it);
-	return ret + n;
-}
-
-template < class Iter >
-typename random_access_reverse_iterator<Iter>::difference_type operator-  (const random_access_reverse_iterator<Iter> & lhs, const random_access_reverse_iterator<Iter> & rhs) {
-	return (rhs.base() - lhs.base());
 }
 
 }

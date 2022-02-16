@@ -40,33 +40,47 @@ namespace ft {
 
 template < class T >
 class bidirectional_iterator {
-protected:
-	
+private:
 	struct s_node<T> *	_ptr;
+	bool				_switch_read;
 
+	void	_clear_node(struct s_node<T> * node) {
+		if (node->right)
+			_clear_node(node->right);
+		if (node->left)
+			_clear_node(node->left);
+		node->node_read = false;
+	}
+
+	void	_clear_nodes() {
+		struct s_node<T> *	tmp = _ptr;
+
+		while (tmp && tmp->parent)
+			tmp = tmp->parent;
+		_clear_node(tmp);
+	}
+
+	
 
 public:
-	typedef T				value_type;
-	typedef struct s_node<T> *		pointer;
-	typedef T &				reference;
-	typedef std::ptrdiff_t	difference_type;
-	// typedef typename iterator_traits<T>::value_type			value_type;
-	// typedef typename iterator_traits<T>::difference_type	difference_type;
-	// typedef typename iterator_traits<T>::pointer			pointer;
-	// typedef typename iterator_traits<T>::reference			reference;
-	// typedef typename iterator_traits<T>::iterator_category	iterator_category;
+	typedef T							value_type;
+	typedef struct s_node<T> *			pointer;
+	typedef T &							reference;
+	typedef std::ptrdiff_t				difference_type;
+	typedef bidirectional_iterator_tag	iterator_category;
 
 	// default constructor
-	bidirectional_iterator (void) : _ptr(NULL) {}
+	bidirectional_iterator (void) : _ptr(NULL), _switch_read(false) {}
 	// parametric constructor
-	bidirectional_iterator (pointer new_ptr) : _ptr(new_ptr) {}
+	bidirectional_iterator (pointer new_ptr) : _ptr(new_ptr), _switch_read(false) {}
 	// destructor
 	~bidirectional_iterator (void) {}
 	// copy constructor
-	bidirectional_iterator (const bidirectional_iterator & src) : _ptr(src._ptr) {}
+	bidirectional_iterator (const bidirectional_iterator & src) : _ptr(src._ptr), _switch_read(src._switch_read) {}
 	// assignment operator
 	bidirectional_iterator & operator= (const bidirectional_iterator & src) {
-		this->_ptr = src._ptr;
+		_ptr = src._ptr;
+		_switch_read = src._switch_read;
 		return *this;
 	}
 
@@ -76,108 +90,137 @@ public:
 	
 	// Comparison operators
 	bool		operator== (const bidirectional_iterator & rhs) const {
-		return this->_ptr == rhs._ptr;
+		return _ptr == rhs._ptr;
 	}
 	bool		operator!= (const bidirectional_iterator & rhs) const {
-		return this->_ptr != rhs._ptr;
+		return _ptr != rhs._ptr;
 	}
 	bool		operator<  (const bidirectional_iterator & rhs) const {
-		return this->_ptr < rhs._ptr;
+		return _ptr < rhs._ptr;
 	}
 	bool		operator>  (const bidirectional_iterator & rhs) const {
-		return this->_ptr > rhs._ptr;
+		return _ptr > rhs._ptr;
 	}
 	bool		operator<= (const bidirectional_iterator & rhs) const {
-		return this->_ptr <= rhs._ptr;
+		return _ptr <= rhs._ptr;
 	}
 	bool		operator>= (const bidirectional_iterator & rhs) const {
-		return this->_ptr >= rhs._ptr;
+		return _ptr >= rhs._ptr;
 	}
 
 
 	reference			operator*  (void) const {
-		return *((*this->_ptr).data);
+		return *((*_ptr).data);
 	}
 
-	// reference			operator[] (const int & offset) const {
-	// 	return *(this->_ptr + offset);
-	// }
+	reference			operator[] (const int & offset) const {
+		bidirectional_iterator tmp(_ptr);
+		tmp += offset;
+		return *(tmp);
+	}
 
 	pointer				operator-> () const {
-		return &(this->operator*());
+		return &(operator*());
 	}
 
 	// for non constant iterators
-	// void		operator*  (const reference ref) {
-	// 	*(this->_ptr) = ref;
-	// }
+	void		operator*  (const reference ref) {
+		*(_ptr) = ref;
+	}
 
 	bidirectional_iterator	&	operator++ (void) {
+		if (!_switch_read) {
+			_clear_nodes();
+			_switch_read = true;
+		}
 		if (_ptr && _ptr->right) {
 			_ptr = _ptr->right;
 			while (_ptr->left)
 				_ptr = _ptr->left;
+			_ptr->node_read = true;
 		}
 		else if (_ptr && _ptr->parent) {
 			_ptr = _ptr->parent;
+			while (_ptr && _ptr->parent && _ptr->node_read)
+				_ptr = _ptr->parent;
+			_ptr->node_read = true;
 		}
+		else if (_ptr) {
+			_ptr->_end->parent = _ptr;
+			_ptr = _ptr->_end;
+		}
+		_ptr->node_read = true;
 		return *this;
 	}
 	bidirectional_iterator		operator++ (int) {
 		bidirectional_iterator tmp(*this);
-		this->operator++();
+		operator++();
 		return tmp;
 	}
 
 	// friend template functions for operator + overloading because int might be before or after iterator
 	bidirectional_iterator	operator+  (const int & rhs) const {
 		bidirectional_iterator ret(*this);
-		ret += rhs;
+		for (int i = 0; i < rhs; i++)
+			ret++;
 		return ret;
 	}
 
 	template < class U >
 	friend bidirectional_iterator<U>	operator+  (const int & lhs, const bidirectional_iterator<U> & rhs);
 	
-	// TODO CHECK WHETHER MAP ITERATORS ARE DEREFERANCABLE BEFORE BEGIN OR AFTER END
 	bidirectional_iterator &	operator-- (void) {
+		if (_switch_read) {
+			_clear_nodes();
+			_switch_read = false;
+		}
 		if (_ptr && _ptr->left) {
 			_ptr = _ptr->left;
 			while (_ptr->right)
 				_ptr = _ptr->right;
+			_ptr->node_read = true;
 		}
-		else if (_ptr && _ptr->parent) // ! Probably wrong
+		else if (_ptr && _ptr->parent) {
 			_ptr = _ptr->parent;
+			while (_ptr && _ptr->parent && _ptr->node_read)
+				_ptr = _ptr->parent;
+			_ptr->node_read = true;
+		}
+		else if (_ptr && _ptr == _ptr->_end) {
+			_ptr = _ptr->parent;
+			_ptr->_end->parent = NULL;
+		}
 		return *this;
 	}
 	bidirectional_iterator		operator-- (int) {
 		bidirectional_iterator tmp(*this);
-		this->operator--();
+		operator--();
 		return tmp;
 	}
 
 	bidirectional_iterator		operator-  (const int & subbed) const {
 		bidirectional_iterator ret(*this);
-		ret._ptr -= subbed;
+		for (int i = 0; i < subbed; i++)
+			ret--;
 		return ret;
 	}
 
 	std::ptrdiff_t				operator-  (const bidirectional_iterator & subbed) const {
-		std::ptrdiff_t ret = static_cast<std::ptrdiff_t>(this->_ptr - subbed._ptr);
+		std::ptrdiff_t ret = static_cast<std::ptrdiff_t>(_ptr - subbed._ptr);
 		return ret;
 	}
 
 	bidirectional_iterator &	operator+= (const int & added) {
-		this->_ptr += added;
+		for (int i = 0; i < added; i++)
+			_ptr++;
 		return *this;
 	}
 
 	bidirectional_iterator &	operator-= (const int & subbed) {
-		this->_ptr -= subbed;
+		for (int i = 0; i < subbed; i++)
+			_ptr--;
 		return *this;
 	}
-
-
 };
 
 // friend function for operator + in case of int before iterator
@@ -187,161 +230,5 @@ bidirectional_iterator<U>	operator+  (const int & lhs, const bidirectional_itera
 	ret += lhs;
 	return ret;
 }
-
-/*
-                                     _ _                 _             
-                                    (_) |               | |            
- _ __ _____   _____ _ __ ___  ___    _| |_ ___ _ __ __ _| |_ ___  _ __ 
-| '__/ _ \ \ / / _ \ '__/ __|/ _ \  | | __/ _ \ '__/ _` | __/ _ \| '__|
-| | |  __/\ V /  __/ |  \__ \  __/  | | ||  __/ | | (_| | || (_) | |   
-|_|  \___| \_/ \___|_|  |___/\___|  |_|\__\___|_|  \__,_|\__\___/|_|   
-*/
-
-// template < class Iter >
-// class bidirectional_reverse_iterator {
-// protected:
-// 	Iter	_iter;
-
-// public:
-// 	typedef Iter												iterator_type;
-// 	typedef	typename iterator_traits<Iter>::difference_type		difference_type;
-// 	typedef	typename iterator_traits<Iter>::value_type			value_type;
-// 	typedef	typename iterator_traits<Iter>::pointer				pointer;
-// 	typedef	typename iterator_traits<Iter>::reference			reference;
-// 	typedef	typename iterator_traits<Iter>::iterator_category	iterator_category;
-
-// 	bidirectional_reverse_iterator (void) { // default
-// 		this->_iter = value_type();
-// 	}
-// 	explicit bidirectional_reverse_iterator (iterator_type x) { // initialization
-// 		this->_iter = x;
-// 	}
-// 	bidirectional_reverse_iterator (const bidirectional_reverse_iterator<Iter> & src) { // copy
-// 		this->_iter = src._iter;
-// 	}
-
-// 	bidirectional_reverse_iterator & operator= (const bidirectional_reverse_iterator<Iter> & src) { // assignment operator
-// 		this->_iter = src._iter;
-// 		return *this;
-// 	}
-
-// 	// operator const bidirectional_reverse_iterator<Iter>() {
-// 	// 	return (bidirectional_reverse_iterator<Iter>(const_cast<const Iter>(_iter)));
-// 	// }
-	
-// 	// Returns a copy of the underlying iterator
-// 	iterator_type base () const {
-// 		return this->_iter;
-// 	}
-
-// 	// Returns a reference to the element pointed to by the iterator
-// 	reference operator* () const {
-// 		return *(this->_iter - 1);
-// 	}
-
-// 	// Returns a pointer to the element pointed to by the iterator
-// 	pointer operator-> () const {
-// 		return &(this->operator*());
-// 	}
-
-// 	reference operator[] (difference_type n) const {
-// 		return this->base()[-n - 1];
-// 	}
-
-// 	bidirectional_reverse_iterator & operator++ () {
-// 		this->_iter--;
-// 	}
-
-// 	bidirectional_reverse_iterator operator++(int) {
-// 		--this->_iter;
-// 	}
-
-// 	bidirectional_reverse_iterator & operator-- () {
-// 		this->_iter++;
-// 	}
-
-// 	bidirectional_reverse_iterator operator--(int) {
-// 		++this->_iter;
-// 	}
-
-// 	// Returns a reverse iterator pointing to the element located a n positions away from the
-// 	// element the iterator currently points to
-// 	// This function requires the base operator to be a random-access iterator
-// 	bidirectional_reverse_iterator				operator+  (difference_type n) const {
-// 		bidirectional_reverse_iterator ret(this->_iter);
-// 		ret._iter -= n;
-
-// 		return ret;
-// 	}
-// 	template < class It >
-// 	friend bidirectional_reverse_iterator<It>		operator+  (typename bidirectional_reverse_iterator<It>::difference_type n, const bidirectional_reverse_iterator<It> & it);
-
-// 	// Returns a reverse iterator pointing to the element located n positions before the element the
-// 	// iterator currently points to
-// 	bidirectional_reverse_iterator				operator-  (difference_type n) const {
-// 		bidirectional_reverse_iterator ret (this->_iter);
-// 		ret._iter += n;
-
-// 		return ret;
-// 	}
-// 	template < class It >
-// 	friend typename bidirectional_reverse_iterator<Iter>::difference_type operator-  (const bidirectional_reverse_iterator<Iter> & lhs, const bidirectional_reverse_iterator<Iter> & rhs);
-
-// 	// Advances the bidirectional_reverse_iterator by n element positions
-// 	// Requires the base iterator to be a random access iterator
-// 	bidirectional_reverse_iterator &				operator+= (difference_type n) {
-// 		this->_iter -= n;
-// 		return *this;
-// 	}
-
-// 	// Decreases the bidirectional_reverse_iterator by n element positions
-// 	// Requires the base iterator to be a random access iterator
-// 	bidirectional_reverse_iterator &				operator-= (difference_type n) {
-// 		this->_iter += n;
-// 		return *this;
-// 	}
-
-// 	template < class Iter2 >
-// 	bool	operator== (const bidirectional_reverse_iterator<Iter2> & rhs) const {
-// 		return (this->base() == rhs.base());
-// 	}
-
-// 	template < class Iter2 >
-// 	bool	operator!= (const bidirectional_reverse_iterator<Iter2> & rhs) const {
-// 		return (this->base() != rhs.base());
-// 	}
-
-// 	template < class Iter2 >
-// 	bool	operator<  (const bidirectional_reverse_iterator<Iter2> & rhs) const {
-// 		return (this->base() < rhs.base());
-// 	}
-
-// 	template < class Iter2 >
-// 	bool	operator<= (const bidirectional_reverse_iterator<Iter2> & rhs) const {
-// 		return (this->base() <= rhs.base());
-// 	}
-
-// 	template < class Iter2 >
-// 	bool	operator>  (const bidirectional_reverse_iterator<Iter2> & rhs) const {
-// 		return (this->base() > rhs.base());
-// 	}
-
-// 	template < class Iter2 >
-// 	bool	operator>= (const bidirectional_reverse_iterator<Iter2> & rhs) const {
-// 		return (this->base() >= rhs.base());
-// 	}
-
-// };
-
-// template < class Iter >
-// bidirectional_reverse_iterator<Iter> operator+  (typename bidirectional_reverse_iterator<Iter>::difference_type n, const bidirectional_reverse_iterator<Iter> & rev_it) {
-// 	bidirectional_reverse_iterator<Iter> ret(rev_it);
-// 	return ret + n;
-// }
-
-// template < class Iter >
-// typename bidirectional_reverse_iterator<Iter>::difference_type operator-  (const bidirectional_reverse_iterator<Iter> & lhs, const bidirectional_reverse_iterator<Iter> & rhs) {
-// 	return (rhs.base() - lhs.base());
-// }
 
 }

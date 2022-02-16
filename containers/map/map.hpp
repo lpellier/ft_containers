@@ -1,15 +1,14 @@
 #pragma once
 
 #include "iterator/iterator.hpp"
-#include <functional>
-#include <cstdlib>
+#include "../../includes/reverse_iterator.hpp"
 
 namespace ft {
 
-template <	class Key,												// map::key_type
-			class T,												// map::mapped_type
-			class Compare = std::less<Key>,							// map::key_compare
-			class Alloc = std::allocator<ft::pair<const Key,T> >	// map::allocator_type
+template <	class Key,											// map::key_type
+			class T,											// map::mapped_type
+			class Compare = std::less<Key>,						// map::key_compare
+			class Alloc = std::allocator<pair<const Key,T> >	// map::allocator_type
 			> 
 class map {
 public:
@@ -40,15 +39,15 @@ public:
 	typedef Alloc	allocator_type;
 	
 	typedef typename ft::pair<const key_type, mapped_type>	value_type;
-	typedef typename allocator_type::reference			reference;
-	typedef typename allocator_type::const_reference	const_reference;
-	typedef typename allocator_type::pointer			pointer;
-	typedef typename allocator_type::const_pointer		const_pointer;
+	typedef typename allocator_type::reference				reference;
+	typedef typename allocator_type::const_reference		const_reference;
+	typedef typename allocator_type::pointer				pointer;
+	typedef typename allocator_type::const_pointer			const_pointer;
 	
-	typedef ft::bidirectional_iterator<value_type>			iterator;
-	// typedef ft::bidirectional_iterator<const value_type>	const_iterator;
-	// typedef ft::reverse_iterator<iterator>					reverse_iterator;
-	// typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
+	typedef bidirectional_iterator<value_type>			iterator;
+	typedef bidirectional_iterator<const value_type>	const_iterator;
+	typedef reverse_iterator_wrap<iterator>				reverse_iterator;
+	typedef reverse_iterator_wrap<const_iterator>		const_reverse_iterator;
 	
 	typedef std::ptrdiff_t	difference_type;
 	typedef std::size_t		size_type;
@@ -65,8 +64,12 @@ public:
 	*/
 
 	// Constructs an empty map, with no elements
-	// explicit	map (const key_compare & comp = key_compare(), const allocator_type & alloc = allocator_type()) { // empty
-	// }
+	explicit	map (const key_compare & comp = key_compare(), const allocator_type & alloc = allocator_type()) { // empty
+		_root = NULL;
+		_size = 0;
+		_comp = comp;
+		_alloc = alloc;
+	}
 
 	// Constructs a map with as many elements as the range [first, last],
 	// with each element constructed from its corresponding element
@@ -83,24 +86,48 @@ public:
 			_add_one(*first);
 			first++;
 		}
+		_end = _empty_node();
+		_rend = _empty_node();
 	}
 
 	// Constructs a map with a copy of each of the elements in x
-	// map (const map & x) { // copy
-
-	// }
+	map (const map & x) { // copy
+		_root = NULL;
+		_size = 0;
+		_comp = x._comp;
+		_alloc = x._alloc;
+		iterator src_it = x.begin();
+		for (; src_it != x.end(); src_it++)
+			_add_one(*src_it);
+		// _add_one(*src_it); // ! Leaving this here because end() doesnt point to a past the end element
+		_end = _empty_node();
+		_rend = _empty_node();
+	}
 
 	// This destroys all map elements, and deallocates all the storage capacity allocated by the map container
 	// using its allocator
 	~map () {
+		delete _end;
+		delete _rend;
 		_delete_tree(_root);
 	}
 
 	// Assigns new contents to the container, replacing its current content and changing its size accordingly
 	// The map preserves its current allocator, which is used to allocate additional storage if needed
-	// map &	operator= (const map & x) {
-
-	// }
+	map &	operator= (const map & x) {
+		_root = NULL;
+		_size = 0;
+		_comp = x._comp;
+		_alloc = x._alloc;
+		iterator src_it = x.begin();
+		for (; src_it != x.end(); src_it++)
+			_add_one(*src_it);
+		// _add_one(*src_it); // ! Leaving this here because end() doesnt point to a past the end element
+		_end = _empty_node();
+		_rend = _empty_node();
+	
+		return *this;
+	}
 
 	/*
 	_____ _                 _                 
@@ -114,45 +141,51 @@ public:
 	// Returns an iterator reffering to the first element in the map container
 	iterator		begin() {
 		t_node *	tmp = _root;
-		while (tmp->left)
+		while (tmp && tmp->left)
 			tmp = tmp->left;
 		return iterator(tmp);
 	}
-	// // If the map is const_qualified
-	// const_iterator	begin() const {
-		
-	// }
+	// If the map is const_qualified
+	const_iterator	begin() const {
+		t_node *	tmp = _root;
+		while (tmp && tmp->left)
+			tmp = tmp->left;
+		return const_iterator(tmp);
+	}
 
 	// Returns an iterator reffering to the past-the-end element in the map container
 	iterator		end() {
-		t_node *	tmp = _root;
-		while (tmp->right)
-			tmp = tmp->right;
-		return iterator(tmp);
+		return iterator(_end);
 	}
-	// // If the map is const_qualified
-	// const_iterator	end() const {
-		
-	// }
+	// If the map is const_qualified
+	const_iterator	end() const {
+		return const_iterator(_end);
+	}
 
-	// // Returns a reverse_iterator reffering to the last element in the map container
-	// reverse_iterator		begin() {
+	// Returns a reverse_iterator reffering to the last element in the map container
+	reverse_iterator		rbegin() {
+		t_node *	tmp = _root;
+		while (tmp && tmp->right)
+			tmp = tmp->right;
+		return reverse_iterator(tmp);
+	}
+	// If the map is const_qualified
+	const_reverse_iterator	rbegin() const {
+		t_node *	tmp = _root;
+		while (tmp && tmp->right)
+			tmp = tmp->right;
+		return const_reverse_iterator(tmp);
+	}
 
-	// }
-	// // If the map is const_qualified
-	// const_reverse_iterator	begin() const {
-		
-	// }
-
-	// // Returns a reverse iterator pointing to the theroritocal element preceding the 
-	// // first element in the map (which is considered its reverse end)
-	// reverse_iterator		end() {
-
-	// }
-	// // If the map is const_qualified
-	// const_reverse_iterator	end() const {
-		
-	// }
+	// Returns a reverse iterator pointing to the theroritocal element preceding the 
+	// first element in the map (which is considered its reverse end)
+	reverse_iterator		rend() {
+		return reverse_iterator(_rend);
+	}
+	// If the map is const_qualified
+	const_reverse_iterator	rend() const {
+		return const_reverse_iterator(_rend);
+	}
 
 	/*
 	 _____                        _ _         
@@ -166,9 +199,9 @@ public:
 	*/
 
 	// Returns whether the map container is empty
-	// bool	empty () const {
-
-	// }
+	bool	empty () const {
+		return (_size == 0);
+	}
 
 	// Returns the number of elements in the map container
 	size_type	size () const {
@@ -176,9 +209,9 @@ public:
 	}
 
 	// Returns the maximum number of elements that the map container can hold
-	// size_type	max_size () const {
-
-	// }
+	size_type	max_size () const {
+		return _alloc.max_size();
+	}
 
 	/*
 	 _____ _                           _      ___                        
@@ -194,9 +227,16 @@ public:
 	// If not, the function inserts a new element with thay key and returns
 	// a reference to it's mapped value.
 	// The element is constructed using the default constructor
-	// mapped_type &	operator[] (const key_type & k) {
+	mapped_type &	operator[] (const key_type & k) {
+		t_node * found;
 
-	// }
+		if ((found = _search_node(k)))
+			return found->data->second;
+		value_type	inserted = make_pair(k, mapped_type());
+		_add_one(inserted);
+		found = _search_node(k);
+		return found->data->second;
+	}
 
 	/*
 	___  ___          _ _  __ _               
@@ -211,7 +251,7 @@ public:
 	// container size by the number of elements inserted
 	// Because element keys in a map are unique, the insertion operation checks
 	// whether each inserted element has a key equivalent to the one of an element
-	// already in the container, and if so, the the element is not inserted,
+	// already in the container, and if so, the element is not inserted,
 	// returning an iterator to this existing element
 	// pair<iterator, bool>	insert (const value_type & val) { // single element
 
@@ -233,6 +273,9 @@ public:
 	// size_type	erase (const key_type & k) {
 
 	// }
+	void	erase(const key_type & key) {
+		_delete_one(key);
+	}
 	// void		erase (iterator first, iterator last) {
 
 	// }
@@ -245,9 +288,9 @@ public:
 
 	// Removes all elements from the map container (which are destroyed),
 	// leaving the container with a size of 0
-	// void	clear () {
-
-	// }
+	void	clear () {
+		_delete_tree(_root);
+	}
 
 	/*
 	 _____ _                                      
@@ -260,13 +303,13 @@ public:
 
 	// Returns a copy of the comparison object used by the
 	// map container to compare keys
-	// key_compare	key_comp () const {
-
-	// }
+	key_compare	key_comp () const {
+		return _comp;
+	}
 
 	// Returns a comparison object that can be used to compare two
 	// elements to get whether the key of the first one goes before the second
-	// value_compare value_comp() const {
+	// value_compare value_comp() const { // ! see value_compare struct below
 
 	// }
 
@@ -297,9 +340,11 @@ public:
 	// returns the number of matches
 	// Because all elements in a map container are unique, the function can
 	// only return 1 or 0
-	// size_type		count (const key_type & k) const {
-
-	// }
+	size_type		count (const key_type & k) const {
+		if (_search_node(_root, k))
+			return 1;
+		return 0;
+	}
 
 	// Returns an iterator pointing to the first element in the container
 	// whose key is not considered to go before k (i.e., either it is equivalent
@@ -342,12 +387,8 @@ public:
 	*/
 
 	// Returns a copy of the allocator object associated with the map
-	// allocator_type	get_allocator () const {
-
-	// }
-
-	void	erase(const key_type & key) {
-		_delete_one(key);
+	allocator_type	get_allocator () const {
+		return _alloc;
 	}
 
 	// TO BE REMOVED
@@ -379,6 +420,9 @@ protected:
 	size_type		_size;
 	// root of binary tree
 	t_node *		_root;
+
+	t_node *		_end;
+	t_node *		_rend;
 
 	void	_add_one(const value_type & element) {
 		if (_search_node(_root, element.first)) // no equal keys
@@ -423,9 +467,6 @@ protected:
 		return node->left->height - node->right->height;
 	}
 
-	// A utility function to right
-	// rotate subtree rooted with y 
-	// See the diagram given above. 
 	t_node *_right_rotation(t_node *x) 
 	{ 
 		t_node *y = x->left; 
@@ -441,20 +482,15 @@ protected:
 		else
 			x->parent->left = y;
 
-		// Perform rotation 
 		y->right = x; 
 		x->parent = y;
 
-		// Update heights 
 		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1;
 		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1;
 	
 		return y;
 	}
 
-	// A utility function to left 
-	// rotate subtree rooted with x 
-	// See the diagram given above. 
 	t_node *_left_rotation(t_node *x) 
 	{ 
 		t_node *y = x->right; 
@@ -470,15 +506,12 @@ protected:
 		else
 			x->parent->right = y;
 
-		// Perform rotation 
 		y->left = x; 
 		x->parent = y;
 
-		// Update heights 
 		x->height = _max(_get_height(x->left), _get_height(x->right)) + 1; 
 		y->height = _max(_get_height(y->left), _get_height(y->right)) + 1; 
 
-		// Return new root 
 		return y; 
 	} 
 
@@ -541,6 +574,17 @@ protected:
 		return node;
 	}
 
+	t_node *	_empty_node() {
+		t_node *	ret = new t_node();
+		ret->left = NULL;
+		ret->right = NULL;
+		ret->parent = NULL;
+		ret->data = NULL;
+		ret->height = 0;
+		ret->node_read = false;
+		return ret;
+	}
+
 	t_node * _new_node(const value_type & val, t_node * parent) {
 		t_node *node = new t_node();
 		node->left = NULL;
@@ -549,6 +593,9 @@ protected:
 		node->data = _alloc.allocate(1);
 		_alloc.construct(node->data, val);
 		node->height = 1;
+		node->node_read = false;
+		node->_end = _end;
+		node->_rend = _rend;
 		return node;
 	}
 
@@ -633,8 +680,6 @@ protected:
 			_alloc.deallocate(node->data, 1);
 			delete node;
 		}
-		// while (_root)
-		// 	_root = _delete_node(_root, _root->data->first);
 	}
 
 	void	_display_tree(const std::string & prefix, t_node * node, bool isLeft, bool childInRight) {
