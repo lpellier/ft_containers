@@ -1,5 +1,6 @@
 #pragma once
 
+#include "iterator/iterator.hpp"
 #include <functional>
 #include <cstdlib>
 
@@ -44,13 +45,15 @@ public:
 	typedef typename allocator_type::pointer			pointer;
 	typedef typename allocator_type::const_pointer		const_pointer;
 	
-	// typedef ft::bidirectional_iterator<value_type>			iterator;
+	typedef ft::bidirectional_iterator<value_type>			iterator;
 	// typedef ft::bidirectional_iterator<const value_type>	const_iterator;
 	// typedef ft::reverse_iterator<iterator>					reverse_iterator;
 	// typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 	
 	typedef std::ptrdiff_t	difference_type;
 	typedef std::size_t		size_type;
+
+	typedef struct s_node<value_type>	t_node;
 
 	/*
 	 _____                         _           _ 
@@ -108,19 +111,25 @@ public:
 	\___/ \__\___|_|  \__,_|\__\___/|_|  |___/
 	*/
 
-	// // Returns an iterator reffering to the first element in the map container
-	// iterator		begin() {
-
-	// }
+	// Returns an iterator reffering to the first element in the map container
+	iterator		begin() {
+		t_node *	tmp = _root;
+		while (tmp->left)
+			tmp = tmp->left;
+		return iterator(tmp);
+	}
 	// // If the map is const_qualified
 	// const_iterator	begin() const {
 		
 	// }
 
-	// // Returns an iterator reffering to the past-the-end element in the map container
-	// iterator		end() {
-
-	// }
+	// Returns an iterator reffering to the past-the-end element in the map container
+	iterator		end() {
+		t_node *	tmp = _root;
+		while (tmp->right)
+			tmp = tmp->right;
+		return iterator(tmp);
+	}
 	// // If the map is const_qualified
 	// const_iterator	end() const {
 		
@@ -344,6 +353,8 @@ public:
 	// TO BE REMOVED
 	void	display_tree(void) {
 		// DEBUG
+		if (!_root)
+			return ;
 		_display_tree("", _root, false, (_root->right ? true : false));
 		bool balanced = _is_balanced(_root);
 		std::cout << "Is tree balanced ? " << (!balanced ? "No" : "Yes")  << std::endl;
@@ -359,14 +370,6 @@ protected:
 	| |_| | | | | (_| |  __/ |    | |_| | | |  __/ | | | | (_) | (_) | (_| |
 	\___/|_| |_|\__,_|\___|_|     \__|_| |_|\___| |_| |_|\___/ \___/ \__,_|                            
 	*/
-
-	typedef struct		s_node {
-		value_type		*data;
-		int				height;
-		struct s_node	*parent;
-		struct s_node	*left;
-		struct s_node	*right;
-	}					t_node;
 
 	// to allocate storage
 	allocator_type	_alloc;
@@ -480,36 +483,65 @@ protected:
 	} 
 
 
-	t_node *	_balance_tree(t_node * node, const value_type & val) {
+	t_node *	_balance_tree(t_node * node, const value_type & val, bool delete_node) {
 		node->height = 1 + _max(_get_height(node->left), _get_height(node->right));
 		int balance = _get_balance(node);
 
-		// Left Left Case 
-		if (balance > 1 && _comp(val.first, node->left->data->first)) 
-			return _right_rotation(node); 
-
-		// Right Right Case 
-		if (balance < -1 && !_comp(val.first, node->right->data->first)) 
-			return _left_rotation(node); 
-
-		// Left Right Case 
-		if (balance > 1 && !_comp(val.first, node->left->data->first)) 
-		{ 
-			node->left = _left_rotation(node->left); 
-			return _right_rotation(node);
+		if (delete_node) {
+			// Left Left Case
+			if (balance > 1 &&
+				_get_balance(node->left) >= 0)
+				return _right_rotation(node);
+		
+			// Left Right Case
+			if (balance > 1 &&
+				_get_balance(node->left) < 0)
+			{
+				node->left = _left_rotation(node->left);
+				return _right_rotation(node);
+			}
+		
+			// Right Right Case
+			if (balance < -1 &&
+				_get_balance(node->right) <= 0)
+				return _left_rotation(node);
+		
+			// Right Left Case
+			if (balance < -1 &&
+				_get_balance(node->right) > 0)
+			{
+				node->right = _right_rotation(node->right);
+				return _left_rotation(node);
+			}
 		}
+		else {
+			// Left Left Case 
+			if (balance > 1 && _comp(val.first, node->left->data->first)) 
+				return _right_rotation(node); 
 
-		// Right Left Case 
-		if (balance < -1 && _comp(val.first, node->right->data->first)) 
-		{ 
-			node->right = _right_rotation(node->right); 
-			return _left_rotation(node); 
+			// Right Right Case 
+			if (balance < -1 && !_comp(val.first, node->right->data->first)) 
+				return _left_rotation(node); 
+
+			// Left Right Case 
+			if (balance > 1 && !_comp(val.first, node->left->data->first)) 
+			{ 
+				node->left = _left_rotation(node->left); 
+				return _right_rotation(node);
+			}
+
+			// Right Left Case 
+			if (balance < -1 && _comp(val.first, node->right->data->first)) 
+			{ 
+				node->right = _right_rotation(node->right); 
+				return _left_rotation(node); 
+			}
 		}
 
 		return node;
 	}
 
-	t_node * newNode(const value_type & val, t_node * parent) {
+	t_node * _new_node(const value_type & val, t_node * parent) {
 		t_node *node = new t_node();
 		node->left = NULL;
 		node->right = NULL;
@@ -522,12 +554,12 @@ protected:
 
 	t_node *	_add_node(t_node * parent, t_node * node, const value_type & val) {
 		if (!node)
-			return newNode(val, parent);
+			return _new_node(val, parent);
 		if (_comp(val.first, node->data->first))
 			node->left = _add_node(node, node->left, val);
 		else if (!_comp(val.first, node->data->first))
 			node->right = _add_node(node, node->right, val);
-		return _balance_tree(node, val);
+		return _balance_tree(node, val, false);
 	}
 
 	t_node * _get_min_node(t_node * node)
@@ -545,19 +577,13 @@ protected:
 		t_node * tmp;
 		if (!node)
 			return node;
-		else if (_comp(key, node->data->first))
-			node->left = _delete_node(node->left, key);
-		else if (!_comp(key, node->data->first))
-			node->right = _delete_node(node->right, key);
-		else {
-			// case 1 : node is a leaf node
-			if(!node->left && !node->right) {
+		else if (key == node->data->first) {
+			if (!node->left && !node->right) {
 				_alloc.destroy(node->data);
 				_alloc.deallocate(node->data, 1);
 				delete node;
 				node = NULL;
 			}
-			// case 2 : node has only one child
 			else if (!node->left) {
 				tmp = node;
 				node = node->right;
@@ -572,15 +598,19 @@ protected:
 				_alloc.deallocate(tmp->data, 1);
 				delete tmp;
 			}
-			// case 3 : has both children
 			else {
 				tmp = _get_min_node(node->right);
 				node->data = tmp->data;
 				node->right = _delete_node(node->right, tmp->data->first);
 			}
 		}
-		return node;
-		// return _balance_tree(node, *(node->data));
+		else if (_comp(key, node->data->first))
+			node->left = _delete_node(node->left, key);
+		else if (!_comp(key, node->data->first))
+			node->right = _delete_node(node->right, key);
+		if (!node)
+			return node;
+		return _balance_tree(node, *(node->data), true);
 	}
 
 	t_node *	_search_node(t_node * node, const key_type & val) {
@@ -603,6 +633,8 @@ protected:
 			_alloc.deallocate(node->data, 1);
 			delete node;
 		}
+		// while (_root)
+		// 	_root = _delete_node(_root, _root->data->first);
 	}
 
 	void	_display_tree(const std::string & prefix, t_node * node, bool isLeft, bool childInRight) {

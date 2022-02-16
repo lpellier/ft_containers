@@ -133,16 +133,25 @@ public:
 	pair (const pair<U,V> & pr) : first(pr.first), second(pr.second) {}
 	pair (const first_type & a, const second_type & b) : first(a), second(b) {}
 
-	// pair &	operator= (const pair & pr) {
-	// 	this->first = pr.first;
-	// 	this->second = pr.second;
-	// 	return *this;
-	// }
+	pair &	operator= (const pair & pr) {
+		this->first = pr.first;
+		this->second = pr.second;
+		return *this;
+	}
 };
 
 template < class T1, class T2 >
 pair<T1, T2> make_pair (T1 x, T2 y) {
 	return (pair<T1, T2>(x, y));
 }
+
+template < class T >
+struct		s_node {
+	T				*data;
+	int				height;
+	struct s_node	*parent;
+	struct s_node	*left;
+	struct s_node	*right;
+};
 
 }
