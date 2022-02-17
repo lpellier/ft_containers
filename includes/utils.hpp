@@ -163,4 +163,20 @@ struct		s_node {
 	bool			node_read;
 };
 
+// template < class Key, class T, class Compare, class Alloc >
+// class map<Key, T, Compare, Alloc>::value_compare : std::binary_function<value_type, value_type, bool> {
+// friend class map;
+// protected:
+// 	key_compare	comp;
+// 	value_compare (key_compare c) : comp(c) {}
+
+// public:
+// 	typedef bool		result_type;
+// 	typedef value_type	first_argument_type;
+// 	typedef value_type	second_argument_type;
+// 	bool operator() (const value_type & x, const value_type & y) const {
+// 		return comp(x.first, y.first);
+// 	}
+// };
+
 }

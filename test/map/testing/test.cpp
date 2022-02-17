@@ -20,25 +20,25 @@ void	test() {
 	srand(time(NULL));
 	ft::vector<ft::pair<const int, int> > test_vec;
 	for (int i = 0; i < 150; i++) {
-		int random = rand() % 150 + 1;
-		if (i == 25)
-			test_vec.push_back(ft::make_pair(25, 25));
-		if (i == 50)
-			test_vec.push_back(ft::make_pair(50, 50));
-		if (i == 100)
-			test_vec.push_back(ft::make_pair(100, 100));
-		if (i == 125)
-			test_vec.push_back(ft::make_pair(125, 125));
-		test_vec.push_back(ft::make_pair(random, random));
-		// test_vec.push_back(ft::make_pair(i, i));
+		// int random = rand() % 150 + 1;
+		// if (i == 25)
+		// 	test_vec.push_back(ft::make_pair(25, 25));
+		// if (i == 50)
+		// 	test_vec.push_back(ft::make_pair(50, 50));
+		// if (i == 100)
+		// 	test_vec.push_back(ft::make_pair(100, 100));
+		// if (i == 125)
+		// 	test_vec.push_back(ft::make_pair(125, 125));
+		// test_vec.push_back(ft::make_pair(random, random));
+		test_vec.push_back(ft::make_pair(i, i));
 	}
 
-	// ft::map<int, int> test_map(test_vec.begin(), test_vec.end());
+	ft::map<int, int> test_map(test_vec.begin(), test_vec.end());
 	
-	ft::map<int, int> test_map;
+	// ft::map<int, int> test_map();
 	
-	ft::map<int, int>::iterator it = test_map.begin();
-	ft::map<int, int>::iterator it_end = test_map.end();
+	if (test_map.find(150) != test_map.end())
+		std::cout << "found" << std::endl;
 
 	// for (; it != it_end; it++) {
 	// 	std::cout << (*it).second << std::endl;

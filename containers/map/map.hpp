@@ -261,38 +261,62 @@ public:
 	// whether each inserted element has a key equivalent to the one of an element
 	// already in the container, and if so, the element is not inserted,
 	// returning an iterator to this existing element
-	// pair<iterator, bool>	insert (const value_type & val) { // single element
-
-	// }
-	// iterator				insert (iterator position, const value_type & val) { // fill
-
-	// }
-	// template < class InputIterator >
-	// void					insert (InputIterator first, InputIterator, last) { // range
-
-	// }
+	pair<iterator, bool>	insert (const value_type & val) { // single element
+		t_node * found;
+		if ((found = _search_node(_root, val)))
+			return make_pair(iterator(found), false);
+		_add_one(val);
+		return make_pair(iterator(_search_node(_root, val)), true);
+	}
+	iterator				insert (iterator position, const value_type & val) { // fill
+		// TODO // Get info on hint
+		// ? For now, ignoring hint and just adding value
+		t_node * found;
+		if ((found = _search_node(_root, val)))
+			return iterator(found);
+		_add_one(val);
+		return iterator(_search_node(_root, val));
+	}
+	// TODO Add enable if to protect from non iterators
+	template < class InputIterator >
+	void					insert (InputIterator first, InputIterator last) { // range
+		while (first != last) {
+			_add_one(*first);
+			first++;
+		}
+	}
 
 	// Removes from the map container either a single element of a range of elements
 	// This effectively reduces the container size by the number of elements removed,
 	// which are destroyed
-	// void		erase (iterator position) {
-
-	// }
-	// size_type	erase (const key_type & k) {
-
-	// }
-	void	erase(const key_type & key) {
-		_delete_one(key);
+	void		erase (iterator position) {
+		_delete_one((*position).second);
 	}
-	// void		erase (iterator first, iterator last) {
-
-	// }
+	size_type	erase (const key_type & k) {
+		if (_search_node(_root, k)) {
+			_delete_one(k);
+			return 1;
+		}
+		return (0);
+	}
+	void		erase (iterator first, iterator last) {
+		while (first != last) {
+			_delete_one((*first).second);
+			first++;
+		}
+	}
 
 	// Exchanges the content of the container by the content of x, which is another map
 	// of the same type; sizes may differ
-	// void	swap (map & x) {
+	void	swap (map & x) {
+		map	tmp(this);
 
-	// }
+		clear();
+		new (this) map(x);
+	
+		x.clear();
+		new (x) map(tmp);
+	}
 
 	// Removes all elements from the map container (which are destroyed),
 	// leaving the container with a size of 0
@@ -317,8 +341,8 @@ public:
 
 	// Returns a comparison object that can be used to compare two
 	// elements to get whether the key of the first one goes before the second
-	// value_compare value_comp() const { // ! see value_compare struct below
-
+	// value_compare value_comp() const {
+	// 	return value_compare(_comp);
 	// }
 
 	/*
@@ -337,12 +361,20 @@ public:
 	// Two keys are considered equivalent if the container's comparison
 	// object returns false reflexively (i.e., no matter the order in which
 	// the elements are passed as arguments)
-	// iterator		find (const key_type & k) {
+	iterator		find (const key_type & k) {
+		t_node * found;
 
-	// }
-	// const_iterator	find (const key_type & k) const {
+		if ((found = _search_node(_root, k)))
+			return iterator(found);
+		return end();
+	}
+	const_iterator	find (const key_type & k) const {
+		t_node * found;
 
-	// }
+		if ((found = _search_node(_root, k)))
+			return iterator(found);
+		return end();
+	}
 
 	// Search the container for elements with a key equivalent to k and
 	// returns the number of matches
@@ -632,7 +664,7 @@ protected:
 		t_node * tmp;
 		if (!node)
 			return node;
-		else if (key == node->data->first) {
+		else if (!_comp(key, node->data->first) && !_comp(node->data->first, key)) {
 			if (!node->left && !node->right) {
 				_alloc.destroy(node->data);
 				_alloc.deallocate(node->data, 1);
@@ -671,7 +703,7 @@ protected:
 	t_node *	_search_node(t_node * node, const key_type & val) {
 		if (!node)
 			return (NULL);
-		if (val == node->data->first)
+		if (!_comp(val, node->data->first) && !_comp(node->data->first, val))
 			return node;
 		else if (_comp(val, node->data->first))
 			return _search_node(node->left, val);
@@ -702,19 +734,7 @@ protected:
 		}
 	}
 
-	class value_compare : std::binary_function<value_type, value_type, bool> {
-	protected:
-		key_compare	comp;
-		value_compare (key_compare c) : comp(c) {}
-
-	public:
-		typedef bool		result_type;
-		typedef value_type	first_argument_type;
-		typedef value_type	second_argument_type;
-		bool operator() (const value_type & x, const value_type & y) const {
-			return comp(x.first, y.first);
-		}
-	};
+	// class value_compare;
 };
 
 }
