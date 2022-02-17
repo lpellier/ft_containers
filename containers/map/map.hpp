@@ -69,25 +69,27 @@ public:
 		_size = 0;
 		_comp = comp;
 		_alloc = alloc;
+		_end = _empty_node();
+		_rend = _empty_node();
 	}
 
 	// Constructs a map with as many elements as the range [first, last],
 	// with each element constructed from its corresponding element
 	// in that range, in the same order
 	template < class InputIterator >
-	// using enable_if here forbids any integral type to get into this function
-	// so that only iterators may use this function
+	// TODO // using enable_if here forbids any integral type to get into this function
+	// TODO // so that only iterators may use this function
 	map (InputIterator first, InputIterator last, const key_compare & comp = key_compare(), const allocator_type & alloc = allocator_type()) { // range
 		_root = NULL;
 		_size = 0;
 		_comp = comp;
 		_alloc = alloc;
+		_end = _empty_node();
+		_rend = _empty_node();
 		while (first != last) {
 			_add_one(*first);
 			first++;
 		}
-		_end = _empty_node();
-		_rend = _empty_node();
 	}
 
 	// Constructs a map with a copy of each of the elements in x
@@ -96,12 +98,11 @@ public:
 		_size = 0;
 		_comp = x._comp;
 		_alloc = x._alloc;
+		_end = _empty_node();
+		_rend = _empty_node();
 		iterator src_it = x.begin();
 		for (; src_it != x.end(); src_it++)
 			_add_one(*src_it);
-		// _add_one(*src_it); // ! Leaving this here because end() doesnt point to a past the end element
-		_end = _empty_node();
-		_rend = _empty_node();
 	}
 
 	// This destroys all map elements, and deallocates all the storage capacity allocated by the map container
@@ -122,7 +123,6 @@ public:
 		iterator src_it = x.begin();
 		for (; src_it != x.end(); src_it++)
 			_add_one(*src_it);
-		// _add_one(*src_it); // ! Leaving this here because end() doesnt point to a past the end element
 		_end = _empty_node();
 		_rend = _empty_node();
 	
@@ -140,6 +140,8 @@ public:
 
 	// Returns an iterator reffering to the first element in the map container
 	iterator		begin() {
+		if (_size == 0)
+			return (end());
 		t_node *	tmp = _root;
 		while (tmp && tmp->left)
 			tmp = tmp->left;
@@ -147,6 +149,8 @@ public:
 	}
 	// If the map is const_qualified
 	const_iterator	begin() const {
+		if (_size == 0)
+			return (end());
 		t_node *	tmp = _root;
 		while (tmp && tmp->left)
 			tmp = tmp->left;
@@ -164,6 +168,8 @@ public:
 
 	// Returns a reverse_iterator reffering to the last element in the map container
 	reverse_iterator		rbegin() {
+		if (_size == 0)
+			return (rend());
 		t_node *	tmp = _root;
 		while (tmp && tmp->right)
 			tmp = tmp->right;
@@ -171,6 +177,8 @@ public:
 	}
 	// If the map is const_qualified
 	const_reverse_iterator	rbegin() const {
+		if (_size == 0)
+			return (rend());
 		t_node *	tmp = _root;
 		while (tmp && tmp->right)
 			tmp = tmp->right;

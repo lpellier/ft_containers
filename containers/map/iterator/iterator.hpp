@@ -42,6 +42,8 @@ template < class T >
 class bidirectional_iterator {
 private:
 	struct s_node<T> *	_ptr;
+	struct s_node<T> *	_end;
+	struct s_node<T> *	_rend;
 	bool				_switch_read;
 
 	void	_clear_node(struct s_node<T> * node) {
@@ -60,6 +62,29 @@ private:
 		_clear_node(tmp);
 	}
 
+	bool	_is_rightmost_node() {
+		struct s_node<T> *	tmp = _ptr;
+
+		while (tmp && tmp->parent)
+			tmp = tmp->parent;
+		while (tmp && tmp->right)
+			tmp = tmp->right;
+		if (tmp == _ptr)
+			return true;
+		return false;
+	}
+
+	bool	_is_leftmost_node() {
+		struct s_node<T> *	tmp = _ptr;
+
+		while (tmp && tmp->parent)
+			tmp = tmp->parent;
+		while (tmp && tmp->left)
+			tmp = tmp->left;
+		if (tmp == _ptr)
+			return true;
+		return false;
+	}
 	
 
 public:
@@ -72,14 +97,16 @@ public:
 	// default constructor
 	bidirectional_iterator (void) : _ptr(NULL), _switch_read(false) {}
 	// parametric constructor
-	bidirectional_iterator (pointer new_ptr) : _ptr(new_ptr), _switch_read(false) {}
+	bidirectional_iterator (pointer new_ptr) : _ptr(new_ptr), _end(_ptr->_end), _rend(_ptr->_rend), _switch_read(false) {}
 	// destructor
 	~bidirectional_iterator (void) {}
 	// copy constructor
-	bidirectional_iterator (const bidirectional_iterator & src) : _ptr(src._ptr), _switch_read(src._switch_read) {}
+	bidirectional_iterator (const bidirectional_iterator & src) : _ptr(src._ptr), _end(_ptr->_end), _rend(_ptr->_rend), _switch_read(src._switch_read) {}
 	// assignment operator
 	bidirectional_iterator & operator= (const bidirectional_iterator & src) {
 		_ptr = src._ptr;
+		_end = _ptr->_end;
+		_rend = _ptr->_rend;
 		_switch_read = src._switch_read;
 		return *this;
 	}
@@ -133,11 +160,21 @@ public:
 			_clear_nodes();
 			_switch_read = true;
 		}
+		if (_ptr == _end)
+			return *this;
 		if (_ptr && _ptr->right) {
 			_ptr = _ptr->right;
 			while (_ptr->left)
 				_ptr = _ptr->left;
 			_ptr->node_read = true;
+		}
+		else if (_ptr && _is_rightmost_node()) {
+			_ptr->_end->parent = _ptr;
+			_ptr = _ptr->_end;
+		}
+		else if (_ptr && _ptr == _rend) {
+			_ptr = _ptr->parent;
+			_ptr->_rend->parent = NULL;
 		}
 		else if (_ptr && _ptr->parent) {
 			_ptr = _ptr->parent;
@@ -145,11 +182,6 @@ public:
 				_ptr = _ptr->parent;
 			_ptr->node_read = true;
 		}
-		else if (_ptr) {
-			_ptr->_end->parent = _ptr;
-			_ptr = _ptr->_end;
-		}
-		_ptr->node_read = true;
 		return *this;
 	}
 	bidirectional_iterator		operator++ (int) {
@@ -174,21 +206,27 @@ public:
 			_clear_nodes();
 			_switch_read = false;
 		}
+		if (_ptr == _rend)
+			return *this;
 		if (_ptr && _ptr->left) {
 			_ptr = _ptr->left;
 			while (_ptr->right)
 				_ptr = _ptr->right;
 			_ptr->node_read = true;
 		}
+		else if (_ptr && _is_leftmost_node()) {
+			_ptr->_rend->parent = _ptr;
+			_ptr = _ptr->_rend;
+		}
+		else if (_ptr && _ptr == _end) {
+			_ptr = _ptr->parent;
+			_ptr->_end->parent = NULL;
+		}
 		else if (_ptr && _ptr->parent) {
 			_ptr = _ptr->parent;
 			while (_ptr && _ptr->parent && _ptr->node_read)
 				_ptr = _ptr->parent;
 			_ptr->node_read = true;
-		}
-		else if (_ptr && _ptr == _ptr->_end) {
-			_ptr = _ptr->parent;
-			_ptr->_end->parent = NULL;
 		}
 		return *this;
 	}
