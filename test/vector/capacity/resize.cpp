@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	resize() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
 	_print_vec(test);
 	test.resize(100, 5);

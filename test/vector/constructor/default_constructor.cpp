@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	default_constructor() {
-	CONTAINER	test;
+	NAMESPACE::vector<TEST_TYPE>	test;
 	std::for_each(test.begin(), test.end(), _print);
 }
 

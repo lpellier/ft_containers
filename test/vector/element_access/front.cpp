@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	front() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
 	_print_vec(test);
 	test.push_back(10);

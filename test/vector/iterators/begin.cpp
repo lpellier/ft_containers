@@ -6,10 +6,10 @@ void	begin() {
 		foo.push_back(i);
 
 
-	CONTAINER	test(foo.begin(), foo.end());
+	NAMESPACE::vector<TEST_TYPE>	test(foo.begin(), foo.end());
 
-	CONTAINER::iterator it_foo = test.begin();
-	CONTAINER::const_iterator const_it_foo = test.begin();
+	NAMESPACE::vector<TEST_TYPE>::iterator it_foo = test.begin();
+	NAMESPACE::vector<TEST_TYPE>::const_iterator const_it_foo = test.begin();
 	std::cout << *it_foo << std::endl;
 	it_foo++;
 	std::cout << *it_foo << std::endl;
@@ -22,7 +22,7 @@ void	begin() {
 	const_it_foo--;
 	std::cout << *const_it_foo << std::endl;
 
-	CONTAINER::iterator test_it = test.begin();
+	NAMESPACE::vector<TEST_TYPE>::iterator test_it = test.begin();
 	while (test_it != test.end()) {
 		std::cout << *test_it << std::endl;
 		test_it++;

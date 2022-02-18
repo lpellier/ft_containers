@@ -1,9 +1,9 @@
 #include "../../test.hpp"
 
 void	get_allocator() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
-	int * test_tab;
+	TEST_TYPE * test_tab;
 	test_tab = test.get_allocator().allocate(5);
 
 	for (int i = 0; i < 5; i++)

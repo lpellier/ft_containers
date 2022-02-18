@@ -1,6 +1,8 @@
 #pragma once
 
 #include "utils.hpp"
+#include "../containers/vector/iterator/iterator.hpp"
+#include "../containers/map/iterator/iterator.hpp"
 
 namespace ft {
 
@@ -26,6 +28,8 @@ public:
 	typedef	typename iterator_traits<Iter>::reference			reference;
 	typedef	typename iterator_traits<Iter>::iterator_category	iterator_category;
 
+	typedef const value_type *	const_iterator_type;
+
 	reverse_iterator_wrap (void) { // default
 		_iter = value_type();
 	}
@@ -41,9 +45,13 @@ public:
 		return *this;
 	}
 
-	// operator const reverse_iterator_wrap<Iter>() {
-	// 	return (reverse_iterator_wrap<Iter>(const_cast<const Iter>(_iter)));
-	// }
+	operator reverse_iterator_wrap<random_access_iterator<const_iterator_type> >() {
+		return reverse_iterator_wrap<random_access_iterator<const_iterator_type> >(random_access_iterator<const_iterator_type>(_iter));
+	}
+
+	operator reverse_iterator_wrap<bidirectional_iterator<const_iterator_type> >() {
+		return reverse_iterator_wrap<bidirectional_iterator<const_iterator_type> >(bidirectional_iterator<const_iterator_type>(_iter));
+	}
 	
 	// Returns a copy of the underlying iterator
 	iterator_type base () const {
@@ -66,18 +74,24 @@ public:
 
 	reverse_iterator_wrap & operator++ () {
 		_iter--;
+		return *this;
 	}
 
 	reverse_iterator_wrap operator++(int) {
-		--_iter;
+		reverse_iterator_wrap tmp(*this);
+		operator++();
+		return tmp;
 	}
 
 	reverse_iterator_wrap & operator-- () {
 		_iter++;
+		return *this;
 	}
 
 	reverse_iterator_wrap operator--(int) {
-		++_iter;
+		reverse_iterator_wrap tmp(*this);
+		operator--();
+		return tmp;
 	}
 
 	// Returns a reverse iterator pointing to the element located a n positions away from the

@@ -60,9 +60,9 @@ public:
 		return *this;
 	}
 
-	// operator const random_access_iterator<const value_type *>() {
-	// 	return (random_access_iterator<const value_type *>(const_cast<const T>(_ptr)));
-	// }
+	operator const random_access_iterator<const value_type *>() {
+		return (random_access_iterator<const value_type *>(const_cast<const T>(_ptr)));
+	}
 	
 	// Comparison operators
 	bool		operator== (const random_access_iterator & rhs) const {

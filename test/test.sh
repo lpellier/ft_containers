@@ -7,6 +7,8 @@ if [ $? -ne 0 ]; then
 fi
 
 ERRORS=0
+COMPILER_ERROR=1
+RES=0
 
 OKAY="\e[92m\xE2\x9C\x94"
 NONO="\xE2\x9D\x8C"
@@ -18,67 +20,59 @@ BLUE="\e[34m"
 MAGENTA="\e[35m"
 RESET="\e[0m"
 
-STD_VECTOR="std::vector<int>"
-FT_VECTOR="ft::vector<int>"
+STD_NAMESPACE="std"
+FT_NAMESPACE="ft"
 
-STD_MAP="std::map<int, int>"
-FT_MAP="ft::map<int, int>"
-
-STD_STACK="std::stack<std::vector<int> >"
-FT_STACK="ft::stack<ft::vector<int> >"
-
-STD_CONTAINER=""
-FT_CONTAINER=""
+TYPE_INT="int"
 
 _output_kitty() {
-	# let "ERRORS=1"
 	if [ $ERRORS -eq 0 ]; then
 		echo -e "$GREEN" ; cat .ascii_art/goodkitty.txt
 	else 
 		echo -e "$RED" ; cat .ascii_art/badkitty.txt
-		# else
-		# echo -e "$RED" ; cat .ascii_art/verybadkitty.txt
 	fi
+}
+
+_compile() {
+	let "COMPILER_ERROR=1"
+
+	while [ $COMPILER_ERROR -eq 1 ]
+	do
+		if [[ $4 -eq 1 ]]; then
+			clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D TEST_TYPE="$1" -D NAMESPACE="$2" $3 | grep "Input/output error" &> /dev/null
+			if [[ $? -ne 0 ]]; then
+				return 0
+			fi
+		else
+			clang++ -g3 -Wall -Werror -Wextra -std=c++98 -D TEST_TYPE="$1" -D NAMESPACE="$2" $3 2> $3".compile_error"
+			cat $3".compile_error" | grep "Input/output error" &> /dev/null
+			local res="$?"
+			if [[ $res -ne "0" && -s $3".compile_error" ]]; then
+				return 1
+			elif [[ $res -ne "0" ]]; then
+				let "COMPILER_ERROR=0"
+			fi
+		fi
+	done
+	return 0
 }
 
 _execute() {
 	printf "$CYAN%-45s" $1
 	folder=$(echo $1 | head -n1 | cut -d "/" -f1)
-	if [ $folder == "map" ]; then
-		STD_CONTAINER=$STD_MAP
-		FT_CONTAINER=$FT_MAP
-	elif [ $folder == "vector" ]; then
-		STD_CONTAINER=$STD_VECTOR
-		FT_CONTAINER=$FT_VECTOR
-	elif [ $folder == "stack" ]; then
-		STD_CONTAINER=$STD_STACK
-		FT_CONTAINER=$FT_STACK
-	else
-		return 1
-	fi
 	if [ $2 -eq 1 ]; then
 		echo
-		c++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_CONTAINER" $1
 	else
 		printf "| "
-		c++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$STD_CONTAINER" $1 2> $1".compile_error"
 	fi
-	if [ $? -ne 0 ]; then
-		echo -e $RED"Compiler error"
-		return 1
-	fi
+	_compile "$TYPE_INT" "$STD_NAMESPACE" "$1" "$2"
 	./a.out > "$1.actual_output"
 
 	{ time ./a.out ; } 2> time.txt 1>/dev/null
 	ACT_TIME=$(tail -n +3 time.txt | grep -o '......$' | cut -c -5 | awk '{sum += $1;} END{print sum;}')
 
-	if [ $2 -eq 1 ]; then
-		echo -ne $BLUE"Compile"$RESET" : "
-		c++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_CONTAINER" $1
-	else
-		echo -ne $BLUE"Compile"$RESET" : "
-		c++ -g3 -Wall -Werror -Wextra -std=c++98 -D CONTAINER="$FT_CONTAINER" $1 2> $1".compile_error"
-	fi
+	echo -ne $BLUE"Compile"$RESET" : "
+	_compile "$TYPE_INT" "$FT_NAMESPACE" "$1" "$2"
 	if [ $? -ne 0 ]; then
 		let "ERRORS += 1"
 		if [ $2 -eq 0 ]; then

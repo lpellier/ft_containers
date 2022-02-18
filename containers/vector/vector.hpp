@@ -70,10 +70,10 @@ public:
 	// with each element constructed from its corresponding element
 	// in that range, in the same order
 	template < class InputIterator >
-	// using enable_if here forbids any integral type to get into this function
-	// so that only iterators may use this function
-	vector (InputIterator first, InputIterator last, class enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
-		_size = distance(first, last);
+	// ? using enable_if here forbids any integral type to get into this function
+	// ? so that only iterators may use this function
+	vector (InputIterator first, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type last) { // range
+		_size = ft::distance(first, last);
 		_capacity = _size;
 		_array = _alloc.allocate(_capacity);
 		for (size_type i = 0; i < _size; i++) {
@@ -324,9 +324,9 @@ public:
 	// Any elements held in the container before the call are destroyed and replaced by newly constructed
 	// elements (no assignments of elements take place)
 	template	< class InputIterator >
-	void		assign (InputIterator first, InputIterator last, class enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
+	void		assign (InputIterator first, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type last) { // range
 		_reduce_size(0);
-		reserve(_next_pow_two(distance(first, last)));
+		reserve(_next_pow_two(ft::distance(first, last)));
 		// adding each element of the first to last iterator range
 		// each time increasing size by one and checking if we ever need a reallocation
 		while (first != last) {
@@ -401,7 +401,7 @@ public:
 	template	< class InputIterator >
 	// using enable_if here forbids any integral type to get into this function
 	// so that only iterators may use this function
-	void		insert (iterator position, InputIterator first, InputIterator last, class enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = NULL) { // range
+	void		insert (iterator position, InputIterator first, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type last) { // range
 		// diff is distance from position to the end
 		difference_type diff = distance(position, end());
 		// tmp is size before any changes to it
@@ -432,30 +432,30 @@ public:
 	// elements after the segment erased to their new positions
 	iterator	erase (iterator position) { // single element
 		// this is the distance from the begin to the point of erasure
-		difference_type distance = distance(begin(), position);
+		difference_type dist = ft::distance(begin(), position);
 		// destroy element pointed to by position
-		_alloc.destroy(_array + distance);
+		_alloc.destroy(_array + dist);
 		// move backwards every element after position
 		position++;
 		while (position != end()) {
-			_move_back(distance(begin(), position));
+			_move_back(ft::distance(begin(), position));
 			position++;
 		}
 		// reduce size by one
 		_reduce_size(_size - 1);
 
-		return begin() + distance;
+		return begin() + dist;
 	}
 	iterator	erase (iterator first, iterator last) { // range
 		// this is the distance from the begin to the point of erasure
-		difference_type distance = distance(begin(), first);
+		difference_type dist = ft::distance(begin(), first);
 		// n is the number of elements erased
-		size_type n = distance(first, last);
+		size_type n = ft::distance(first, last);
 		// erasing elements pointed to by first one by one
 		for (size_type i = 0; i < n; i++)
-			erase(begin() + distance);
+			erase(begin() + dist);
 
-		return begin() + distance;
+		return begin() + dist;
 	}
 
 	// Exchanges the content of the vector by the content of x, which is another vector object of the same type

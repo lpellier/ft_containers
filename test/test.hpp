@@ -4,13 +4,18 @@
 # define RED            "\e[31m"
 # define RESET          "\e[0m"
 
-#ifndef CONTAINER
-# define CONTAINER const std::vector<int>
+#ifndef NAMESPACE
+# define NAMESPACE std
+#endif
+
+#ifndef TEST_TYPE
+# define TEST_TYPE int
 #endif
 
 #include "../includes/containers.hpp"
 #include <iostream>
 #include <vector>
+#include <map>
 #include <algorithm>
 #include <stdlib.h>
 

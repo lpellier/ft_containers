@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	templ() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 }
 
 int main() {

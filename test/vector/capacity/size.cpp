@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	size() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
 	std::cout << test.size() << std::endl;
 	test.push_back(1);

@@ -89,15 +89,15 @@ private:
 
 public:
 	typedef T							value_type;
-	typedef struct s_node<T> *			pointer;
-	typedef T &							reference;
 	typedef std::ptrdiff_t				difference_type;
+	typedef value_type &				reference;
 	typedef bidirectional_iterator_tag	iterator_category;
+	typedef value_type 					pointer;
 
 	// default constructor
 	bidirectional_iterator (void) : _ptr(NULL), _switch_read(false) {}
-	// parametric constructor
-	bidirectional_iterator (pointer new_ptr) : _ptr(new_ptr), _end(_ptr->_end), _rend(_ptr->_rend), _switch_read(false) {}
+	// parametric constructor // TODO // probably shouldnt be public
+	bidirectional_iterator (struct s_node<T> * new_ptr) : _ptr(new_ptr), _end(_ptr->_end), _rend(_ptr->_rend), _switch_read(false) {}
 	// destructor
 	~bidirectional_iterator (void) {}
 	// copy constructor
@@ -111,9 +111,9 @@ public:
 		return *this;
 	}
 
-	// operator const bidirectional_iterator<const value_type *>() {
-	// 	return (bidirectional_iterator<const value_type *>(const_cast<const T>(_ptr)));
-	// }
+	operator const bidirectional_iterator<const value_type *>() {
+		return (bidirectional_iterator<const value_type *>(const_cast<const T>(_ptr)));
+	}
 	
 	// Comparison operators
 	bool		operator== (const bidirectional_iterator & rhs) const {
@@ -151,8 +151,8 @@ public:
 	}
 
 	// for non constant iterators
-	void		operator*  (const reference ref) {
-		*(_ptr) = ref;
+	void		operator*  (reference ref) {
+		*(_ptr)->data = ref;
 	}
 
 	bidirectional_iterator	&	operator++ (void) {

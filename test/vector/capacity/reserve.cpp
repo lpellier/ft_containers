@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	reserve() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
 	_print_vec(test);
 	test.reserve(100);

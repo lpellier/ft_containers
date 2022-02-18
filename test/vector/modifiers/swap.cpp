@@ -1,8 +1,8 @@
 #include "../../test.hpp"
 
 void	swap() {
-	CONTAINER test(10, 0);
-	CONTAINER test1(20, 1);
+	NAMESPACE::vector<TEST_TYPE> test(10, 0);
+	NAMESPACE::vector<TEST_TYPE> test1(20, 1);
 
 	_print_vec(test);
 	_print_vec(test1);

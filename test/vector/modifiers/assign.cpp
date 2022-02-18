@@ -5,7 +5,7 @@ void	assign() {
 	for (int i = 0; i < 100; i++)
 		to_be_assigned.push_back(i);
 	
-	CONTAINER test(10, 2);
+	NAMESPACE::vector<TEST_TYPE> test(10, 2);
 
 	_print_vec(test);
 	test.assign(to_be_assigned.begin(), to_be_assigned.end());

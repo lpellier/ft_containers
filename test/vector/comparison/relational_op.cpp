@@ -1,8 +1,8 @@
 #include "../../test.hpp"
 
 void	relational_op() {
-	CONTAINER test(100, 5);
-	CONTAINER test1(50, 2);
+	NAMESPACE::vector<TEST_TYPE> test(100, 5);
+	NAMESPACE::vector<TEST_TYPE> test1(50, 2);
 
 	std::cout << (test == test1) << std::endl;
 	std::cout << (test != test1) << std::endl;
@@ -11,7 +11,7 @@ void	relational_op() {
 	std::cout << (test <= test1) << std::endl;
 	std::cout << (test >= test1) << std::endl;
 	
-	CONTAINER test2(100, 5);
+	NAMESPACE::vector<TEST_TYPE> test2(100, 5);
 
 	std::cout << (test == test2) << std::endl;
 	std::cout << (test != test2) << std::endl;

@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	back() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
 	// std::cout << test.back() << std::endl;
 	_print_vec(test);

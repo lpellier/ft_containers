@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	at() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
 	_print_vec(test);
 	for (int i = 0; i < 10; i++)

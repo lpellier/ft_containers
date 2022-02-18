@@ -54,6 +54,20 @@ public:
 
 	typedef struct s_node<value_type>	t_node;
 
+	class value_compare : std::binary_function<value_type, value_type, bool> {
+	protected:
+		key_compare	comp;
+		value_compare (key_compare c) : comp(c) {}
+
+	public:
+		typedef bool		result_type;
+		typedef value_type	first_argument_type;
+		typedef value_type	second_argument_type;
+		bool operator() (const value_type & x, const value_type & y) const {
+			return comp(x.first, y.first);
+		}
+	};
+
 	/*
 	 _____                         _           _ 
 	/  __ \                       (_)         | |
@@ -108,9 +122,9 @@ public:
 	// This destroys all map elements, and deallocates all the storage capacity allocated by the map container
 	// using its allocator
 	~map () {
+		_delete_tree(_root);
 		delete _end;
 		delete _rend;
-		_delete_tree(_root);
 	}
 
 	// Assigns new contents to the container, replacing its current content and changing its size accordingly
@@ -263,19 +277,20 @@ public:
 	// returning an iterator to this existing element
 	pair<iterator, bool>	insert (const value_type & val) { // single element
 		t_node * found;
-		if ((found = _search_node(_root, val)))
+		if ((found = _search_node(_root, val.first)))
 			return make_pair(iterator(found), false);
 		_add_one(val);
-		return make_pair(iterator(_search_node(_root, val)), true);
+		return make_pair(iterator(_search_node(_root, val.first)), true);
 	}
 	iterator				insert (iterator position, const value_type & val) { // fill
 		// TODO // Get info on hint
 		// ? For now, ignoring hint and just adding value
+		(void) position;
 		t_node * found;
-		if ((found = _search_node(_root, val)))
+		if ((found = _search_node(_root, val.first)))
 			return iterator(found);
 		_add_one(val);
-		return iterator(_search_node(_root, val));
+		return iterator(_search_node(_root, val.first));
 	}
 	// TODO Add enable if to protect from non iterators
 	template < class InputIterator >
@@ -341,9 +356,9 @@ public:
 
 	// Returns a comparison object that can be used to compare two
 	// elements to get whether the key of the first one goes before the second
-	// value_compare value_comp() const {
-	// 	return value_compare(_comp);
-	// }
+	value_compare value_comp() const {
+		return value_compare(_comp);
+	}
 
 	/*
 	_____                      _   _                 
@@ -389,33 +404,65 @@ public:
 	// Returns an iterator pointing to the first element in the container
 	// whose key is not considered to go before k (i.e., either it is equivalent
 	// or goes after)
-	// iterator		lower_bound (const key_type & k) {
+	iterator		lower_bound (const key_type & k) {
+		t_node * tmp = _root;
 
-	// }
-	// // If the map is const-qualified
-	// const_iterator	lower_bound (const key_type & k) const {
-		
-	// }
+		while (_comp(k, tmp->data.second))
+			tmp = tmp->left;
+		if (_is_leftmost_node(tmp))
+			return end();
+		return iterator(tmp);
+	}
+	// If the map is const-qualified
+	const_iterator	lower_bound (const key_type & k) const {
+		t_node * tmp = _root;
+
+		while (_comp(k, tmp->data.second))
+			tmp = tmp->left;
+		if (_is_leftmost_node(tmp))
+			return end();
+		return const_iterator(tmp);	
+	}
 
 	// Returns an iterator pointing to the first element in the container
 	// whose ket is considered to go after k
-	// iterator		upper_bound (const key_type & k) {
+	iterator		upper_bound (const key_type & k) {
+		t_node * tmp = _root;
 
-	// }
-	// const_iterator	upper_bound (const key_type & k) const {
-		
-	// }
+		while (!_comp(k, tmp->data.second))
+			tmp = tmp->right;
+		if (_is_rightmost_node(tmp))
+			return end();
+		return iterator(tmp);
+	}
+	const_iterator	upper_bound (const key_type & k) const {
+		t_node * tmp = _root;
+
+		while (!_comp(k, tmp->data.second))
+			tmp = tmp->right;
+		if (_is_rightmost_node(tmp))
+			return end();
+		return const_iterator(tmp);	
+	}
 
 	// Returns the bounds of a range that includes all the elements in the
 	// container which have a key equivalent to k
 	// Because the elements in a map container have unique keys, the range returned
 	// will contain a single element at most
-	// pair<iterator, iterator>				equal_range (const key_type & k) {
+	pair<iterator, iterator>				equal_range (const key_type & k) {
+		t_node * found;
 
-	// }
-	// pair<const_iterator, const_iterator>	equal_range (const key_type & k) const {
-
-	// }
+		if ((found = search_node(_root, k)))
+			return make_pair(lower_bound(k), upper_bound(k));
+		return make_pair(upper_bound(k), upper_bound(k));
+	}
+	pair<const_iterator, const_iterator>	equal_range (const key_type & k) const {
+		t_node * found;
+		
+		if ((found = search_node(_root, k)))
+			return make_pair(lower_bound(k), upper_bound(k));
+		return make_pair(upper_bound(k), upper_bound(k));
+	}
 
 	/*
 	  ___  _ _                 _             
@@ -476,6 +523,30 @@ protected:
 			return ;
 		_root = _delete_node(_root, key);
 		_size--;
+	}
+
+	bool	_is_rightmost_node(t_node * _ptr) {
+		struct s_node<T> *	tmp = _ptr;
+
+		while (tmp && tmp->parent)
+			tmp = tmp->parent;
+		while (tmp && tmp->right)
+			tmp = tmp->right;
+		if (tmp == _ptr)
+			return true;
+		return false;
+	}
+
+	bool	_is_leftmost_node(t_node * _ptr) {
+		struct s_node<T> *	tmp = _ptr;
+
+		while (tmp && tmp->parent)
+			tmp = tmp->parent;
+		while (tmp && tmp->left)
+			tmp = tmp->left;
+		if (tmp == _ptr)
+			return true;
+		return false;
 	}
 
 	int _get_height(t_node *N) 
@@ -716,9 +787,7 @@ protected:
 		if (node) {
 			_delete_tree(node->left);
 			_delete_tree(node->right);
-			_alloc.destroy(node->data);
-			_alloc.deallocate(node->data, 1);
-			delete node;
+			_delete_one(node->data->first);
 		}
 	}
 

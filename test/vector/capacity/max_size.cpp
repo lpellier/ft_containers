@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	max_size() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
 	std::cout << test.max_size() << std::endl;
 	test.push_back(1);

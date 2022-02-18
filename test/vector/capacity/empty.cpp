@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	empty() {
-	CONTAINER test;
+	NAMESPACE::vector<TEST_TYPE> test;
 
 	std::cout << test.empty();
 	test.push_back(1);
