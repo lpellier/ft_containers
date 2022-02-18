@@ -4,11 +4,12 @@ void	size() {
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test;
 
 	std::cout << test.size() << std::endl;
-	test.push_back(1);
+	test.insert(NAMESPACE::make_pair(TEST_TYPE(), TEST_TYPE()));
 	std::cout << test.size() << std::endl;
-	test.pop_back();
+	test.clear();
 	std::cout << test.size() << std::endl;
-	test.assign(200, 1);
+	for (int i = 0; i < 4; i++)
+		test.insert(NAMESPACE::make_pair(i, i));
 	std::cout << test.size() << std::endl;
 }
 

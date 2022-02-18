@@ -19,6 +19,10 @@
 #include <algorithm>
 #include <stdlib.h>
 
+void	_print_pair(NAMESPACE::pair<const TEST_TYPE, TEST_TYPE> a) {
+	std::cout << a.first << " " << a.second << std::endl;
+}
+
 void	_print(int a) {
 	std::cout << a << " ";
 }

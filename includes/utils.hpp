@@ -149,7 +149,7 @@ pair<T1, T2> make_pair (T1 x, T2 y) {
 
 template < class T >
 struct		s_node {
-	T				*data;
+	T				data;
 	struct s_node	*parent;
 	struct s_node	*left;
 	struct s_node	*right;

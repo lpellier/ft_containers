@@ -92,7 +92,7 @@ public:
 	typedef std::ptrdiff_t				difference_type;
 	typedef value_type &				reference;
 	typedef bidirectional_iterator_tag	iterator_category;
-	typedef value_type 					pointer;
+	typedef value_type *				pointer;
 
 	// default constructor
 	bidirectional_iterator (void) : _ptr(NULL), _switch_read(false) {}
@@ -111,8 +111,10 @@ public:
 		return *this;
 	}
 
-	operator const bidirectional_iterator<const value_type *>() {
-		return (bidirectional_iterator<const value_type *>(const_cast<const T>(_ptr)));
+	// struct s_node<T> *	_ptr;
+	operator const bidirectional_iterator<const value_type>() {
+		// return bidirectional_iterator(reinterpret_cast<struct s_node<const value_type> *>(_ptr));
+		return bidirectional_iterator<const value_type>(reinterpret_cast<struct s_node<const value_type> *>(_ptr));
 	}
 	
 	// Comparison operators
@@ -137,7 +139,7 @@ public:
 
 
 	reference			operator*  (void) const {
-		return *((*_ptr).data);
+		return ((*_ptr).data);
 	}
 
 	reference			operator[] (const int & offset) const {
