@@ -52,7 +52,7 @@ public:
 	typedef std::ptrdiff_t	difference_type;
 	typedef std::size_t		size_type;
 
-	typedef struct s_node<value_type>	t_node;
+	typedef node<value_type>	t_node;
 	typedef	typename allocator_type::template rebind<t_node>::other	node_allocator;
 
 	class value_compare : std::binary_function<value_type, value_type, bool> {
@@ -531,7 +531,7 @@ protected:
 	}
 
 	bool	_is_rightmost_node(t_node * _ptr) {
-		struct s_node<T> *	tmp = _ptr;
+		node<T> *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
 			tmp = tmp->parent;
@@ -543,7 +543,7 @@ protected:
 	}
 
 	bool	_is_leftmost_node(t_node * _ptr) {
-		struct s_node<T> *	tmp = _ptr;
+		node<T> *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
 			tmp = tmp->parent;

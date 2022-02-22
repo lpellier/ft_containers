@@ -41,12 +41,12 @@ namespace ft {
 template < class T >
 class bidirectional_iterator {
 private:
-	struct s_node<T> *	_ptr;
-	struct s_node<T> *	_end;
-	struct s_node<T> *	_rend;
+	node<T> *	_ptr;
+	node<T> *	_end;
+	node<T> *	_rend;
 	bool				_switch_read;
 
-	void	_clear_node(struct s_node<T> * node) {
+	void	_clear_node(node<T> * node) {
 		if (node->right)
 			_clear_node(node->right);
 		if (node->left)
@@ -55,7 +55,7 @@ private:
 	}
 
 	void	_clear_nodes() {
-		struct s_node<T> *	tmp = _ptr;
+		node<T> *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
 			tmp = tmp->parent;
@@ -63,7 +63,7 @@ private:
 	}
 
 	bool	_is_rightmost_node() {
-		struct s_node<T> *	tmp = _ptr;
+		node<T> *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
 			tmp = tmp->parent;
@@ -75,7 +75,7 @@ private:
 	}
 
 	bool	_is_leftmost_node() {
-		struct s_node<T> *	tmp = _ptr;
+		node<T> *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
 			tmp = tmp->parent;
@@ -97,7 +97,7 @@ public:
 	// default constructor
 	bidirectional_iterator (void) : _ptr(NULL), _switch_read(false) {}
 	// parametric constructor // TODO // probably shouldnt be public
-	bidirectional_iterator (struct s_node<T> * new_ptr) : _ptr(new_ptr), _end(_ptr->_end), _rend(_ptr->_rend), _switch_read(false) {}
+	bidirectional_iterator (node<T> * new_ptr) : _ptr(new_ptr), _end(_ptr->_end), _rend(_ptr->_rend), _switch_read(false) {}
 	// destructor
 	~bidirectional_iterator (void) {}
 	// copy constructor
@@ -111,10 +111,11 @@ public:
 		return *this;
 	}
 
-	// struct s_node<T> *	_ptr;
 	operator const bidirectional_iterator<const value_type>() {
-		// return bidirectional_iterator(reinterpret_cast<struct s_node<const value_type> *>(_ptr));
-		return bidirectional_iterator<const value_type>(reinterpret_cast<struct s_node<const value_type> *>(_ptr));
+		bidirectional_iterator<const value_type>	ret;
+
+		ret._ptr = reinterpret_cast<node<const value_type> *>(_ptr);
+		return ret;
 	}
 	
 	// Comparison operators

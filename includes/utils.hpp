@@ -148,17 +148,40 @@ pair<T1, T2> make_pair (T1 x, T2 y) {
 }
 
 template < class T >
-struct		s_node {
-	T				data;
-	struct s_node	*parent;
-	struct s_node	*left;
-	struct s_node	*right;
+class		node {
+public:
+	T			data;
+	node	*parent;
+	node	*left;
+	node	*right;
 
-	struct s_node	*_end;
-	struct s_node	*_rend;
+	node	*_end;
+	node	*_rend;
 
 	int				height;
 	bool			node_read;
+	
+	node() : data(T()), parent(NULL), left(NULL), right(NULL), _end(NULL), _rend(NULL), height(0), node_read(false) {}
+	node(T & new_data) : data(new_data), parent(NULL), left(NULL), right(NULL), _end(NULL), _rend(NULL), height(0), node_read(false) {}
+	node(const node & src) : data(src.data), parent(src.parent), left(src.left), right(src.right), _end(src._end), _rend(src._rend), height(src.height), node_read(src.node_read) {}
+	node & operator=(const node & src) {
+		new (this) node(src);
+
+		return *this;	
+	}
+
+	operator const node<const T>() {
+		node<const T>	ret(data);
+
+		ret.parent = reinterpret_cast<node<const T> *>(parent);
+		ret.left = reinterpret_cast<node<const T> *>(left);
+		ret.right = reinterpret_cast<node<const T> *>(right);
+		ret._end = reinterpret_cast<node<const T> *>(_end);
+		ret._rend = reinterpret_cast<node<const T> *>(_rend);
+		ret.height = height;
+		ret.node_read = node_read;
+		return ret;
+	}
 };
 
 
