@@ -140,6 +140,12 @@ public:
 		new (this) pair(pr);
 		return *this;
 	}
+
+	operator pair<const T1, const T2>() const {
+		return pair<const T1, const T2>(const_cast<const T1>(first), const_cast<const T2>(second));
+	}
+
+	// TODO Comparison operators
 };
 
 template < class T1, class T2 >
@@ -159,18 +165,17 @@ public:
 	node	*_rend;
 
 	int				height;
-	bool			node_read;
-	
-	node() : data(T()), parent(NULL), left(NULL), right(NULL), _end(NULL), _rend(NULL), height(0), node_read(false) {}
-	node(T & new_data) : data(new_data), parent(NULL), left(NULL), right(NULL), _end(NULL), _rend(NULL), height(0), node_read(false) {}
-	node(const node & src) : data(src.data), parent(src.parent), left(src.left), right(src.right), _end(src._end), _rend(src._rend), height(src.height), node_read(src.node_read) {}
+
+	node() : data(T()), parent(NULL), left(NULL), right(NULL), _end(NULL), _rend(NULL), height(0) {}
+	node(T & new_data) : data(new_data), parent(NULL), left(NULL), right(NULL), _end(NULL), _rend(NULL), height(0) {}
+	node(const node & src) : data(src.data), parent(src.parent), left(src.left), right(src.right), _end(src._end), _rend(src._rend), height(src.height) {}
 	node & operator=(const node & src) {
 		new (this) node(src);
 
 		return *this;	
 	}
 
-	operator const node<const T>() {
+	operator const node<const T>() const {
 		node<const T>	ret(data);
 
 		ret.parent = reinterpret_cast<node<const T> *>(parent);
@@ -179,7 +184,6 @@ public:
 		ret._end = reinterpret_cast<node<const T> *>(_end);
 		ret._rend = reinterpret_cast<node<const T> *>(_rend);
 		ret.height = height;
-		ret.node_read = node_read;
 		return ret;
 	}
 };

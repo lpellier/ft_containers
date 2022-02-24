@@ -44,10 +44,10 @@ public:
 	typedef typename allocator_type::pointer				pointer;
 	typedef typename allocator_type::const_pointer			const_pointer;
 	
-	typedef bidirectional_iterator<value_type>			iterator;
-	typedef bidirectional_iterator<const value_type>	const_iterator;
-	typedef reverse_iterator_wrap<iterator>				reverse_iterator;
-	typedef reverse_iterator_wrap<const_iterator>		const_reverse_iterator;
+	typedef bidirectional_iterator<value_type>				iterator;
+	typedef const_bidirectional_iterator<const value_type>	const_iterator;
+	typedef reverse_iterator_wrap<iterator>					reverse_iterator;
+	typedef reverse_iterator_wrap<const_iterator>			const_reverse_iterator;
 	
 	typedef std::ptrdiff_t	difference_type;
 	typedef std::size_t		size_type;
@@ -154,7 +154,7 @@ public:
 	*/
 
 	// Returns an iterator reffering to the first element in the map container
-	iterator		begin() {
+	iterator		begin(enable_if<!is_const<T>::value>) {
 		if (_size == 0)
 			return (end());
 		t_node *	tmp = _root;
@@ -169,20 +169,20 @@ public:
 		t_node *	tmp = _root;
 		while (tmp && tmp->left)
 			tmp = tmp->left;
-		return const_iterator(tmp);
+		return const_iterator(reinterpret_cast<node<const value_type> *>(tmp));
 	}
 
 	// Returns an iterator reffering to the past-the-end element in the map container
-	iterator		end() {
+	iterator		end(enable_if<!is_const<T>::value>) {
 		return iterator(_end);
 	}
 	// If the map is const_qualified
 	const_iterator	end() const {
-		return const_iterator(_end);
+		return const_iterator(reinterpret_cast<node<const value_type> *>(_end));
 	}
 
 	// Returns a reverse_iterator reffering to the last element in the map container
-	reverse_iterator		rbegin() {
+	reverse_iterator		rbegin(enable_if<!is_const<T>::value>) {
 		if (_size == 0)
 			return (rend());
 		t_node *	tmp = _root;
@@ -197,17 +197,17 @@ public:
 		t_node *	tmp = _root;
 		while (tmp && tmp->right)
 			tmp = tmp->right;
-		return const_reverse_iterator(tmp);
+		return const_reverse_iterator(reinterpret_cast<node<const value_type> *>(tmp));
 	}
 
 	// Returns a reverse iterator pointing to the theroritocal element preceding the 
 	// first element in the map (which is considered its reverse end)
-	reverse_iterator		rend() {
+	reverse_iterator		rend(enable_if<!is_const<T>::value>) {
 		return reverse_iterator(_rend);
 	}
 	// If the map is const_qualified
 	const_reverse_iterator	rend() const {
-		return const_reverse_iterator(_rend);
+		return const_reverse_iterator(reinterpret_cast<node<const value_type> *>(_rend));
 	}
 
 	/*
@@ -256,11 +256,11 @@ public:
 	mapped_type &	operator[] (const key_type & k) {
 		t_node * found;
 
-		if ((found = _search_node(k)))
+		if ((found = _search_node(_root, k)))
 			return found->data.second;
 		value_type	inserted = make_pair(k, mapped_type());
 		_add_one(inserted);
-		found = _search_node(k);
+		found = _search_node(_root, k);
 		return found->data.second;
 	}
 
@@ -520,6 +520,8 @@ protected:
 		if (_search_node(_root, element.first)) // no equal keys
 			return ;
 		_root = _add_node(NULL, _root, element);
+		_end->parent = _get_max_node(_root);
+		_rend->parent = _get_min_node(_root);
 		_size++;
 	}
 	
@@ -527,6 +529,8 @@ protected:
 		if (!_search_node(_root, key)) // if key doesnt exist in map
 			return ;
 		_root = _delete_node(_root, key);
+		_end->parent = _get_max_node(_root);
+		_rend->parent = _get_min_node(_root);
 		_size--;
 	}
 
@@ -694,18 +698,19 @@ protected:
 		ret->parent = NULL;
 		ret->data = value_type();
 		ret->height = 0;
-		ret->node_read = false;
+		ret->_end = NULL;
+		ret->_rend = NULL;
 		return ret;
 	}
 
 	t_node * _new_node(const value_type & val, t_node * parent) {
-		t_node *node = new t_node();
+		t_node *node = _alloc.allocate(1);
+		_alloc.construct(node, t_node());
 		node->left = NULL;
 		node->right = NULL;
 		node->parent = parent;
 		node->data = val;
 		node->height = 1;
-		node->node_read = false;
 		node->_end = _end;
 		node->_rend = _rend;
 		return node;
@@ -726,8 +731,19 @@ protected:
 		t_node * current = node;
 	
 		/* loop down to find the leftmost leaf */
-		while (current->left != NULL)
+		while (current && current->left != NULL)
 			current = current->left;
+	
+		return current;
+	}
+
+	t_node * _get_max_node(t_node * node)
+	{
+		t_node * current = node;
+	
+		/* loop down to find the rightmost leaf */
+		while (current && current->right != NULL)
+			current = current->right;
 	
 		return current;
 	}

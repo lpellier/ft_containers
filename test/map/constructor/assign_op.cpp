@@ -1,5 +1,3 @@
-# define NAMESPACE ft
-
 #include "../../test.hpp"
 
 void	assign_op() {
