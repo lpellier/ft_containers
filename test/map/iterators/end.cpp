@@ -6,6 +6,7 @@ void	end() {
 		foo.push_back(NAMESPACE::make_pair(i, i));
 
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE>	test(foo.begin(), foo.end());
+	test.display_tree();
 
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE>::iterator it_foo = test.end();
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE>::const_iterator const_it_foo = test.end();

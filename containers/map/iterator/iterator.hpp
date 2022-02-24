@@ -143,18 +143,15 @@ public:
 	bidirectional_iterator	&	operator++ (void) {
 		if (_ptr == _end)
 			return *this;
-		if (_ptr && _ptr->right && _ptr->right != _prev) {
-			_prev = _ptr;
+		if (_ptr && _ptr->right) {
 			_ptr = _ptr->right;
 			while (_ptr->left)
 				_ptr = _ptr->left;
 		}
 		else if (_ptr && _is_rightmost_node()) {
-			_prev = _ptr;
 			_ptr = _ptr->_end;
 		}
 		else if (_ptr && _ptr->parent) {
-			_prev = _ptr;
 			_ptr = _ptr->parent;
 		}
 		return *this;
