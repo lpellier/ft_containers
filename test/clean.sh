@@ -1,6 +1,7 @@
 #!/bin/bash
 
 rm -rf */*/*.actual_output
+rm -rf */*/a.out
 rm -rf */*/*.your_output
 rm -rf */*/*.compile_error
 rm -rf */*/*.leaks_error
