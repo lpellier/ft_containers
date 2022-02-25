@@ -46,7 +46,7 @@ template < class T >
 class bidirectional_iterator {
 private:
 	node<T> *	_ptr;
-	node<T> *	_prev;
+	// node<T> *	_prev;
 	node<T> *	_end;
 	node<T> *	_rend;
 
@@ -83,18 +83,17 @@ public:
 	typedef value_type *				pointer;
 
 	// default constructor // TODO // shouldnt be public either
-	bidirectional_iterator (void) : _ptr(NULL), _prev(NULL) {}
+	bidirectional_iterator (void) : _ptr(NULL) {}
 	// parametric constructor // TODO // probably shouldnt be public
-	bidirectional_iterator (node<T> * new_ptr) : _ptr(new_ptr), _prev(NULL), _end(_ptr->_end), _rend(_ptr->_rend) {}
+	bidirectional_iterator (node<T> * new_ptr) : _ptr(new_ptr), _end(_ptr->_end), _rend(_ptr->_rend) {}
 	// destructor
 	~bidirectional_iterator (void) {}
 	// copy constructor
-	bidirectional_iterator (const bidirectional_iterator<value_type> & src) : _ptr(src._ptr), _prev(NULL), _end(_ptr->_end), _rend(_ptr->_rend) {}
-	bidirectional_iterator (const const_bidirectional_iterator<const value_type> & src) : _ptr(reinterpret_cast<node<T> *>(src.get_ptr())), _prev(NULL), _end(_ptr->_end), _rend(_ptr->_rend) {}
+	bidirectional_iterator (const bidirectional_iterator<value_type> & src) : _ptr(src._ptr), _end(_ptr->_end), _rend(_ptr->_rend) {}
+	bidirectional_iterator (const const_bidirectional_iterator<const value_type> & src) : _ptr(reinterpret_cast<node<T> *>(src.get_ptr())), _end(_ptr->_end), _rend(_ptr->_rend) {}
 	// assignment operator
 	bidirectional_iterator & operator= (const bidirectional_iterator & src) {
 		_ptr = src._ptr;
-		_prev = NULL;
 		_end = _ptr->_end;
 		_rend = _ptr->_rend;
 		return *this;
@@ -152,6 +151,8 @@ public:
 			_ptr = _ptr->_end;
 		}
 		else if (_ptr && _ptr->parent) {
+			while (_ptr && _ptr->parent && _ptr == _ptr->parent->right)
+				_ptr = _ptr->parent;
 			_ptr = _ptr->parent;
 		}
 		return *this;
@@ -176,18 +177,17 @@ public:
 	bidirectional_iterator &	operator-- (void) {
 		if (_ptr == _rend)
 			return *this;
-		if (_ptr && _ptr->left && _ptr->left != _prev) {
-			_prev = _ptr;
+		if (_ptr && _ptr->left) {
 			_ptr = _ptr->left;
 			while (_ptr->right)
 				_ptr = _ptr->right;
 		}
 		else if (_ptr && _is_leftmost_node()) {
-			_prev = _ptr;
 			_ptr = _ptr->_rend;
 		}
 		else if (_ptr && _ptr->parent) {
-			_prev = _ptr;
+			while (_ptr && _ptr->parent && _ptr == _ptr->parent->left)
+				_ptr = _ptr->parent;
 			_ptr = _ptr->parent;
 		}
 		return *this;
@@ -343,9 +343,9 @@ public:
 			_ptr = _ptr->_end;
 		}
 		else if (_ptr && _ptr->parent) {
-			_ptr = _ptr->parent;
-			while (_ptr && _ptr->parent)
+			while (_ptr && _ptr->parent && _ptr == _ptr->parent->right)
 				_ptr = _ptr->parent;
+			_ptr = _ptr->parent;
 		}
 		return *this;
 	}
@@ -378,9 +378,9 @@ public:
 			_ptr = _ptr->_rend;
 		}
 		else if (_ptr && _ptr->parent) {
-			_ptr = _ptr->parent;
-			while (_ptr && _ptr->parent)
+			while (_ptr && _ptr->parent && _ptr == _ptr->parent->left)
 				_ptr = _ptr->parent;
+			_ptr = _ptr->parent;
 		}
 		return *this;
 	}
@@ -429,3 +429,4 @@ const_bidirectional_iterator<U>	operator+  (const int & lhs, const const_bidirec
 }
 
 }
+
