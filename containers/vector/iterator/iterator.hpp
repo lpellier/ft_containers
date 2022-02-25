@@ -61,9 +61,15 @@ public:
 	}
 
 	operator const random_access_iterator<const value_type *>() {
-		return (random_access_iterator<const value_type *>(const_cast<const T>(_ptr)));
+		random_access_iterator<const value_type *> ret(reinterpret_cast<const value_type *>(_ptr));
+		return ret;
 	}
-	
+
+	// operator const random_access_iterator<value_type *>() {
+	// 	const random_access_iterator<value_type *> ret(const_cast<value_type *>(reinterpret_cast<const value_type *>(_ptr)));
+	// 	return ret;
+	// }
+
 	// Comparison operators
 	bool		operator== (const random_access_iterator & rhs) const {
 		return _ptr == rhs._ptr;

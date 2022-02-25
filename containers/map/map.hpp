@@ -58,12 +58,12 @@ public:
 	class value_compare : std::binary_function<value_type, value_type, bool> {
 	protected:
 		key_compare	comp;
-		value_compare (key_compare c) : comp(c) {}
 
 	public:
 		typedef bool		result_type;
 		typedef value_type	first_argument_type;
 		typedef value_type	second_argument_type;
+		value_compare (key_compare c) : comp(c) {}
 		bool operator() (const value_type & x, const value_type & y) const {
 			return comp(x.first, y.first);
 		}
@@ -185,19 +185,13 @@ public:
 	reverse_iterator		rbegin() {
 		if (_size == 0)
 			return (rend());
-		// t_node *	tmp = _root;
-		// while (tmp && tmp->right)
-		// 	tmp = tmp->right;
 		return reverse_iterator(end());
 	}
 	// If the map is const_qualified
 	const_reverse_iterator	rbegin() const {
 		if (_size == 0)
 			return (rend());
-		// t_node *	tmp = _root;
-		// while (tmp && tmp->right)
-		// 	tmp = tmp->right;
-		return const_reverse_iterator(reinterpret_cast<node<const value_type> *>(end()));
+		return const_reverse_iterator(end());
 	}
 
 	// Returns a reverse iterator pointing to the theroritocal element preceding the 
@@ -207,7 +201,7 @@ public:
 	}
 	// If the map is const_qualified
 	const_reverse_iterator	rend() const {
-		return const_reverse_iterator(reinterpret_cast<node<const value_type> *>(begin()));
+		return const_reverse_iterator(begin());
 	}
 
 	/*

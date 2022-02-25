@@ -30,9 +30,7 @@ public:
 
 	typedef const value_type *	const_iterator_type;
 
-	reverse_iterator_wrap (void) { // default
-		current = value_type();
-	}
+	reverse_iterator_wrap (void) {} // default
 	explicit reverse_iterator_wrap (iterator_type x) { // initialization
 		current = x;
 	}
@@ -45,8 +43,8 @@ public:
 		return *this;
 	}
 
-	operator reverse_iterator_wrap<random_access_iterator<const_iterator_type> >() {
-		return reverse_iterator_wrap<random_access_iterator<const_iterator_type> >(random_access_iterator<const_iterator_type>(current));
+	operator reverse_iterator_wrap<random_access_iterator<const value_type *> >() {
+		return reverse_iterator_wrap<random_access_iterator<const value_type *> >(current);
 	}
 
 	operator reverse_iterator_wrap<bidirectional_iterator<const value_type> >() {

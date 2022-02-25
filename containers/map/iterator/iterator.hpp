@@ -98,9 +98,11 @@ public:
 	}
 	
 	operator bidirectional_iterator<const value_type>() {
-		return bidirectional_iterator<const value_type>(reinterpret_cast<node<const T> *>(_ptr));
+		bidirectional_iterator<const value_type>	ret(reinterpret_cast<node<const T> *>(_ptr));
+		return ret;
+		// return bidirectional_iterator<const value_type>(reinterpret_cast<node<const T> *>(_ptr));
 	}
-
+	
 	// Comparison operators
 	bool		operator== (const bidirectional_iterator & rhs) const {
 		return _ptr == rhs._ptr;

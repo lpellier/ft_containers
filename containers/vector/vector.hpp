@@ -403,11 +403,11 @@ public:
 	// so that only iterators may use this function
 	void		insert (iterator position, InputIterator first, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type last) { // range
 		// diff is distance from position to the end
-		difference_type diff = distance(position, end());
+		difference_type diff = ft::distance(position, end());
 		// tmp is size before any changes to it
 		size_type	tmp = _size;
 		// n is the number of elements added to the vector
-		size_type	n = distance(first, last);
+		size_type	n = ft::distance(first, last);
 		if (_size + n > _capacity)
 			reserve(_next_pow_two(_size + n));
 		while (first != last) {
