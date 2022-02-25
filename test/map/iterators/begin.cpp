@@ -5,7 +5,6 @@ void	begin() {
 	for (int i = 0; i < 10; i++)
 		foo.push_back(NAMESPACE::make_pair(i, i));
 
-
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE>	test(foo.begin(), foo.end());
 
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE>::iterator it_foo = test.begin();

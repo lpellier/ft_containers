@@ -45,7 +45,7 @@ public:
 	typedef typename allocator_type::const_pointer			const_pointer;
 	
 	typedef bidirectional_iterator<value_type>				iterator;
-	typedef const_bidirectional_iterator<const value_type>	const_iterator;
+	typedef bidirectional_iterator<const value_type>	const_iterator;
 	typedef reverse_iterator_wrap<iterator>					reverse_iterator;
 	typedef reverse_iterator_wrap<const_iterator>			const_reverse_iterator;
 	
@@ -154,7 +154,7 @@ public:
 	*/
 
 	// Returns an iterator reffering to the first element in the map container
-	iterator		begin(enable_if<!is_const<T>::value>) {
+	iterator		begin() {
 		if (_size == 0)
 			return (end());
 		t_node *	tmp = _root;
@@ -173,7 +173,7 @@ public:
 	}
 
 	// Returns an iterator reffering to the past-the-end element in the map container
-	iterator		end(enable_if<!is_const<T>::value>) {
+	iterator		end() {
 		return iterator(_end);
 	}
 	// If the map is const_qualified
@@ -182,7 +182,7 @@ public:
 	}
 
 	// Returns a reverse_iterator reffering to the last element in the map container
-	reverse_iterator		rbegin(enable_if<!is_const<T>::value>) {
+	reverse_iterator		rbegin() {
 		if (_size == 0)
 			return (rend());
 		t_node *	tmp = _root;
@@ -202,7 +202,7 @@ public:
 
 	// Returns a reverse iterator pointing to the theroritocal element preceding the 
 	// first element in the map (which is considered its reverse end)
-	reverse_iterator		rend(enable_if<!is_const<T>::value>) {
+	reverse_iterator		rend() {
 		return reverse_iterator(_rend);
 	}
 	// If the map is const_qualified

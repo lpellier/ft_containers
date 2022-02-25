@@ -49,8 +49,9 @@ public:
 		return reverse_iterator_wrap<random_access_iterator<const_iterator_type> >(random_access_iterator<const_iterator_type>(_iter));
 	}
 
-	operator reverse_iterator_wrap<bidirectional_iterator<const_iterator_type> >() {
-		return reverse_iterator_wrap<bidirectional_iterator<const_iterator_type> >(bidirectional_iterator<const_iterator_type>(_iter));
+	operator reverse_iterator_wrap<bidirectional_iterator<const value_type> >() {
+		bidirectional_iterator<const value_type> ret(_iter);
+		return reverse_iterator_wrap<bidirectional_iterator<const value_type> >(ret);
 	}
 	
 	// Returns a copy of the underlying iterator

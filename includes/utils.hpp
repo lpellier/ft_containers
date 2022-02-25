@@ -175,7 +175,7 @@ public:
 		return *this;	
 	}
 
-	operator const node<const T>() const {
+	operator node<const T>() {
 		node<const T>	ret(data);
 
 		ret.parent = reinterpret_cast<node<const T> *>(parent);
@@ -186,6 +186,7 @@ public:
 		ret.height = height;
 		return ret;
 	}
+
 };
 
 
