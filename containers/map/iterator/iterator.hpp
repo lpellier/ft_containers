@@ -89,7 +89,6 @@ public:
 	~bidirectional_iterator (void) {}
 	// copy constructor
 	bidirectional_iterator (const bidirectional_iterator<value_type> & src) : _ptr(src._ptr), _end(_ptr->_end), _rend(_ptr->_rend) {}
-	// bidirectional_iterator (const const_bidirectional_iterator<const value_type> & src) : _ptr(reinterpret_cast<node<T> *>(src.get_ptr())), _end(_ptr->_end), _rend(_ptr->_rend) {}
 	// assignment operator
 	bidirectional_iterator & operator= (const bidirectional_iterator & src) {
 		_ptr = src._ptr;

@@ -185,29 +185,29 @@ public:
 	reverse_iterator		rbegin() {
 		if (_size == 0)
 			return (rend());
-		t_node *	tmp = _root;
-		while (tmp && tmp->right)
-			tmp = tmp->right;
-		return reverse_iterator(tmp);
+		// t_node *	tmp = _root;
+		// while (tmp && tmp->right)
+		// 	tmp = tmp->right;
+		return reverse_iterator(end());
 	}
 	// If the map is const_qualified
 	const_reverse_iterator	rbegin() const {
 		if (_size == 0)
 			return (rend());
-		t_node *	tmp = _root;
-		while (tmp && tmp->right)
-			tmp = tmp->right;
-		return const_reverse_iterator(reinterpret_cast<node<const value_type> *>(tmp));
+		// t_node *	tmp = _root;
+		// while (tmp && tmp->right)
+		// 	tmp = tmp->right;
+		return const_reverse_iterator(reinterpret_cast<node<const value_type> *>(end()));
 	}
 
 	// Returns a reverse iterator pointing to the theroritocal element preceding the 
 	// first element in the map (which is considered its reverse end)
 	reverse_iterator		rend() {
-		return reverse_iterator(_rend);
+		return reverse_iterator(begin());
 	}
 	// If the map is const_qualified
 	const_reverse_iterator	rend() const {
-		return const_reverse_iterator(reinterpret_cast<node<const value_type> *>(_rend));
+		return const_reverse_iterator(reinterpret_cast<node<const value_type> *>(begin()));
 	}
 
 	/*

@@ -13,13 +13,13 @@ void	rbegin() {
 	it_foo++;
 	std::cout << (*it_foo).first << " " << (*it_foo).second << std::endl;
 	it_foo--;
-	std::cout << (*it_foo).first << " " << (*it_foo).second << std::endl;
+	std::cout << (*it_foo).first << " " << (*it_foo).second << std::endl << std::endl;
 
 	std::cout << (*const_it_foo).first << " " << (*const_it_foo).second << std::endl;
 	const_it_foo++;
 	std::cout << (*const_it_foo).first << " " << (*const_it_foo).second << std::endl;
 	const_it_foo--;
-	std::cout << (*const_it_foo).first << " " << (*const_it_foo).second << std::endl;
+	std::cout << (*const_it_foo).first << " " << (*const_it_foo).second << std::endl << std::endl;
 
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE>::reverse_iterator test_it = test.rbegin();
 	while (test_it != test.rend()) {

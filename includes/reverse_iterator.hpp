@@ -18,7 +18,7 @@ namespace ft {
 template < class Iter >
 class reverse_iterator_wrap {
 protected:
-	Iter	_iter;
+	Iter	current;
 
 public:
 	typedef Iter												iterator_type;
@@ -31,37 +31,37 @@ public:
 	typedef const value_type *	const_iterator_type;
 
 	reverse_iterator_wrap (void) { // default
-		_iter = value_type();
+		current = value_type();
 	}
 	explicit reverse_iterator_wrap (iterator_type x) { // initialization
-		_iter = x;
+		current = x;
 	}
 	reverse_iterator_wrap (const reverse_iterator_wrap<Iter> & src) { // copy
-		_iter = src._iter;
+		current = src.current;
 	}
 
 	reverse_iterator_wrap & operator= (const reverse_iterator_wrap<Iter> & src) { // assignment operator
-		_iter = src._iter;
+		current = src.current;
 		return *this;
 	}
 
 	operator reverse_iterator_wrap<random_access_iterator<const_iterator_type> >() {
-		return reverse_iterator_wrap<random_access_iterator<const_iterator_type> >(random_access_iterator<const_iterator_type>(_iter));
+		return reverse_iterator_wrap<random_access_iterator<const_iterator_type> >(random_access_iterator<const_iterator_type>(current));
 	}
 
 	operator reverse_iterator_wrap<bidirectional_iterator<const value_type> >() {
-		bidirectional_iterator<const value_type> ret(_iter);
+		bidirectional_iterator<const value_type> ret(current);
 		return reverse_iterator_wrap<bidirectional_iterator<const value_type> >(ret);
 	}
 	
 	// Returns a copy of the underlying iterator
 	iterator_type base () const {
-		return _iter;
+		return current;
 	}
 
 	// Returns a reference to the element pointed to by the iterator
 	reference operator* () const {
-		return *(_iter - 1);
+		return *(current - 1);
 	}
 
 	// Returns a pointer to the element pointed to by the iterator
@@ -74,7 +74,7 @@ public:
 	}
 
 	reverse_iterator_wrap & operator++ () {
-		_iter--;
+		current--;
 		return *this;
 	}
 
@@ -85,7 +85,7 @@ public:
 	}
 
 	reverse_iterator_wrap & operator-- () {
-		_iter++;
+		current++;
 		return *this;
 	}
 
@@ -99,8 +99,8 @@ public:
 	// element the iterator currently points to
 	// This function requires the base operator to be a random-access iterator
 	reverse_iterator_wrap				operator+  (difference_type n) const {
-		reverse_iterator_wrap ret(_iter);
-		ret._iter -= n;
+		reverse_iterator_wrap ret(current);
+		ret.current -= n;
 
 		return ret;
 	}
@@ -110,8 +110,8 @@ public:
 	// Returns a reverse iterator pointing to the element located n positions before the element the
 	// iterator currently points to
 	reverse_iterator_wrap				operator-  (difference_type n) const {
-		reverse_iterator_wrap ret (_iter);
-		ret._iter += n;
+		reverse_iterator_wrap ret (current);
+		ret.current += n;
 
 		return ret;
 	}
@@ -121,14 +121,14 @@ public:
 	// Advances the reverse_iterator_wrap by n element positions
 	// Requires the base iterator to be a random access iterator
 	reverse_iterator_wrap &				operator+= (difference_type n) {
-		_iter -= n;
+		current -= n;
 		return *this;
 	}
 
 	// Decreases the reverse_iterator_wrap by n element positions
 	// Requires the base iterator to be a random access iterator
 	reverse_iterator_wrap &				operator-= (difference_type n) {
-		_iter += n;
+		current += n;
 		return *this;
 	}
 
