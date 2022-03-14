@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VALGRIND=1
+VALGRIND=0
 which valgrind 1> /dev/null 2> /dev/null
 if [ $? -ne 0 ]; then
 	VALGRIND=0
