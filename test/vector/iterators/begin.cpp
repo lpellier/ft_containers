@@ -16,6 +16,8 @@ void	begin() {
 	it_foo--;
 	std::cout << *it_foo << std::endl;
 
+	std::cout << (it_foo == const_it_foo) << std::endl;
+
 	std::cout << *const_it_foo << std::endl;
 	const_it_foo++;
 	std::cout << *const_it_foo << std::endl;
