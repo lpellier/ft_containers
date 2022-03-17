@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../includes/reverse_iterator.hpp"
-#include "iterator/iterator.hpp"
+// #include "iteratorc/iterator.hpp"
 
 namespace ft {
 
@@ -360,7 +360,7 @@ public:
 	// the elements that were after position to their new positions
 	iterator	insert (iterator position, const value_type & val) { // single element
 		// diff is distance from position to the end
-		difference_type diff = distance(position, end());
+		difference_type diff = ft::distance(position, end());
 		if (_size + 1 > _capacity)
 			reserve(_next_pow_two(_size + 1));
 		// tmp is size before any changes to it
@@ -380,7 +380,7 @@ public:
 	}
 	void		insert (iterator position, size_type n, const value_type & val) { // fill
 		// diff is distance from position to the end
-		difference_type diff = distance(position, end());
+		difference_type diff = ft::distance(position, end());
 		if (_size + n > _capacity)
 			reserve(_next_pow_two(_size + n));
 		// tmp is size before any changes to it
@@ -393,7 +393,7 @@ public:
 		while (cur_position > position) {
 			// moving each new element backwards until we arrive at desired position
 			for (size_type i = 0; i < n; i++)
-				_move_back(distance(begin(), cur_position + i));
+				_move_back(ft::distance(begin(), cur_position + i));
 			cur_position--;
 		}
 	} 
@@ -421,7 +421,7 @@ public:
 		while (cur_position > position) {
 			// moving each new element backwards until we arrive at desired position
 			for (size_type i = 0; i < n; i++)
-				_move_back(distance(begin(), cur_position + i));
+				_move_back(ft::distance(begin(), cur_position + i));
 			cur_position--;
 		}
 	}
@@ -433,8 +433,6 @@ public:
 	iterator	erase (iterator position) { // single element
 		// this is the distance from the begin to the point of erasure
 		difference_type dist = ft::distance(begin(), position);
-		// destroy element pointed to by position
-		_alloc.destroy(_array + dist);
 		// move backwards every element after position
 		position++;
 		while (position != end()) {
@@ -581,7 +579,7 @@ template	< class T >
 bool		operator== (const vector<T> & lhs, const vector<T> & rhs) {
 	if (lhs.size() != rhs.size())
 		return false;
-	return equal(lhs.begin(), lhs.end(), rhs.begin());
+	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 template	< class T >
 bool		operator!= (const vector<T> & lhs, const vector<T> & rhs) {
@@ -589,7 +587,7 @@ bool		operator!= (const vector<T> & lhs, const vector<T> & rhs) {
 }
 template	< class T >
 bool		operator<  (const vector<T> & lhs, const vector<T> & rhs) {
-	return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 template	< class T >
 bool		operator<= (const vector<T> & lhs, const vector<T> & rhs) {

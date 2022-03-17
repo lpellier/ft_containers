@@ -1,14 +1,14 @@
 #pragma once
 
-#include "iterator/iterator.hpp"
-#include "../../includes/reverse_iterator.hpp"
+// #include "iterator/iterator.hpp"
+#include "../../utils/reverse_iterator.hpp"
 
 namespace ft {
 
 template <	class Key,											// map::key_type
 			class T,											// map::mapped_type
 			class Compare = std::less<Key>,						// map::key_compare
-			class Alloc = std::allocator<pair<const Key,T> >	// map::allocator_type
+			class Alloc = std::allocator<ft::pair<const Key, T> >	// map::allocator_type
 			> 
 class map {
 public:
@@ -252,7 +252,7 @@ public:
 
 		if ((found = _search_node(_root, k)))
 			return found->data.second;
-		value_type	inserted = make_pair(k, mapped_type());
+		value_type	inserted = ft::make_pair(k, mapped_type());
 		_add_one(inserted);
 		found = _search_node(_root, k);
 		return found->data.second;
@@ -276,9 +276,9 @@ public:
 	pair<iterator, bool>	insert (const value_type & val) { // single element
 		t_node * found;
 		if ((found = _search_node(_root, val.first)))
-			return make_pair(iterator(found), false);
+			return ft::make_pair(iterator(found), false);
 		_add_one(val);
-		return make_pair(iterator(_search_node(_root, val.first)), true);
+		return ft::make_pair(iterator(_search_node(_root, val.first)), true);
 	}
 	iterator				insert (iterator position, const value_type & val) { // fill
 		// TODO // Get info on hint
@@ -303,7 +303,7 @@ public:
 	// This effectively reduces the container size by the number of elements removed,
 	// which are destroyed
 	void		erase (iterator position) {
-		_delete_one((*position).second);
+		_delete_one((*position).first);
 	}
 	size_type	erase (const key_type & k) {
 		if (_search_node(_root, k)) {
@@ -314,7 +314,7 @@ public:
 	}
 	void		erase (iterator first, iterator last) {
 		while (first != last) {
-			_delete_one((*first).second);
+			_delete_one((*first).first);
 			first++;
 		}
 	}
@@ -451,15 +451,15 @@ public:
 		t_node * found;
 
 		if ((found = search_node(_root, k)))
-			return make_pair(lower_bound(k), upper_bound(k));
-		return make_pair(upper_bound(k), upper_bound(k));
+			return ft::make_pair(lower_bound(k), upper_bound(k));
+		return ft::make_pair(upper_bound(k), upper_bound(k));
 	}
 	pair<const_iterator, const_iterator>	equal_range (const key_type & k) const {
 		t_node * found;
 		
 		if ((found = search_node(_root, k)))
-			return make_pair(lower_bound(k), upper_bound(k));
-		return make_pair(upper_bound(k), upper_bound(k));
+			return ft::make_pair(lower_bound(k), upper_bound(k));
+		return ft::make_pair(upper_bound(k), upper_bound(k));
 	}
 
 	/*
@@ -529,7 +529,7 @@ protected:
 	}
 
 	bool	_is_rightmost_node(t_node * _ptr) {
-		node<T> *	tmp = _ptr;
+		t_node *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
 			tmp = tmp->parent;
@@ -541,7 +541,7 @@ protected:
 	}
 
 	bool	_is_leftmost_node(t_node * _ptr) {
-		node<T> *	tmp = _ptr;
+		t_node *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
 			tmp = tmp->parent;
