@@ -1,28 +1,23 @@
 #include "../../test.hpp"
 
-void	relational_op() {
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test(100, 5);
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test1(50, 2);
+void	equal_range() {
+	NAMESPACE::map<char,int> mymap;
 
-	std::cout << (test == test1) << std::endl;
-	std::cout << (test != test1) << std::endl;
-	std::cout << (test < test1) << std::endl;
-	std::cout << (test > test1) << std::endl;
-	std::cout << (test <= test1) << std::endl;
-	std::cout << (test >= test1) << std::endl;
-	
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test2(100, 5);
+	mymap['a']=10;
+	mymap['b']=20;
+	mymap['c']=30;
 
-	std::cout << (test == test2) << std::endl;
-	std::cout << (test != test2) << std::endl;
-	std::cout << (test < test2) << std::endl;
-	std::cout << (test > test2) << std::endl;
-	std::cout << (test <= test2) << std::endl;
-	std::cout << (test >= test2) << std::endl;
-	
+	NAMESPACE::pair<NAMESPACE::map<char,int>::iterator,NAMESPACE::map<char,int>::iterator> ret;
+	ret = mymap.equal_range('b');
+
+	std::cout << "lower bound points to: ";
+	std::cout << ret.first->first << " => " << ret.first->second << '\n';
+
+	std::cout << "upper bound points to: ";
+	std::cout << ret.second->first << " => " << ret.second->second << '\n';	
 }
 
 int main() {
-	relational_op();
+	equal_range();
 	exit(EXIT_SUCCESS);
 }

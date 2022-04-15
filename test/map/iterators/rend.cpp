@@ -1,9 +1,9 @@
 #include "../../test.hpp"
 
 void	rend() {
-	NAMESPACE::vector<NAMESPACE::pair<TEST_TYPE, TEST_TYPE> > foo;
+	NAMESPACE::map<TEST_TYPE, TEST_TYPE> foo;
 	for (int i = 0; i < 10; i++)
-		foo.push_back(NAMESPACE::make_pair(i, i));
+		foo.insert(NAMESPACE::make_pair(i, i));
 
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE>	test(foo.rbegin(), foo.rend());
 

@@ -1,28 +1,25 @@
 #include "../../test.hpp"
 
-void	relational_op() {
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test(100, 5);
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test1(50, 2);
+void	count() {
+	NAMESPACE::map<char,int> mymap;
+	char c;
 
-	std::cout << (test == test1) << std::endl;
-	std::cout << (test != test1) << std::endl;
-	std::cout << (test < test1) << std::endl;
-	std::cout << (test > test1) << std::endl;
-	std::cout << (test <= test1) << std::endl;
-	std::cout << (test >= test1) << std::endl;
-	
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test2(100, 5);
+	mymap ['a']=101;
+	mymap ['c']=202;
+	mymap ['f']=303;
 
-	std::cout << (test == test2) << std::endl;
-	std::cout << (test != test2) << std::endl;
-	std::cout << (test < test2) << std::endl;
-	std::cout << (test > test2) << std::endl;
-	std::cout << (test <= test2) << std::endl;
-	std::cout << (test >= test2) << std::endl;
+	for (c='a'; c<'h'; c++)
+	{
+		std::cout << c;
+		if (mymap.count(c)>0)
+			std::cout << " is an element of mymap.\n";
+		else 
+			std::cout << " is not an element of mymap.\n";
+	}
 	
 }
 
 int main() {
-	relational_op();
+	count();
 	exit(EXIT_SUCCESS);
 }

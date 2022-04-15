@@ -1,19 +1,24 @@
 #include "../../test.hpp"
 
 void	clear() {
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> to_be_assigned(1000, 10);
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test;
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test1;
+	NAMESPACE::map<char,int> mymap;
 
-	_print_map(test);
-	test.clear();
-	_print_map(test);
-	test = NAMESPACE::map<TEST_TYPE, TEST_TYPE>(100, 5);
-	test.clear();
-	_print_map(test1);
-	test1 = NAMESPACE::map<TEST_TYPE, TEST_TYPE>(to_be_assigned.begin(), to_be_assigned.end());
-	test1.clear();
-	_print_map(test1);
+	mymap['x']=100;
+	mymap['y']=200;
+	mymap['z']=300;
+
+	std::cout << "mymap contains:\n";
+	for (NAMESPACE::map<char,int>::iterator it=mymap.begin(); it!=mymap.end(); ++it)
+		std::cout << it->first << " => " << it->second << '\n';
+
+	mymap.clear();
+	mymap['a']=1101;
+	mymap['b']=2202;
+
+	std::cout << "mymap contains:\n";
+	for (NAMESPACE::map<char,int>::iterator it=mymap.begin(); it!=mymap.end(); ++it)
+		std::cout << it->first << " => " << it->second << '\n';
+
 }
 
 int main() {

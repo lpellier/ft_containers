@@ -1,28 +1,26 @@
 #include "../../test.hpp"
 
-void	relational_op() {
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test(100, 5);
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test1(50, 2);
+void	lower_bound() {
+	NAMESPACE::map<char,int> mymap;
+	NAMESPACE::map<char,int>::iterator itlow;
 
-	std::cout << (test == test1) << std::endl;
-	std::cout << (test != test1) << std::endl;
-	std::cout << (test < test1) << std::endl;
-	std::cout << (test > test1) << std::endl;
-	std::cout << (test <= test1) << std::endl;
-	std::cout << (test >= test1) << std::endl;
-	
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test2(100, 5);
+	mymap['a']=20;
+	mymap['b']=40;
+	mymap['c']=60;
+	mymap['d']=80;
+	mymap['e']=100;
 
-	std::cout << (test == test2) << std::endl;
-	std::cout << (test != test2) << std::endl;
-	std::cout << (test < test2) << std::endl;
-	std::cout << (test > test2) << std::endl;
-	std::cout << (test <= test2) << std::endl;
-	std::cout << (test >= test2) << std::endl;
-	
+	itlow=mymap.lower_bound ('b');  // itlow points to b
+
+	mymap.erase(itlow);        // erases [itlow,itup)
+
+	// print content:
+	for (NAMESPACE::map<char,int>::iterator it=mymap.begin(); it!=mymap.end(); ++it)
+		std::cout << it->first << " => " << it->second << '\n';
+
 }
 
 int main() {
-	relational_op();
+	lower_bound();
 	exit(EXIT_SUCCESS);
 }

@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	assign_op() {
-	NAMESPACE::map<NAMESPACE::pair<const TEST_TYPE, TEST_TYPE> > test_map;
+	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test_map;
 	for (int i = 0; i < 10; i++)
 		test_map.insert(NAMESPACE::make_pair(i, i));
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE>	assign_guy(test_map.begin(), test_map.end());

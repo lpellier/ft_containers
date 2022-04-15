@@ -93,8 +93,6 @@ public:
 	// with each element constructed from its corresponding element
 	// in that range, in the same order
 	template < class InputIterator >
-	// TODO // using enable_if here forbids any integral type to get into this function
-	// TODO // so that only iterators may use this function
 	map (InputIterator first, InputIterator last, const key_compare & comp = key_compare(), const allocator_type & alloc = allocator_type()) { // range
 		_root = NULL;
 		_size = 0;
@@ -112,8 +110,8 @@ public:
 	map (const map & x) { // copy
 		_root = NULL;
 		_size = 0;
-		_comp = x._comp;
-		_alloc = x._alloc;
+		_comp = key_compare(x._comp);
+		_alloc = allocator_type(x._alloc);
 		_end = _empty_node();
 		_rend = _empty_node();
 		const_iterator src_it = x.begin();
@@ -125,8 +123,10 @@ public:
 	// using its allocator
 	~map () {
 		_delete_tree();
-		delete _end;
-		delete _rend;
+		if (_end)
+			delete _end;
+		if (_rend)
+			delete _rend;
 	}
 
 	// Assigns new contents to the container, replacing its current content and changing its size accordingly
@@ -134,13 +134,13 @@ public:
 	map &	operator= (const map & x) {
 		_root = NULL;
 		_size = 0;
-		_comp = x._comp;
-		_alloc = x._alloc;
-		iterator src_it = x.begin();
-		for (; src_it != x.end(); src_it++)
-			_add_one(*src_it);
+		_comp = key_compare(x._comp);
+		_alloc = allocator_type(x._alloc);
 		_end = _empty_node();
 		_rend = _empty_node();
+		const_iterator src_it = x.begin();
+		for (; src_it != x.end(); src_it++)
+			_add_one(*src_it);
 	
 		return *this;
 	}
@@ -323,13 +323,13 @@ public:
 	// Exchanges the content of the container by the content of x, which is another map
 	// of the same type; sizes may differ
 	void	swap (map & x) {
-		map	tmp(this);
+		map	tmp(*this);
 
 		clear();
 		new (this) map(x);
 	
 		x.clear();
-		new (x) map(tmp);
+		x = tmp;
 	}
 
 	// Removes all elements from the map container (which are destroyed),
@@ -406,9 +406,9 @@ public:
 	iterator		lower_bound (const key_type & k) {
 		t_node * tmp = _root;
 
-		while (_comp(k, tmp->data.second))
+		while (tmp && _comp(k, tmp->data.first))
 			tmp = tmp->left;
-		if (_is_leftmost_node(tmp))
+		if (!tmp)
 			return end();
 		return iterator(tmp);
 	}
@@ -416,30 +416,30 @@ public:
 	const_iterator	lower_bound (const key_type & k) const {
 		t_node * tmp = _root;
 
-		while (_comp(k, tmp->data.second))
+		while (tmp && _comp(k, tmp->data.first))
 			tmp = tmp->left;
-		if (_is_leftmost_node(tmp))
+		if (!tmp)
 			return end();
 		return const_iterator(tmp);	
 	}
 
 	// Returns an iterator pointing to the first element in the container
-	// whose ket is considered to go after k
+	// whose key is considered to go after k
 	iterator		upper_bound (const key_type & k) {
 		t_node * tmp = _root;
 
-		while (!_comp(k, tmp->data.second))
+		while (tmp && !_comp(k, tmp->data.first))
 			tmp = tmp->right;
-		if (_is_rightmost_node(tmp))
+		if (!tmp)
 			return end();
 		return iterator(tmp);
 	}
 	const_iterator	upper_bound (const key_type & k) const {
 		t_node * tmp = _root;
 
-		while (!_comp(k, tmp->data.second))
+		while (tmp && !_comp(k, tmp->data.first))
 			tmp = tmp->right;
-		if (_is_rightmost_node(tmp))
+		if (!tmp)
 			return end();
 		return const_iterator(tmp);	
 	}
@@ -451,14 +451,14 @@ public:
 	pair<iterator, iterator>				equal_range (const key_type & k) {
 		t_node * found;
 
-		if ((found = search_node(_root, k)))
+		if ((found = _search_node(_root, k)))
 			return ft::make_pair(lower_bound(k), upper_bound(k));
 		return ft::make_pair(upper_bound(k), upper_bound(k));
 	}
 	pair<const_iterator, const_iterator>	equal_range (const key_type & k) const {
 		t_node * found;
 		
-		if ((found = search_node(_root, k)))
+		if ((found = _search_node(_root, k)))
 			return ft::make_pair(lower_bound(k), upper_bound(k));
 		return ft::make_pair(upper_bound(k), upper_bound(k));
 	}
@@ -478,7 +478,7 @@ public:
 	}
 
 	// TO BE REMOVED
-	void	display_tree(void) {
+	void	display_tree(void) const {
 		// DEBUG
 		if (!_root)
 			return ;
@@ -529,7 +529,7 @@ protected:
 		_size--;
 	}
 
-	bool	_is_rightmost_node(t_node * _ptr) {
+	bool	_is_rightmost_node(t_node * _ptr) const {
 		t_node *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
@@ -541,7 +541,7 @@ protected:
 		return false;
 	}
 
-	bool	_is_leftmost_node(t_node * _ptr) {
+	bool	_is_leftmost_node(t_node * _ptr) const {
 		t_node *	tmp = _ptr;
 
 		while (tmp && tmp->parent)
@@ -553,18 +553,17 @@ protected:
 		return false;
 	}
 
-	int _get_height(t_node *N) 
-	{ 
+	int _get_height(t_node *N) const { 
 		if (N == NULL) 
 			return 0; 
 		return N->height; 
 	} 
 
-	int		_max(int a, int b) {
+	int		_max(int a, int b) const {
 		return (a > b)? a : b; 
 	}
 
-	bool		_is_balanced(t_node * node) {
+	bool		_is_balanced(t_node * node) const {
 		if (!node)
 			return true;
 		if (abs(_get_balance(node)) <= 1 && _is_balanced(node->left) && _is_balanced(node->right))
@@ -572,7 +571,7 @@ protected:
 		return false;
 	}
 
-	int		_get_balance(t_node * node) {
+	int		_get_balance(t_node * node) const {
 		if (!node || (!node->left && !node->right))
 			return (0);
 		if (!node->left)
@@ -721,8 +720,7 @@ protected:
 		return _balance_tree(node, val, false);
 	}
 
-	t_node * _get_min_node(t_node * node)
-	{
+	t_node * _get_min_node(t_node * node) const {
 		t_node * current = node;
 	
 		/* loop down to find the leftmost leaf */
@@ -732,8 +730,7 @@ protected:
 		return current;
 	}
 
-	t_node * _get_max_node(t_node * node)
-	{
+	t_node * _get_max_node(t_node * node) const {
 		t_node * current = node;
 	
 		/* loop down to find the rightmost leaf */
@@ -756,6 +753,7 @@ protected:
 			else if (!node->left) {
 				tmp = node;
 				node = node->right;
+				node->parent = tmp->parent;
 				_alloc.destroy(tmp);
 				_alloc.deallocate(tmp, 1);
 				tmp = NULL;
@@ -763,6 +761,7 @@ protected:
 			else if (!node->right) {
 				tmp = node;
 				node = node->left;
+				node->parent = tmp->parent;
 				_alloc.destroy(tmp);
 				_alloc.deallocate(tmp, 1);
 				tmp = NULL;
@@ -782,7 +781,7 @@ protected:
 		return _balance_tree(node, node->data, true);
 	}
 
-	t_node *	_search_node(t_node * node, const key_type & val) {
+	t_node *	_search_node(t_node * node, const key_type & val) const {
 		if (!node)
 			return (NULL);
 		if (!_comp(val, node->data.first) && !_comp(node->data.first, val))
@@ -799,7 +798,7 @@ protected:
 			_delete_one(_root->data.first);
 	}
 
-	void	_display_tree(const std::string & prefix, t_node * node, bool isLeft, bool childInRight) {
+	void	_display_tree(const std::string & prefix, t_node * node, bool isLeft, bool childInRight) const {
 		if (node) {
 			std::cout << prefix;
 			std::cout << (isLeft && childInRight ? "├──" : "└──");

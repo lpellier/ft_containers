@@ -1,17 +1,24 @@
 #include "../../test.hpp"
 
 void	swap() {
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test(10, 0);
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test1(20, 1);
+	NAMESPACE::map<char,int> foo,bar;
 
-	_print_map(test);
-	_print_map(test1);
-	test.swap(test1);
-	_print_map(test);
-	_print_map(test1);
-	test1.swap(test);
-	_print_map(test);
-	_print_map(test1);
+	foo['x']=100;
+	foo['y']=200;
+
+	bar['a']=11;
+	bar['b']=22;
+	bar['c']=33;
+
+	foo.swap(bar);
+
+	std::cout << "foo contains:\n";
+	for (NAMESPACE::map<char,int>::iterator it=foo.begin(); it!=foo.end(); ++it)
+		std::cout << it->first << " => " << it->second << '\n';
+
+	std::cout << "bar contains:\n";
+	for (NAMESPACE::map<char,int>::iterator it=bar.begin(); it!=bar.end(); ++it)
+		std::cout << it->first << " => " << it->second << '\n';
 }
 
 int main() {

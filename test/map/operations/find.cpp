@@ -1,28 +1,26 @@
 #include "../../test.hpp"
 
-void	relational_op() {
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test(100, 5);
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test1(50, 2);
+void	find() {
+	NAMESPACE::map<char,int> mymap;
+	NAMESPACE::map<char,int>::iterator it;
 
-	std::cout << (test == test1) << std::endl;
-	std::cout << (test != test1) << std::endl;
-	std::cout << (test < test1) << std::endl;
-	std::cout << (test > test1) << std::endl;
-	std::cout << (test <= test1) << std::endl;
-	std::cout << (test >= test1) << std::endl;
-	
-	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test2(100, 5);
+	mymap['a']=50;
+	mymap['b']=100;
+	mymap['c']=150;
+	mymap['d']=200;
 
-	std::cout << (test == test2) << std::endl;
-	std::cout << (test != test2) << std::endl;
-	std::cout << (test < test2) << std::endl;
-	std::cout << (test > test2) << std::endl;
-	std::cout << (test <= test2) << std::endl;
-	std::cout << (test >= test2) << std::endl;
-	
+	it = mymap.find('b');
+	if (it != mymap.end())
+	mymap.erase (it);
+
+	// print content:
+	std::cout << "elements in mymap:" << '\n';
+	std::cout << "a => " << mymap.find('a')->second << '\n';
+	std::cout << "c => " << mymap.find('c')->second << '\n';
+	std::cout << "d => " << mymap.find('d')->second << '\n';
 }
 
 int main() {
-	relational_op();
+	find();
 	exit(EXIT_SUCCESS);
 }
