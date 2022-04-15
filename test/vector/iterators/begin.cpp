@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	begin() {
-	std::vector<int> foo;
+	NAMESPACE::vector<int> foo;
 	for (int i = 0; i < 10; i++)
 		foo.push_back(i);
 
@@ -15,8 +15,6 @@ void	begin() {
 	std::cout << *it_foo << std::endl;
 	it_foo--;
 	std::cout << *it_foo << std::endl;
-
-	std::cout << (it_foo == const_it_foo) << std::endl;
 
 	std::cout << *const_it_foo << std::endl;
 	const_it_foo++;

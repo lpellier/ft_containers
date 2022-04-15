@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../../../includes/utils.hpp"
+// #include "../../../includes/utils.hpp"
+#include <cstddef>
+#include "../../../includes/type_traits.hpp"
 
 namespace ft {
 
@@ -40,11 +42,11 @@ struct iterator {
 template < class T >
 class random_access_iterator {
 public:
-	typedef typename iterator_traits<T>::value_type			value_type;
-	typedef typename iterator_traits<T>::difference_type	difference_type;
-	typedef typename iterator_traits<T>::pointer			pointer;
-	typedef typename iterator_traits<T>::reference			reference;
-	typedef typename iterator_traits<T>::iterator_category	iterator_category;
+	typedef typename ft::iterator_traits<T>::value_type			value_type;
+	typedef typename ft::iterator_traits<T>::difference_type	difference_type;
+	typedef typename ft::iterator_traits<T>::pointer			pointer;
+	typedef typename ft::iterator_traits<T>::reference			reference;
+	typedef typename ft::iterator_traits<T>::iterator_category	iterator_category;
 
 	// default constructor
 	random_access_iterator (void) : _ptr(NULL) {}
@@ -60,15 +62,10 @@ public:
 		return *this;
 	}
 
-	operator const random_access_iterator<const value_type *>() {
-		random_access_iterator<const value_type *> ret(reinterpret_cast<const value_type *>(_ptr));
+	operator random_access_iterator<const value_type *>() {
+		random_access_iterator<const value_type *> ret(_ptr);
 		return ret;
 	}
-
-	// operator const random_access_iterator<value_type *>() {
-	// 	const random_access_iterator<value_type *> ret(const_cast<value_type *>(reinterpret_cast<const value_type *>(_ptr)));
-	// 	return ret;
-	// }
 
 	// Comparison operators
 	bool		operator== (const random_access_iterator & rhs) const {

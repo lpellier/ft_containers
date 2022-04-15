@@ -5,7 +5,7 @@
 # define RESET          "\e[0m"
 
 #ifndef NAMESPACE
-# define NAMESPACE std
+# define NAMESPACE ft // ? std
 #endif
 
 #ifndef TEST_TYPE

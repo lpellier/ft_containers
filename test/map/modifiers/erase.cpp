@@ -1,14 +1,19 @@
 #include "../../test.hpp"
 
+// !
+# define NAMESPACE ft
+
 void	erase() {
 	NAMESPACE::map<TEST_TYPE, TEST_TYPE> test;
 	for (int i = 0; i < 10; i++)
-		test.push_back(i);
-	_print_vec(test);
-	test.erase(test.begin() + 5);
-	_print_vec(test);
-	test.erase(test.begin(), test.begin() + 3);
-	_print_vec(test);
+		test.insert(NAMESPACE::make_pair(i, i));
+	_print_map(test);
+	NAMESPACE::map<TEST_TYPE, TEST_TYPE>::iterator test_it = test.begin();
+	test.erase(test_it);
+	_print_map(test);
+	test_it = test.begin();
+	test.erase(test_it);
+	_print_map(test);
 }
 
 int main() {

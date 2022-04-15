@@ -28,7 +28,6 @@ namespace ft {
 // 		typedef Category	iterator_category;
 // };
 
-
 /*
                      _                                                   _ _                 _             
                     | |                                                 (_) |               | |            
@@ -37,10 +36,6 @@ namespace ft {
 | | | (_| | | | | (_| | (_) | | | | | |  | (_| | (_| (_|  __/\__ \__ \  | | ||  __/ | | (_| | || (_) | |   
 |_|  \__,_|_| |_|\__,_|\___/|_| |_| |_|   \__,_|\___\___\___||___/___/  |_|\__\___|_|  \__,_|\__\___/|_|   
 */
-
-
-template <class T>
-class const_bidirectional_iterator;
 
 template < class T >
 class bidirectional_iterator {
@@ -75,20 +70,20 @@ private:
 	
 
 public:
-	typedef T							value_type;
-	typedef std::ptrdiff_t				difference_type;
-	typedef value_type &				reference;
-	typedef bidirectional_iterator_tag	iterator_category;
-	typedef value_type *				pointer;
+	typedef typename ft::map_iterator_traits<T>::value_type			value_type;
+	typedef typename ft::map_iterator_traits<T>::difference_type	difference_type;
+	typedef typename ft::map_iterator_traits<T>::pointer			pointer;
+	typedef typename ft::map_iterator_traits<T>::reference			reference;
+	typedef typename ft::map_iterator_traits<T>::iterator_category	iterator_category;
 
-	// default constructor // TODO // shouldnt be public either
+	// default constructor 
 	bidirectional_iterator (void) : _ptr(NULL) {}
-	// parametric constructor // TODO // probably shouldnt be public
+	// parametric constructor 
 	bidirectional_iterator (node<T> * new_ptr) : _ptr(new_ptr), _end(_ptr->_end), _rend(_ptr->_rend) {}
 	// destructor
 	~bidirectional_iterator (void) {}
 	// copy constructor
-	bidirectional_iterator (const bidirectional_iterator<value_type> & src) : _ptr(src._ptr), _end(_ptr->_end), _rend(_ptr->_rend) {}
+	bidirectional_iterator (const bidirectional_iterator & src) : _ptr(src._ptr), _end(_ptr->_end), _rend(_ptr->_rend) {}
 	// assignment operator
 	bidirectional_iterator & operator= (const bidirectional_iterator & src) {
 		_ptr = src._ptr;

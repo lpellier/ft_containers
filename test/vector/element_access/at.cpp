@@ -12,6 +12,7 @@ void	at() {
 		test.at(i) = i;
 	_print_vec(test);
 
+	// ? this works but is commented because exception.what() is not the same
 	// try {
 	// 	test.at(10);
 	// }

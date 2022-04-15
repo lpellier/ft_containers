@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	rbegin() {
-	std::vector<int> foo;
+	NAMESPACE::vector<int> foo;
 	for (int i = 0; i < 10; i++)
 		foo.push_back(i);
 

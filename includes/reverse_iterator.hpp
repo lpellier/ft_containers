@@ -1,6 +1,9 @@
 #pragma once
 
-#include "utils.hpp"
+// #include "utils.hpp"
+
+#include <cstddef>
+#include "type_traits.hpp"
 #include "../containers/vector/iterator/iterator.hpp"
 #include "../containers/map/iterator/iterator.hpp"
 
@@ -22,11 +25,11 @@ protected:
 
 public:
 	typedef Iter												iterator_type;
-	typedef	typename iterator_traits<Iter>::difference_type		difference_type;
-	typedef	typename iterator_traits<Iter>::value_type			value_type;
-	typedef	typename iterator_traits<Iter>::pointer				pointer;
-	typedef	typename iterator_traits<Iter>::reference			reference;
-	typedef	typename iterator_traits<Iter>::iterator_category	iterator_category;
+	typedef	typename ft::iterator_traits<Iter>::difference_type		difference_type;
+	typedef	typename ft::iterator_traits<Iter>::value_type			value_type;
+	typedef	typename ft::iterator_traits<Iter>::pointer				pointer;
+	typedef	typename ft::iterator_traits<Iter>::reference			reference;
+	typedef	typename ft::iterator_traits<Iter>::iterator_category	iterator_category;
 
 	typedef const value_type *	const_iterator_type;
 

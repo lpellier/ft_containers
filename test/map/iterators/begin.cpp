@@ -1,7 +1,7 @@
 #include "../../test.hpp"
 
 void	begin() {
-	std::vector<NAMESPACE::pair<TEST_TYPE, TEST_TYPE> > foo;
+	NAMESPACE::vector<NAMESPACE::pair<TEST_TYPE, TEST_TYPE> > foo;
 	for (int i = 0; i < 10; i++)
 		foo.push_back(NAMESPACE::make_pair(i, i));
 
@@ -14,8 +14,6 @@ void	begin() {
 	std::cout << (*it_foo).first << " " << (*it_foo).second << std::endl;
 	it_foo--;
 	std::cout << (*it_foo).first << " " << (*it_foo).second << std::endl;
-
-	std::cout << (it_foo == const_it_foo) << std::endl;
 
 	std::cout << (*const_it_foo).first << " " << (*const_it_foo).second << std::endl;
 	const_it_foo++;

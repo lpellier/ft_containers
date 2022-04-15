@@ -1,7 +1,8 @@
 #pragma once
 
-// #include "iterator/iterator.hpp"
-#include "../../utils/reverse_iterator.hpp"
+#include "iterator/iterator.hpp"
+#include "../../includes/reverse_iterator.hpp"
+#include "../../includes/pair.hpp"
 
 namespace ft {
 
@@ -115,7 +116,7 @@ public:
 		_alloc = x._alloc;
 		_end = _empty_node();
 		_rend = _empty_node();
-		iterator src_it = x.begin();
+		const_iterator src_it = x.begin();
 		for (; src_it != x.end(); src_it++)
 			_add_one(*src_it);
 	}
