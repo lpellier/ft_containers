@@ -4,6 +4,8 @@
 # define RED            "\e[31m"
 # define RESET          "\e[0m"
 
+namespace ft {}
+
 #ifndef NAMESPACE
 # define NAMESPACE ft
 #endif
@@ -12,7 +14,6 @@
 # define TEST_TYPE int
 #endif
 
-#include "../includes/containers.hpp"
 #include <iostream>
 #include <vector>
 #include <map>

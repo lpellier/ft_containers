@@ -1,3 +1,4 @@
+#include "../../../containers/stack/stack.hpp"
 #include "../../test.hpp"
 
 void	empty() {
