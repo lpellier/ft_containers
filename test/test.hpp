@@ -16,6 +16,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <stack>
 #include <algorithm>
 #include <stdlib.h>
 

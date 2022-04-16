@@ -64,12 +64,24 @@ public:
 		c.pop_back();
 	}
 
-// friend bool	operator== (const stack<T, Container> & lhs, const stack<T, Container> & rhs);
-// friend bool	operator!= (const stack & lhs, const stack & rhs);
-// friend bool	operator< (const stack & lhs, const stack & rhs);
-// friend bool	operator<= (const stack & lhs, const stack & rhs);
-// friend bool	operator> (const stack & lhs, const stack & rhs);
-// friend bool	operator>= (const stack & lhs, const stack & rhs);
+	friend bool	operator== (const stack& lhs, const stack& rhs) {
+		return (lhs.c == rhs.c);
+	}
+	friend bool	operator!= (const stack& lhs, const stack& rhs) {
+		return (lhs.c != rhs.c);
+	}
+	friend bool	operator<  (const stack& lhs, const stack& rhs) {
+		return (lhs.c < rhs.c);
+	}
+	friend bool	operator<= (const stack& lhs, const stack& rhs) {
+		return (lhs.c <= rhs.c);
+	}
+	friend bool	operator>  (const stack& lhs, const stack& rhs) {
+		return (lhs.c > rhs.c);
+	}
+	friend bool	operator>= (const stack& lhs, const stack& rhs) {
+		return (lhs.c >= rhs.c);
+	}
 
 protected:
 	container_type	c;
@@ -90,29 +102,5 @@ protected:
 |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|  \___/ \_/ \___|_|  |_|\___/ \__,_|\__,_|___/                                                                                                                                 
 */
 
-template < class T, class Container >
-bool	operator== (const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
-	return (lhs.c == rhs.c);
-}
-template < class T, class Container >
-bool	operator!= (const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
-	return (lhs.c != rhs.c);
-}
-template < class T, class Container >
-bool	operator<  (const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
-	return (lhs.c < rhs.c);
-}
-template < class T, class Container >
-bool	operator<= (const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
-	return (lhs.c <= rhs.c);
-}
-template < class T, class Container >
-bool	operator>  (const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
-	return (lhs.c > rhs.c);
-}
-template < class T, class Container >
-bool	operator>= (const stack<T, Container>& lhs, const stack<T, Container>& rhs) {
-	return (lhs.c >= rhs.c);
-}
 
 }
