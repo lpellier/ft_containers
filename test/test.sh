@@ -1,10 +1,11 @@
 #!/bin/bash
 
-VALGRIND=0
-which valgrind 1> /dev/null 2> /dev/null
-if [ $? -ne 0 ]; then
-	VALGRIND=0
-fi
+VALGRIND=1
+#which valgrind 1> /dev/null 2> /dev/null
+#if [ $? -ne 0 ]; then
+#	VALGRIND=0
+#fi
+
 
 ERRORS=0
 COMPILER_ERROR=1

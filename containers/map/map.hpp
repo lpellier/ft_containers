@@ -123,10 +123,16 @@ public:
 	// using its allocator
 	~map () {
 		_delete_tree();
-		if (_end)
-			delete _end;
-		if (_rend)
-			delete _rend;
+		if (_end) {
+			_alloc.destroy(_end);
+			_alloc.deallocate(_end, 1);
+			_end = NULL;
+		}
+		if (_rend) {
+			_alloc.destroy(_rend);
+			_alloc.deallocate(_rend, 1);
+			_rend = NULL;
+		}
 	}
 
 	// Assigns new contents to the container, replacing its current content and changing its size accordingly
@@ -326,9 +332,30 @@ public:
 		map	tmp(*this);
 
 		clear();
+		if (_end) {
+			_alloc.destroy(_end);
+			_alloc.deallocate(_end, 1);
+			_end = NULL;
+		}
+		if (_rend) {
+			_alloc.destroy(_rend);
+			_alloc.deallocate(_rend, 1);
+			_rend = NULL;
+		}
 		new (this) map(x);
 	
 		x.clear();
+
+		if (x._end) {
+			_alloc.destroy(x._end);
+			_alloc.deallocate(x._end, 1);
+			x._end = NULL;
+		}
+		if (x._rend) {
+			_alloc.destroy(x._rend);
+			_alloc.deallocate(x._rend, 1);
+			x._rend = NULL;
+		}
 		x = tmp;
 	}
 
