@@ -156,6 +156,10 @@ public:
 		return *this;
 	}
 
+	T	get_ptr() const {
+		return _ptr;
+	}
+
 protected:
 	T	_ptr;
 
@@ -168,5 +172,19 @@ random_access_iterator<U>	operator+  (const int & lhs, const random_access_itera
 	ret += lhs;
 	return ret;
 }
+
+template<typename it1, typename it2>
+bool operator==(const random_access_iterator<it1>& a, const random_access_iterator<it2>& b) {return a.get_ptr() == b.get_ptr();}
+template<typename it1, typename it2>
+bool operator!=(const random_access_iterator<it1>& a, const random_access_iterator<it2>& b) {return a.get_ptr() != b.get_ptr();}
+template<typename it1, typename it2>
+bool operator<(const random_access_iterator<it1>& a, const random_access_iterator<it2>& b) {return a.get_ptr() < b.get_ptr();}
+template<typename it1, typename it2>
+bool operator<=(const random_access_iterator<it1>& a, const random_access_iterator<it2>& b) {return a.get_ptr() <= b.get_ptr();}
+template<typename it1, typename it2>
+bool operator>(const random_access_iterator<it1>& a, const random_access_iterator<it2>& b) {return a.get_ptr() > b.get_ptr();}
+template<typename it1, typename it2>
+bool operator>=(const random_access_iterator<it1>& a, const random_access_iterator<it2>& b) {return a.get_ptr() >= b.get_ptr();}
+
 
 }

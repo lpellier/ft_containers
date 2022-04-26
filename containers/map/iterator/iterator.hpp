@@ -235,5 +235,18 @@ bidirectional_iterator<U>	operator+  (const int & lhs, const bidirectional_itera
 	return ret;
 }
 
+template<typename it1, typename it2>
+bool operator==(const bidirectional_iterator<it1>& a, const bidirectional_iterator<it2>& b) {return a.get_ptr() == b.get_ptr();}
+template<typename it1, typename it2>
+bool operator!=(const bidirectional_iterator<it1>& a, const bidirectional_iterator<it2>& b) {return a.get_ptr() != b.get_ptr();}
+template<typename it1, typename it2>
+bool operator<(const bidirectional_iterator<it1>& a, const bidirectional_iterator<it2>& b) {return a.get_ptr() < b.get_ptr();}
+template<typename it1, typename it2>
+bool operator<=(const bidirectional_iterator<it1>& a, const bidirectional_iterator<it2>& b) {return a.get_ptr() <= b.get_ptr();}
+template<typename it1, typename it2>
+bool operator>(const bidirectional_iterator<it1>& a, const bidirectional_iterator<it2>& b) {return a.get_ptr() > b.get_ptr();}
+template<typename it1, typename it2>
+bool operator>=(const bidirectional_iterator<it1>& a, const bidirectional_iterator<it2>& b) {return a.get_ptr() >= b.get_ptr();}
+
 }
 
