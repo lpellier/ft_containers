@@ -176,17 +176,17 @@ typename reverse_iterator_wrap<Iter>::difference_type operator-  (const reverse_
 	return (rhs.base() - lhs.base());
 }
 
-template<typename Iter>
-bool operator==(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() == b.base();}
-template<typename Iter>
-bool operator!=(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() != b.base();}
-template<typename Iter>
-bool operator<(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() < b.base();}
-template<typename Iter>
-bool operator<=(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() <= b.base();}
-template<typename Iter>
-bool operator>(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() > b.base();}
-template<typename Iter>
-bool operator>=(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() >= b.base();}
+// template<typename Iter>
+// bool operator==(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() == b.base();}
+// template<typename Iter>
+// bool operator!=(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() != b.base();}
+// template<typename Iter>
+// bool operator<(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() < b.base();}
+// template<typename Iter>
+// bool operator<=(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() <= b.base();}
+// template<typename Iter>
+// bool operator>(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() > b.base();}
+// template<typename Iter>
+// bool operator>=(const reverse_iterator_wrap<Iter>& a, const reverse_iterator_wrap<Iter>& b) {return a.base() >= b.base();}
 
 }
